@@ -103,7 +103,8 @@ def reconstruct_trips(servicio='L'):
 
 
 def source_contract(expected, servicio='L', instancia=ROOT / 'metodo_hibrido/instancia_417'):
-    source = ROOT / 'CODIGO apstone'
+    # En el proyecto se llama «CODIGO apstone»; en el repositorio del grupo, «codigo».
+    source = next(ROOT / n for n in ('CODIGO apstone', 'codigo') if (ROOT / n).is_dir())
     raw = ROOT / '01-datos'
     source_trips = {r['corrida_id']: r for r in rows(source / 'output/fase1/corridas.csv')
                     if r['service_id'] == servicio}

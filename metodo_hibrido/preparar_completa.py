@@ -11,7 +11,17 @@ from pathlib import Path
 from metodo_hibrido.caso_base import DAY_TYPES, read_csv, write_csv, load_instance, validate_inputs
 
 HERE = Path(__file__).resolve().parent
-SOURCE = HERE.parent / 'CODIGO apstone'
+
+
+def carpeta_codigo(raiz):
+    """En el proyecto se llama «CODIGO apstone»; en el repositorio del grupo, «codigo»."""
+    for nombre in ('CODIGO apstone', 'codigo'):
+        if (raiz / nombre).is_dir():
+            return raiz / nombre
+    raise FileNotFoundError(f'No está la carpeta del código en {raiz}')
+
+
+SOURCE = carpeta_codigo(HERE.parent)
 # Corridas y rutas de cada tipo de día en los datos originales; si no calzan, no se arma la instancia.
 ESPERADO = {'L': (64502, 417), 'S': (43619, 343), 'D': (37377, 339)}
 DIA = {'L': 'laboral', 'S': 'de sábado', 'D': 'de domingo o festivo'}

@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from metodo_hibrido.preparar_completa import preparar
+from metodo_hibrido.preparar_completa import carpeta_codigo, preparar
 
 HERE = Path(__file__).resolve().parent
 
@@ -42,6 +42,15 @@ class InstanciasCompletas(unittest.TestCase):
                 self.assertEqual(len({f['route_id'] for f in filas}), rutas)
                 self.assertEqual(escenario['service_id'], servicio)
                 self.assertEqual(len(escenario['rutas']), rutas)
+
+    def test_carpeta_del_codigo_con_cualquiera_de_sus_nombres(self):
+        # En el proyecto se llama «CODIGO apstone»; en el repositorio del grupo, «codigo».
+        for nombre in ('CODIGO apstone', 'codigo'):
+            with self.subTest(nombre=nombre), tempfile.TemporaryDirectory() as tmp:
+                (Path(tmp) / nombre).mkdir()
+                self.assertEqual(carpeta_codigo(Path(tmp)), Path(tmp) / nombre)
+        with tempfile.TemporaryDirectory() as tmp, self.assertRaises(FileNotFoundError):
+            carpeta_codigo(Path(tmp))
 
     def test_no_sobrescribe_una_instancia_existente(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -11,10 +11,9 @@ from collections import defaultdict
 from pathlib import Path
 
 from metodo_hibrido.caso_base import load_instance, read_csv, write_csv
-from metodo_hibrido.preparar_completa import ESPERADO
+from metodo_hibrido.preparar_completa import ESPERADO, SOURCE
 
 HERE = Path(__file__).resolve().parent
-SOURCE = HERE.parent / 'CODIGO apstone'
 
 
 def module(name, path):

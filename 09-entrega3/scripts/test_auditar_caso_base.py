@@ -6,10 +6,11 @@ import unittest
 from pathlib import Path
 
 from auditar_caso_base import auditar
+from fuentes import CODIGO  # acepta «CODIGO apstone» o «codigo»
 
 RAIZ = Path(__file__).resolve().parents[2]
 INSTANCIA_212 = RAIZ / 'metodo_hibrido/instancia_212'
-MIOPE_212 = RAIZ / 'CODIGO apstone/output/tres_fases/muestra_212_caso_base'
+MIOPE_212 = CODIGO / 'output/tres_fases/muestra_212_caso_base'
 
 
 class AuditoriaCasoBase(unittest.TestCase):
