@@ -1,0 +1,371 @@
+% !TEX program = pdflatex
+% Compilar: pdflatex bibliografia && bibtex bibliografia && pdflatex bibliografia && pdflatex bibliografia
+\documentclass[11pt,a4paper,parskip=half]{scrartcl}
+\input{estilo}
+\bibliographystyle{apalike}
+
+% --- las fichas usan la misma lista alineada que los otros documentos ---
+\newenvironment{ficha}[1]{%
+  \entradasimple{#1}{}%
+  \begin{campos}%
+}{%
+  \end{campos}%
+}
+\newcommand{\campo}[2]{\item[#1] #2}
+\newcommand{\prioridad}[1]{\textcolor{amber}{\textbf{#1}}}
+\newcommand{\gatilla}[1]{\item[Gatilla] #1}
+
+\title{Bibliografía crítica}
+\subject{\normalsize ICS2122 — Taller de Investigación Operativa (Capstone)}
+\subtitle{\normalsize Planificación de la operación de buses eléctricos (E-VSP)\\[2pt]
+23 referencias verificadas abriendo su DOI o URL, organizadas en cinco capas}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{nota}
+\textbf{\textcolor{ink}{Metodología de verificación.}} Cada referencia fue verificada abriendo su DOI/URL (Crossref, Semantic Scholar, página del editor o repositorio institucional) antes de fichar. Ninguna cita proviene de memoria. \texttt{referencias.bib} fue probado con \texttt{pdflatex}+\texttt{bibtex} reales y compila sin \textit{warnings}. Nomenclatura de investigación de operaciones (IO) en inglés (\textit{deadhead}, \textit{time-space network}, \textit{column generation}, SoC = \textit{state of charge}), con traducción la primera vez que aparece.
+
+\textbf{Punto de partida:} se usaron dos \textit{reviews} de anclaje para el \textit{snowballing} --- \citet{perumal_evspreview_2022} (marco del campo, 259 citas) y \citet{wang_bevretrospective_2025} (el más reciente encontrado, abril de 2025) --- porque el AGENT.md pedía partir del \textit{review} más reciente, no asumir que el más citado seguía siendo el más nuevo. \textit{Backward snowballing} sobre las 55 referencias de Perumal et al.; \textit{forward snowballing} sobre sus $\sim$95 citas de 2025-2026, ambos vía la API de Semantic Scholar.
+\end{nota}
+
+\tableofcontents
+
+\section{Capa 0 --- Fundamentos del VSP clásico}
+
+\begin{ficha}{[P-01] \citet{bunte_vspoverview_2009} --- An overview on vehicle scheduling models}
+\campo{Capa}{0 \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1007/s12469-010-0018-5} (verificado vía Crossref y Springer Link)}
+\campo{Problema}{el \textit{Vehicle Scheduling Problem} (VSP) clásico: asignar una flota de buses convencionales a un conjunto de viajes programados (\textit{timetabled trips}), con múltiples depósitos y tipos de vehículo, minimizando flota y/o costo operacional. Sin restricciones de energía.}
+\campo{Formulación}{los autores clasifican los modelos en dos familias: \textbf{connection-based networks} (nodos = viajes, arcos = encadenamientos factibles por tiempo/lugar) y \textbf{time-space networks} (nodos = eventos espacio-temporales, arcos = actividades; permite flujo de costo mínimo en redes). Señalan que Kliewer et al. fueron los primeros en aplicar el \textit{time-space network} al VSP.}
+\campo{Método}{revisión metodológica; compara enfoques exactos (flujo en redes, ILP) y las bases de \textit{column generation} para multi-depósito.}
+\campo{Supuestos clave}{(1) cada viaje se cubre exactamente una vez; (2) el bus retorna implícitamente a algún depósito; (3) sin restricción de autonomía; (4) foco en factibilidad temporal/espacial, no energética.}
+\campo{Qué nos sirve}{base conceptual para decidir la representación de red (\textit{time-space} vs. \textit{connection-based}) antes de añadir la capa eléctrica.}
+\campo{Qué NO cubre}{nada de energía, batería ni carga --- brecha exacta que llena la Capa 1.}
+\gatilla{Pregunta que gatilla: Q12 (validación de la ruta metodológica)}
+\end{ficha}
+
+\begin{ficha}{[P-02] \citet{kliewer_timespacemdvsp_2006} --- A time-space network based exact optimization model for multi-depot bus scheduling}
+\campo{Capa}{0 \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/j.ejor.2005.02.030} (verificado vía Crossref) --- EJOR 175(3):1616-1627}
+\campo{Problema}{\textit{Multi-Depot Vehicle Scheduling Problem} (MDVSP) --- NP-hard, mucho más difícil que el caso mono-depósito (polinomial).}
+\campo{Formulación}{flujo de costo mínimo sobre un \textbf{time-space network agregado} (agrega arcos entre eventos en la misma franja temporal), en vez del \textit{connection-based network} tradicional --- reduce drásticamente arcos/variables sin perder exactitud.}
+\campo{Método}{exacto --- ILP con relajación LP + \textit{column generation}/flujo en redes; resuelve instancias reales de una empresa de transporte alemana.}
+\campo{Supuestos clave}{(1) depósitos con capacidad; (2) sin restricción de energía; (3) el ahorro computacional asume homogeneidad de tiempos de \textit{deadhead} dentro de la franja agregada.}
+\campo{Qué nos sirve}{técnica que casi toda la literatura de E-VSP extiende para incorporar SoC como dimensión adicional del nodo/arco --- candidato directo si escalamos a miles de viajes.}
+\campo{Qué NO cubre}{energía, carga, ni capacidad de electroterminal.}
+\gatilla{Pregunta que gatilla: Q12}
+\end{ficha}
+
+\begin{ficha}{[P-03] \citet{desaulniers_publictransit_2007} --- Public Transit (cap. 2)}
+\campo{Capa}{0 \quad \prioridad{MEDIA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/S0927-0507(06)14002-5} (verificado vía Crossref) --- en \textit{Handbooks in Operations Research and Management Science}, Vol.\,14 (Transportation), Elsevier, pp.\,69--127}
+\campo{Problema}{capítulo de \textit{handbook}: revisión general de IO aplicada a transporte público --- diseño de redes, \textit{timetabling}, \textit{vehicle scheduling}, \textit{crew scheduling}, integración vehicle-crew.}
+\campo{Formulación}{panorama de formulaciones estándar de la época (\textit{set-partitioning}, \textit{network flow}), sin foco en electromovilidad (2007, previo a la masificación de buses eléctricos).}
+\campo{Método}{revisión narrativa con formulaciones ilustrativas; sin cómputo propio.}
+\campo{Supuestos clave}{trata \textit{vehicle scheduling} y \textit{crew scheduling} como secuenciales/integrables pero no simultáneos por defecto; asume flota convencional.}
+\campo{Qué nos sirve}{vocabulario estándar de la jerarquía de planificación (\textit{network design} $\to$ \textit{timetabling} $\to$ \textit{vehicle scheduling} $\to$ \textit{crew scheduling}) para ubicar dónde entra la carga.}
+\campo{Qué NO cubre}{todo lo eléctrico; es anterior al problema.}
+\gatilla{Pregunta que gatilla: Q8 (exclusiones de alcance)}
+\end{ficha}
+
+\section{Capa 1 --- E-VSP: núcleo del problema}
+
+\begin{ficha}{[P-04] \citet{perumal_evspreview_2022} --- Electric bus planning \& scheduling: A review of related problems and methodologies}
+\campo{Capa}{1 \quad \prioridad{CRÍTICA --- leer primero}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/j.ejor.2021.10.058} (verificado vía Crossref) --- EJOR 301(2):395-413 --- 259 citas (Semantic Scholar, 2026)}
+\campo{Problema}{\textit{review} que sintetiza 43 artículos sobre planificación de buses eléctricos en tres niveles: estratégico, táctico y operacional (E-VSP y \textit{charging scheduling}).}
+\campo{Formulación}{organiza el campo en 4 familias: (1) \textit{fleet \& infrastructure investment}; (2) \textit{charging infrastructure location}; (3) \textbf{E-VSP}; (4) \textit{charging scheduling}.}
+\campo{Método}{revisión bibliométrica y metodológica; mapea qué método (exacto/heurístico) se usó en cada subproblema.}
+\campo{Supuestos clave}{(1) trata E-VSP y \textit{charging scheduling} frecuentemente por separado --- brecha que el enunciado exige cerrar; (2) identifica robustez/incertidumbre como subdesarrollada.}
+\campo{Qué nos sirve}{mapa de literatura completo --- todas las semillas de Capas 1-3 provienen de su grafo de citas.}
+\campo{Qué NO cubre}{al ser de 2022, no cubre desarrollos posteriores (branch-and-price recientes, \textit{chance-constrained}).}
+\gatilla{Pregunta que gatilla: Q10 (¿determinista o incertidumbre?)}
+\end{ficha}
+
+\begin{ficha}{[P-05] \citet{wang_bevretrospective_2025} --- A Review of Battery Electric Public Transport Timetabling and Scheduling: A 10 Year Retrospective and New Developments}
+\campo{Capa}{1 \quad \prioridad{CRÍTICA --- review más reciente encontrado}}
+\campo{DOI/URL}{\url{https://doi.org/10.3390/electronics14091694} (verificado vía Crossref) --- Electronics 14(9):1694, 2025-04-22}
+\campo{Problema}{\textit{review} de una década de investigación en BEV \textit{timetabling} y \textit{scheduling} en transporte público, con foco específico en buses.}
+\campo{Formulación}{3 ejes: (1) evolución de \textit{timetabling} con análisis comparativo; (2) desarrollos clave en \textit{scheduling}, incluida integración con \textit{crew scheduling}; (3) integración \textit{scheduling}+\textit{timetabling}.}
+\campo{Método}{revisión sistemática comparativa; identifica fortalezas/limitaciones y direcciones futuras.}
+\campo{Supuestos clave}{foco en degradación de batería y ciclo de vida --- más detalle que Perumal (2022) por ser 3 años más reciente.}
+\campo{Qué nos sirve}{confirma qué preguntas siguen abiertas en 2025 --- usarlo para justificar el estado del arte en la introducción.}
+\campo{Qué NO cubre}{no está centrado en capacidad de infraestructura de carga (eso se cubre mejor en Capa 2).}
+\gatilla{Pregunta que gatilla: Q10}
+\end{ficha}
+
+\begin{ficha}{[P-06] \citet{pasha_evsstateofart_2024} --- Electric vehicle scheduling: State of the art, critical challenges, and future research opportunities}
+\campo{Capa}{1 \quad \prioridad{MEDIA --- complementario, alcance más amplio}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/j.jii.2024.100561} (verificado vía Crossref) --- Journal of Industrial Information Integration, Vol.\,38, art.\,100561}
+\campo{Problema}{\textit{review} de \textit{electric vehicle scheduling} amplio (no exclusivo de buses urbanos); 3 categorías: EVS general, con red eléctrica, y con consideraciones ambientales.}
+\campo{Formulación}{modelos matemáticos representativos por categoría.}
+\campo{Método}{revisión sistemática con formulaciones ilustrativas.}
+\campo{Supuestos clave}{menor nivel de detalle operacional (deadhead, terminales) que Perumal (2022) o Wang et al. (2025) por cubrir EVs en general.}
+\campo{Qué nos sirve}{perspectiva de interacción con la red eléctrica --- justifica modelar potencia agregada del electroterminal.}
+\campo{Qué NO cubre}{especificidad del contexto de transporte público urbano.}
+\gatilla{Pregunta que gatilla: Q2 (faltan los datos de cargadores y de potencia)}
+\end{ficha}
+
+\begin{ficha}{[P-07] \citet{wen_alnsevsp_2016} --- An adaptive large neighborhood search heuristic for the Electric Vehicle Scheduling Problem}
+\campo{Capa}{1 (también Capa 3 --- método) \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/j.cor.2016.06.013} (verificado vía Crossref) --- Computers \& Operations Research 76:73-83}
+\campo{Problema}{E-VSP multi-depósito: viajes con horario fijo cubiertos por buses eléctricos con autonomía limitada; recarga \textbf{total o parcial} en estaciones dadas.}
+\campo{Formulación}{el objetivo explícito es resolver instancias grandes (E-VSP es NP-hard).}
+\campo{Método}{heurístico --- \textit{Adaptive Large Neighborhood Search} (ALNS).}
+\campo{Supuestos clave}{(1) recarga parcial permitida; (2) estaciones con ubicación/disponibilidad dadas, sin capacidad limitada de cargadores simultáneos; (3) NP-hard $\to$ se resigna optimalidad garantizada por escalabilidad.}
+\campo{Qué nos sirve}{referencia metodológica directa para metaheurística --- mismo problema núcleo, pero \textbf{sin} capacidad limitada de cargadores, exactamente la extensión que el proyecto debe agregar.}
+\campo{Qué NO cubre}{capacidad de infraestructura de carga --- la restricción central del enunciado.}
+\gatilla{Pregunta que gatilla: Q2, Q12 (¿ALNS extendido o exacto en instancia reducida?)}
+\end{ficha}
+
+\begin{ficha}{[P-08] \citet{vankootenniekerk_schedulingev_2017} --- Scheduling electric vehicles}
+\campo{Capa}{1 \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1007/s12469-017-0164-0} (verificado vía Crossref y Springer Link) --- Public Transport 9(1-2):155-176}
+\campo{Problema}{e-VSP mono-línea sin sustitución de batería. Comparan explícitamente \textbf{modelo simplificado} (carga lineal, precio constante) contra \textbf{modelo detallado} (curva no lineal, tarifas reales por hora, depreciación por profundidad de descarga).}
+\campo{Formulación}{el modelo detallado discretiza el nivel de carga para mantener tratabilidad; ILP para instancias pequeñas/medianas.}
+\campo{Método}{exacto (ILP) para instancias pequeñas/medianas; \textit{column generation} para instancias grandes (sin garantía de optimalidad). Probado en instancias reales.}
+\campo{Supuestos clave}{(1) sin intercambio de batería; (2) cita textual: \textit{``we allow any type of charging process, work with the actual electricity prices, and take the depreciation cost of the battery into account''}; (3) sin restricción de capacidad simultánea de cargadores.}
+\campo{Qué nos sirve}{referencia más directa para ``¿carga lineal o curva no lineal?'', con datos de tarifa horaria análogos a \texttt{data-alumnos/electricity\_prices.csv}.}
+\campo{Qué NO cubre}{capacidad limitada de cargadores/potencia agregada --- sin contención entre buses por el mismo cargador.}
+\gatilla{Pregunta que gatilla: Q5 (consumo y curva de carga)}
+\end{ficha}
+
+\begin{ficha}{[P-09] \citet{adler_altfuelvsp_2017} --- The Vehicle Scheduling Problem for Fleets with Alternative-Fuel Vehicles}
+\campo{Capa}{1 (también Capa 3 --- método exacto) \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1287/trsc.2015.0615} (verificado vía Crossref) --- Transportation Science 51(2):441-456}
+\campo{Problema}{``alternative-fuel multiple depot vehicle scheduling problem'' --- generalización del MDVSP con reabastecimiento solo en estaciones dadas y capacidad de tanque/batería limitada.}
+\campo{Formulación}{programa entero sobre la red MDVSP extendida con nodos de reabastecimiento y seguimiento de nivel restante.}
+\campo{Método}{exacto --- \textbf{branch-and-price}. Probado con datos reales del sistema de buses de Phoenix, Arizona.}
+\campo{Supuestos clave}{(1) estaciones en ubicaciones fijas con capacidad no limitante; (2) consumo determinístico por distancia.}
+\campo{Qué nos sirve}{referencia exacta (branch-and-price) para la variante de capacidad de tanque/batería --- comparación directa si se elige column generation/branch-and-price.}
+\campo{Qué NO cubre}{capacidad limitada de estaciones de recarga; no hay recarga parcial con curva de carga.}
+\gatilla{Pregunta que gatilla: Q12}
+\end{ficha}
+
+\begin{ficha}{[P-10] \citet{li_limitedenergy_2014} --- Transit Bus Scheduling with Limited Energy}
+\campo{Capa}{1 \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1287/trsc.2013.0468} (verificado vía Crossref) --- Transportation Science 48(4):521-539}
+\campo{Problema}{dos variantes con energía limitada: (a) buses eléctricos con \textit{battery swapping} o \textit{fast charging}; (b) buses GNC/diésel/híbrido-diésel con distancia máxima de ruta.}
+\campo{Formulación}{restricción de energía/distancia acoplada al nivel de combustible o carga restante; ambas variantes NP-hard.}
+\campo{Método}{\textit{column generation}; también explora \textit{simulated annealing} (SA) priorizando velocidad y salud de batería sobre optimalidad garantizada.}
+\campo{Supuestos clave}{(1) contempla \textit{battery swapping} como alternativa, probablemente no aplicable al parque BYD K9 real de la RM; (2) restricción de distancia máxima, más simple que un balance energético continuo.}
+\campo{Qué nos sirve}{familia ``column generation + energía limitada''; justifica descartar \textit{battery swapping}.}
+\campo{Qué NO cubre}{capacidad limitada de estación de carga/swapping --- sin contención por recurso compartido.}
+\gatilla{Pregunta que gatilla: Q8 (exclusiones de alcance)}
+\end{ficha}
+
+\section{Capa 2 --- Recarga como recurso escaso}
+
+\begin{ficha}{[P-11] \citet{he_fastchargingbus_2020} --- Optimal charging scheduling and management for a fast-charging battery electric bus system}
+\campo{Capa}{2 \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/j.tre.2020.102056} (verificado vía Crossref) --- TR Part E, Vol.\,142, art.\,102056}
+\campo{Problema}{\textit{on-route fast-charging}: recarga a alta potencia en \textit{layover} de terminal, en vez de recarga nocturna lenta.}
+\campo{Formulación}{programación de carga en terminal considerando cola de llegada y potencia disponible.}
+\campo{Método}{optimización con gestión de demanda pico (\textit{peak demand management}).}
+\campo{Supuestos clave}{(1) recarga rápida en terminal de paso; (2) potencia alta concentrada en ventanas cortas --- escenario de contención que describe el enunciado.}
+\campo{Qué nos sirve}{modela explícitamente la competencia por el recurso de carga en ventanas cortas.}
+\campo{Qué NO cubre}{no resuelve el E-VSP completo, solo la sub-decisión de carga.}
+\gatilla{Pregunta que gatilla: Q2}
+\end{ficha}
+
+\begin{ficha}{[P-12] \citet{devos_capacitatedcharging_2024} --- Electric Vehicle Scheduling in Public Transit with Capacitated Charging Stations}
+\campo{Capa}{2 (también Capa 3 --- método exacto) \quad \prioridad{CRÍTICA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1287/trsc.2022.0253} (verificado vía Crossref) --- Transportation Science 58(2):279-294}
+\campo{Problema}{E-VSP con \textbf{capacidad limitada de estaciones de carga} y \textbf{recarga parcial} --- combinación exacta del enunciado.}
+\campo{Formulación}{programa binario basado en rutas sobre una red que trackea SoC y ocupación de la estación de carga en el tiempo.}
+\campo{Método}{exacto --- \textit{column generation} con \textit{pricing} que genera rutas factibles respetando capacidad de estación.}
+\campo{Supuestos clave}{(1) capacidad = número de puntos de carga simultáneos (no potencia agregada); (2) recarga parcial con relación tiempo-SoC dada.}
+\campo{Qué nos sirve}{referencia metodológica más cercana al problema exacto del enunciado.}
+\campo{Qué NO cubre}{la restricción de potencia agregada del electroterminal (distinta de ``número de cargadores'').}
+\gatilla{Pregunta que gatilla: Q2}
+\end{ficha}
+
+\begin{ficha}{[P-13] \citet{jiang_limitedcapacitylargescale_2022} --- Electric Bus Scheduling Considering Limited Charging Facility Capacity for Large-Scale Operation}
+\campo{Capa}{2 \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1061/jtepbs.0000706} (verificado vía Crossref) --- J.\,Transportation Engineering, Part A 148(9):04022058}
+\campo{Problema}{E-VSP a \textbf{gran escala} con capacidad limitada de carga --- foco explícito en escalabilidad ($>$500 viajes).}
+\campo{Formulación}{modelo de asignación con capacidad de instalación de carga como cuello de botella explícito.}
+\campo{Método}{enfoque orientado a instancias grandes, escalabilidad como objetivo de diseño.}
+\campo{Supuestos clave}{capacidad de instalación como restricción dura; foco en tratabilidad a escala real.}
+\campo{Qué nos sirve}{punto de comparación de tamaño de instancia si el proyecto maneja miles de viajes.}
+\campo{Qué NO cubre}{no se verificó en este corte si distingue cargadores discretos de potencia agregada.}
+\gatilla{Pregunta que gatilla: Q2}
+\end{ficha}
+
+\begin{ficha}{[P-14] \citet{xylia_stockholmlocation_2017} --- Locating charging infrastructure for electric buses in Stockholm}
+\campo{Capa}{2 \quad \prioridad{MEDIA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/j.trc.2017.03.005} (verificado vía Crossref) --- TR Part C 78:183-200}
+\campo{Problema}{ubicación óptima de infraestructura de carga a nivel de red urbana (Estocolmo) --- problema de \textbf{localización}, no de \textit{scheduling}.}
+\campo{Formulación}{modelo de localización que identifica \textit{hubs} de transporte público como puntos preferentes para cargadores.}
+\campo{Método}{optimización de localización (no \textit{vehicle scheduling}).}
+\campo{Supuestos clave}{ubicaciones de electroterminal como variable de decisión --- a diferencia de \texttt{data-alumnos/depots.csv}, donde son dato fijo.}
+\campo{Qué nos sirve}{justifica tratar la ubicación como dato (no decisión) en nuestro proyecto, a diferencia de esta referencia.}
+\campo{Qué NO cubre}{no resuelve \textit{scheduling} ni capacidad eléctrica; nivel táctico/estratégico, no operacional.}
+\gatilla{Pregunta que gatilla: Q4 (alcance de los datos; la ubicación quedó resuelta por el enunciado)}
+\end{ficha}
+
+\begin{ficha}{[P-15] \citet{hall_adjustmentsplanning_2018} --- Adjustments of public transit operations planning process for the use of electric buses}
+\campo{Capa}{2 \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1080/15472450.2018.1488131} (verificado vía Crossref) --- J.\,Intelligent Transportation Systems 23(3):216-230}
+\campo{Problema}{cómo la introducción de buses eléctricos obliga a modificar el \textbf{proceso completo de planificación}: diseño de red, \textit{timetabling} y \textit{vehicle scheduling} deben ajustarse conjuntamente.}
+\campo{Formulación}{análisis conceptual + estudio de caso sobre qué etapas requieren rediseño.}
+\campo{Método}{estudio de caso aplicado, sin algoritmo de optimización nuevo.}
+\campo{Supuestos clave}{(1) diseño de rutas/horarios no puede tratarse como fijo e independiente de la electrificación; (2) \textit{trade-off} explícito entre rigidez del \textit{timetable} y factibilidad energética.}
+\campo{Qué nos sirve}{justifica declarar como supuesto explícito de alcance (no ignorado silenciosamente) que no rediseñamos rutas ni horarios, aunque el GTFS se trate como dato fijo.}
+\campo{Qué NO cubre}{no da formulación matemática reutilizable directamente.}
+\gatilla{Pregunta que gatilla: Q3 (¿qué día tipo se planifica?)}
+\end{ficha}
+
+\section{Capa 3 --- Métodos de solución}
+
+\begin{ficha}{[P-16] \citet{wu_waitingtimebranchprice_2025} --- Optimal battery-electric bus scheduling with waiting times cost: A branch-and-price approach}
+\campo{Capa}{3 (método exacto) \quad \prioridad{ALTA}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/j.cie.2025.111209} (verificado vía Crossref) --- Computers \& Industrial Engineering, Vol.\,206, art.\,111209}
+\campo{Problema}{E-VSP con costo de tiempos de espera (\textit{waiting time cost}) y tiempos de recarga variables.}
+\campo{Formulación}{MILP descompuesto en problema maestro + \textit{pricing}.}
+\campo{Método}{exacto --- \textbf{branch-and-price}; resuelve a optimalidad hasta 101 viajes, superando el exacto previo (91 viajes).}
+\campo{Supuestos clave}{(1) tiempo de recarga variable; (2) 101 viajes es pequeño frente a ``miles de viajes'' del enunciado --- brecha de escalabilidad relevante.}
+\campo{Qué nos sirve}{\textit{benchmark} de lo que un exacto resuelve hoy (2025) --- argumenta por qué a escala RM se necesita heurística/descomposición.}
+\campo{Qué NO cubre}{capacidad limitada de electroterminal (cargadores/potencia) --- no es su foco.}
+\gatilla{Pregunta que gatilla: Q12}
+\end{ficha}
+
+\begin{ficha}{[P-17] \citet{legault_bendersfleetelectrification_2025} --- Integrated Bus Fleet Electrification Planning Through Accelerated Logic-Based Benders Decomposition and Restriction Heuristics}
+\campo{Capa}{3 (descomposición) \quad \prioridad{MEDIA-ALTA --- \textbf{preprint, no revisado por pares}}}
+\campo{DOI/URL}{\url{https://arxiv.org/abs/2508.05863} (verificado --- arXiv v3, 2026-07-27; también en Optimization Online) --- \textbf{working paper}, citado como tal por regla anti-alucinación}
+\campo{Problema}{planificación integrada multi-período: inversión anual en flota + carga, y operación horaria de \textit{vehicle scheduling}+\textit{charging}, simultáneamente.}
+\campo{Formulación}{programa entero de dos etapas (inversión estratégica + operación).}
+\campo{Método}{exacto --- \textbf{Logic-based Benders decomposition} acelerada (\textit{speedups} hasta 3 órdenes de magnitud) + heurística de restricción (gap $<$1\%). Probado con datos de Chicago.}
+\campo{Supuestos clave}{integra inversión con operación diaria --- nuestro proyecto probablemente NO incluye decisión de inversión (flota de 1200 buses ya dada en \texttt{parameters.csv}).}
+\campo{Qué nos sirve}{técnica de descomposición aplicable si se separa ``cuántos buses por depósito'' de ``cómo secuenciar sus viajes''.}
+\campo{Qué NO cubre}{sin revisión por pares; asume flota variable, mientras el enunciado da flota fija.}
+\gatilla{Pregunta que gatilla: Q7 (función objetivo; la flota quedó resuelta por el enunciado)}
+\end{ficha}
+
+\begin{ficha}{[P-18] \citet{ricard_chanceconstrained_2026} --- Chance-constrained battery management for electric bus scheduling}
+\campo{Capa}{3 (robustez/incertidumbre) \quad \prioridad{ALTA --- responde al vacío de Perumal et al. (2022)}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/j.ejor.2026.05.046} (verificado vía Crossref) --- EJOR (2026); versión preprint previa en arXiv:2503.19853, verificada también}
+\campo{Problema}{E-VSP bajo \textbf{incertidumbre} en consumo energético y degradación de batería --- exactamente el vacío que Perumal et al. (2022) identifican.}
+\campo{Formulación}{modelo \textit{chance-constrained}: restricciones de SoC cumplidas con probabilidad mínima dada, no determinísticamente.}
+\campo{Método}{heurística de branch-and-price adaptada a \textit{pricing} estocástico.}
+\campo{Supuestos clave}{(1) consumo/degradación como variables aleatorias con distribución conocida/estimable; (2) nivel de servicio en vez de cota determinística fija.}
+\campo{Qué nos sirve}{referencia más directa para justificar (o descartar) tratar el consumo como determinístico o estocástico --- probable pregunta de defensa.}
+\campo{Qué NO cubre}{no aborda capacidad limitada de infraestructura de carga simultáneamente con la incertidumbre.}
+\gatilla{Pregunta que gatilla: Q10}
+\end{ficha}
+
+\section{Capa 4 --- Contexto chileno / Santiago}
+
+\begin{ficha}{[P-19] Ministerio de Energía de Chile --- Plataforma de Electromovilidad: Buses eléctricos de RED Metropolitana de Movilidad}
+\campo{Capa}{4 \quad \prioridad{MEDIA --- fuente oficial, cifras desactualizadas}}
+\campo{URL}{\url{https://energia.gob.cl/electromovilidad/transporte-de-pasajeros/buses-electricos-red} (verificado, \textit{fetch} directo)}
+\campo{Qué reporta}{despliegue inicial de 200 buses; luego $>$650 unidades ($\sim$10\% de la flota RED); flota BYD K9 (METBUS, 100 unidades) y Yutong E12 (Vule/STP, 100 unidades); cargadores BYD 50\,kW AC y Yutong 150\,kW DC; disponibilidad $>$97\%; ahorro de mantención $\sim$70\% vs.\ diésel Euro VI.}
+\campo{Qué nos sirve}{fuente oficial para contrastar órdenes de magnitud de potencia real (50-150\,kW) contra \texttt{data-alumnos/vehicles.csv} (\texttt{charge\_power\_kw}\,=\,180, no coincide exactamente).}
+\campo{Qué NO cubre / brecha}{cifras del despliegue temprano ($\sim$2020); la flota actual real es de miles de buses (ver P-20, P-21). \textbf{No hay dataset descargable}, es contenido narrativo.}
+\gatilla{Pregunta que gatilla: Q4}
+\end{ficha}
+
+\begin{ficha}{[P-20] \citet{galarza_pilotstoscale_2020} --- From pilots to scale: Lessons from electric bus deployments in Santiago de Chile}
+\campo{Capa}{4 \quad \prioridad{ALTA --- fuente más rica en parámetros reales}}
+\campo{URL}{\url{https://iea.blob.core.windows.net/assets/db408b53-276c-47d6-8b05-52e53b1208e1/e-bus-case-study-Santiago-From-pilots-to-scale-Zebra-paper.pdf} (verificado, PDF leído completo). Autor: Sebastián Galarza (CMM Chile), \textit{partnership} ZEBRA (ICCT+C40 Cities), con IEA Global EV Outlook 2020}
+\campo{Qué reporta}{RED/Transantiago 2018: 6.756 buses, 380 rutas, 690.954 pasajeros de capacidad, 2.946\,km de red. Piloto Metbus-Enel-BYD (2017): consumo real \textbf{1,006\,kWh/km}, costo \textbf{US\$0,10/kWh} (idéntico al período P1 de \texttt{electricity\_prices.csv}), disponibilidad 99,23\%. Escalamiento: cargadores BYD 80\,kW AC, 3-4\,h de carga, upgrade de red $\sim$US\$3\,M por electroterminal. Piloto Engie-Vule/STP: terminal STP 13 cargadores DC de 150\,kW/25 buses; terminal Vule Rinconada 37 cargadores DC de 150\,kW/75 buses, demanda de 6\,MW + respaldo 2,1\,MW.}
+\campo{Qué nos sirve}{única fuente con cifras operacionales reales y verificadas (kWh/km, kW, MW) para contrastar los valores sintéticos de \texttt{01-datos}.}
+\campo{Qué NO cubre}{reporte técnico de 2020 (no revisado por pares), describe pilotos de 100-285 buses, no la escala actual.}
+\gatilla{Pregunta que gatilla: Q4, Q5}
+\end{ficha}
+
+\begin{ficha}{[P-21] \citet{basso_disaggregatedenergy_2024} --- The impact of electromobility in public transport: An estimation of energy consumption using disaggregated data in Santiago, Chile}
+\campo{Capa}{4 \quad \prioridad{ALTA --- único peer-reviewed con datos desagregados reales de RED}}
+\campo{DOI/URL}{\url{https://doi.org/10.1016/j.energy.2023.129550} (verificado vía Crossref) --- Energy 286:129550}
+\campo{Problema}{estimación de consumo energético bus-por-bus con datos desagregados reales de RED (no agregados por ruta).}
+\campo{Formulación/Método}{estimación a nivel de viaje individual, considerando ocupación de pasajeros y modo de conducción del conductor.}
+\campo{Supuestos clave}{(1) el consumo depende de variables operacionales finas, más rico que el supuesto lineal simple de \texttt{energy\_kwh}; (2) ahorro de 400.000\,kWh/día al reemplazar 1.000 buses diésel por eléctricos.}
+\campo{Qué nos sirve}{valida (o cuestiona) el supuesto de consumo lineal en distancia del dataset sintético del curso.}
+\campo{Qué NO cubre}{no resuelve \textit{scheduling} ni capacidad de carga.}
+\gatilla{Pregunta que gatilla: Q5}
+\end{ficha}
+
+\begin{ficha}{[P-22] \citet{oemick_economicsocialeval_2019} --- Evaluación económica y social de la incorporación de buses eléctricos al transporte público urbano de Santiago (tesis, Magíster, U.\,de Chile)}
+\campo{Capa}{4 \quad \prioridad{MEDIA}}
+\campo{URL}{\url{https://repositorio.uchile.cl/handle/2250/171777} (verificado, repositorio institucional, acceso abierto)}
+\campo{Qué reporta}{3 escenarios (25\%/50\%/75\% flota eléctrica a 2030); costos de combustible caen 55\% acumulado; ahorro máximo de 641.000\,millones\,CLP en escenario 75\%.}
+\campo{Qué nos sirve}{orden de magnitud para justificar \texttt{cost\_per\_km} desde una perspectiva económica agregada.}
+\campo{Qué NO cubre}{no modela \textit{scheduling}, \textit{deadhead} ni capacidad de carga.}
+\gatilla{Pregunta que gatilla: Q9 (baseline y criterio de éxito)}
+\end{ficha}
+
+\begin{ficha}{[P-23] \citet{zapata_gridimpact_2022} --- Impacto de electrificación de buses del transporte público de Santiago sobre el sistema eléctrico nacional (memoria de título, Ing.\,Civil Eléctrico, U.\,de Chile)}
+\campo{Capa}{4 \quad \prioridad{ALTA --- cifras de potencia agregada}}
+\campo{URL}{\url{https://repositorio.uchile.cl/handle/2250/184624} (verificado, repositorio institucional, acceso abierto)}
+\campo{Problema}{impacto de electrificar la flota completa sobre el sistema eléctrico nacional --- dimensiona la restricción de potencia agregada del enunciado a escala de sistema.}
+\campo{Formulación/Método}{(1) gestión de carga que optimiza horarios para minimizar costo energético; (2) simulación de despacho hidrotérmico 2021-2030.}
+\campo{Supuestos clave y hallazgos}{electrificar la flota completa requeriría $>$130\,MW y $\sim$1,59\,GWh/día (0,63\% de demanda punta 2020); $\sim$80\% abastecido por gas y carbón; hasta 97\% de la flota electrificable.}
+\campo{Qué nos sirve}{cota real de potencia agregada a nivel de sistema --- perspectiva para la restricción de ``capacidad eléctrica restringida''.}
+\campo{Qué NO cubre}{no resuelve el E-VSP; modelo agregado a nivel de sistema, no de \textit{vehicle scheduling} por bus.}
+\gatilla{Pregunta que gatilla: Q2}
+\end{ficha}
+
+\subsection*{Disponibilidad de datos --- Capa 4 (resumen obligatorio)}
+
+\begin{longtable}{@{}p{3.1cm}p{1.6cm}p{3.4cm}p{6.7cm}@{}}
+\toprule
+\textbf{Fuente} & \textbf{¿Descarg.?} & \textbf{Formato} & \textbf{Cobertura verificada} \\
+\midrule
+\endhead
+GTFS Red Metropolitana de Movilidad & \textcolor{ink}{\textbf{Sí}}, público, sin autenticación & \texttt{.zip} con archivos GTFS estándar & Feed vigente verificado en \texttt{dtpm.cl/index.php/noticias/gtfs-vigente}; \texttt{01-datos/gtfs/} (\texttt{feed\_version V166.20260704}) es copia de este mismo feed. Sin licencia explícita declarada (brecha). \\
+\addlinespace
+Flota, depósitos, tarifas, capacidad de carga (\texttt{vehicles.csv}, \texttt{depots.csv}, \texttt{charger\_capacity.csv}, \texttt{electricity\_prices.csv}, \texttt{parameters.csv}) & No verificado como público & CSV con valores redondos & Ningún valor coincide exactamente con cifras oficiales encontradas. \texttt{[SIN FUENTE --- dato de curso, no público]}. \\
+\addlinespace
+Ministerio de Energía --- plataforma de electromovilidad & Sí (página web) & HTML narrativo, \textbf{no dataset} & Cifras agregadas $\sim$2020, sin granularidad por electroterminal ni serie descargable. \\
+\addlinespace
+Reporte ZEBRA/CMM Chile/IEA (Galarza 2020) & Sí (PDF) & PDF narrativo con tablas & Cifras reales de pilotos 2017-2020 con fuente primaria citada en notas al pie. \\
+\addlinespace
+Basso et al. (2024), \textit{Energy} & Parcial --- paper de acceso restringido & Artículo científico & Metodología/resultados agregados públicos; no se verificó si el dataset desagregado subyacente es descargable. \textbf{Pregunta directa, no supuesto.} \\
+\addlinespace
+Tesis U.\,de Chile (Oemick 2019, Zapata 2022) & Sí, texto completo & PDF, repositorio institucional & Texto completo con metodología y fuentes citadas. \\
+\bottomrule
+\end{longtable}
+
+\textbf{Conclusión de disponibilidad:} el GTFS de la RED es el \textbf{único} insumo simultáneamente público, verificado y ya empaquetado en \texttt{data-alumnos/}. Todo lo demás parece construido para el curso, sin fuente pública verificada --- razonable pedagógicamente, pero no debe presentarse como si fueran datos oficiales de DTPM/Ministerio de Energía sin aclararlo.
+
+\section*{Ranking de prioridad de lectura (23 referencias)}
+
+\begin{longtable}{@{}p{0.7cm}p{6cm}p{8.5cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Ficha} & \textbf{Por qué en este orden} \\
+\midrule
+\endhead
+1 & P-04 \citet{perumal_evspreview_2022} & Mapa completo del campo; de aquí sale todo el \textit{snowballing} \\
+2 & P-05 \citet{wang_bevretrospective_2025} & \textit{Review} más reciente encontrado; confirma vacíos vigentes a 2025 \\
+3 & P-12 \citet{devos_capacitatedcharging_2024} & Formulación exacta más cercana al problema del enunciado \\
+4 & P-08 \citet{vankootenniekerk_schedulingev_2017} & Resuelve la pregunta de carga lineal/no lineal con datos reales \\
+5 & P-07 \citet{wen_alnsevsp_2016} & Método heurístico de referencia (ALNS) \\
+6 & P-18 \citet{ricard_chanceconstrained_2026} & Cierra el vacío de robustez/incertidumbre \\
+7 & P-15 \citet{hall_adjustmentsplanning_2018} & Advierte que la jerarquía de planificación completa puede verse afectada \\
+8 & P-20 \citet{galarza_pilotstoscale_2020} & Única fuente con parámetros reales de Santiago \\
+9 & P-01 \citet{bunte_vspoverview_2009} & Vocabulario y taxonomía de red \\
+10 & P-02 \citet{kliewer_timespacemdvsp_2006} & Técnica de \textit{time-space network} agregado \\
+11 & P-11 \citet{he_fastchargingbus_2020} & Contención real por recurso de carga en ventanas cortas \\
+12 & P-09 \citet{adler_altfuelvsp_2017} & Método exacto (branch-and-price) de referencia \\
+13 & P-16 \citet{wu_waitingtimebranchprice_2025} & \textit{Benchmark} de tamaño de instancia resoluble hoy \\
+14 & P-21 \citet{basso_disaggregatedenergy_2024} & Único paper \textit{peer-reviewed} con datos reales de RED \\
+15 & P-23 \citet{zapata_gridimpact_2022} & Cota real de potencia agregada a nivel de sistema \\
+16 & P-10 \citet{li_limitedenergy_2014} & Alternativa de \textit{battery swapping} a descartar/justificar \\
+17 & P-13 \citet{jiang_limitedcapacitylargescale_2022} & Escalabilidad a instancias grandes \\
+18 & P-06 \citet{pasha_evsstateofart_2024} & Complementario, perspectiva de red eléctrica \\
+19 & P-14 \citet{xylia_stockholmlocation_2017} & Contexto de localización \\
+20 & P-19 Ministerio de Energía & Fuente oficial pero desactualizada \\
+21 & P-22 \citet{oemick_economicsocialeval_2019} & Evaluación económica agregada \\
+22 & P-17 \citet{legault_bendersfleetelectrification_2025} & Preprint; techo metodológico si se modela inversión de flota \\
+23 & P-03 \citet{desaulniers_publictransit_2007} & Contexto histórico, lectura opcional \\
+\bottomrule
+\end{longtable}
+
+\clearpage
+\renewcommand{\refname}{Referencias citadas}
+\bibliography{referencias}
+
+\end{document}

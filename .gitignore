@@ -1,0 +1,47 @@
+# Archivos locales y entornos de Python
+.DS_Store
+.Rhistory
+.claude/
+.deps/
+.venv*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.home_sin_licencia/
+tmp/
+
+# Credenciales y licencias locales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+gurobi.lic
+
+# Datos voluminosos y copias comprimidas: compartir por separado
+*.gpkg
+*.gpkg-*
+*.zip
+
+# Datos e instancias: se comparten por separado o se regeneran con los scripts
+01-datos/
+metodo_hibrido/instancia_*/
+CODIGO apstone/gtfs
+
+# Resultados de las corridas: se regeneran con los scripts
+03-resultados/
+metodo_hibrido/resultados/
+CODIGO apstone/output/
+caso_base_simple_gurobi/corrida_gurobi/
+
+# Archivos auxiliares de compilación LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+*.vrb

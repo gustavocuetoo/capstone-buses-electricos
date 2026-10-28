@@ -1,0 +1,181 @@
+% Select one class
+%\documentclass{pucthesis}		% For DVI
+%\documentclass[pdftex]{pucthesis}	% For pdfLaTeX
+%\documentclass[spanish]{pucthesis}		% For DVI, in spanish
+\documentclass[pdftex,spanish]{pucthesis}	% For pdfLaTeX, in spanish
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%      Nota: si usas español, algunos nombres      %
+%      debes cambiarlos manualmente en este     %
+%        documento. En teoría, nunca deberías       %
+%           modificar el archivo pucthesis.cls              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%
+%   Packages	 %
+%%%%%%%%%
+
+% Floats
+\usepackage{graphicx}
+\usepackage{float}
+\floatstyle{boxed}
+\restylefloat{figure}
+\IfFileExists{subfigure.sty}{\usepackage{subfigure}}{}  % no está en el TeX Live local; en Overleaf sí
+\usepackage{color}
+
+% Math packages
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% Closest font to Times New Roman
+\usepackage{times}
+
+% To make pretty tables
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% To avoid underfull errors in the bibliography
+\usepackage{etoolbox}
+\apptocmd{\sloppy}{\hbadness 10000\relax}{}{}
+
+% To make cites and references
+\usepackage[hidelinks,pdfusetitle,pdfdisplaydoctitle]{hyperref}
+\usepackage[notocbib]{apacite} 
+\usepackage{doi}
+\renewcommand{\doitext}{}
+
+%--------- NEW ENVIRONMENTS --------- You are free to remove or use it
+\newtheorem{definition}{\bf Definition}[chapter]
+\newtheorem{property}{Property}[chapter]
+\newtheorem{claim}{Claim}[chapter]
+\newtheorem{lemma}{\bf Lemma}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+\newtheorem{theorem}{\noindent \bf Theorem}[chapter]
+\newtheorem{corollary}{\bf Corollary}[chapter]
+\newtheorem{pf}{Proof}[chapter]
+\newtheorem{example}{\bf Example}[chapter]
+\newtheorem{remark}{Remark}[chapter]
+
+% En caso de que el título sea muy largo, se puede ajustar el espacio
+% antes y después de este en las dos primeras páginas para que quede centrado.
+
+%\makeatletter
+%  \setlength{\beftitle}{105\p@\@plus24\p@}
+%  \setlength{\afttitle}{65\p@}
+%\makeatother
+
+% Agregados del informe 2 (paquetes y cifras; no cambian la configuración de la plantilla)
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\input{cifras.tex}
+
+\begin{document}
+
+\mdate{Octubre 2026}
+\version{2}
+
+\title[PLANIFICACIÓN DE LA OPERACIÓN DE BUSES ELÉCTRICOS EN LA REGIÓN METROPOLITANA\\ GRUPO 29]
+   {\bf PLANIFICACIÓN DE LA OPERACIÓN DE BUSES ELÉCTRICOS EN LA REGIÓN METROPOLITANA\\ GRUPO 29}
+\author[Integrantes:]{Integrantes:\\
+\textnormal{\small{
+Gonzalo Anguita\\
+Diego Barrios\\
+Gustavo Cueto\\
+Nicolás Farías\\
+Fernando González\\
+Ricardo Palma\\
+Cristóbal Rehbein}
+}
+}
+
+\address{Escuela de Ingenier\'ia\\
+                   Pontificia Universidad Cat\'olica de Chile\\
+                   Vicu\~na Mackenna 4860\\
+                  Santiago, Chile\\
+                  {\it Tel.\/} : 56 (2) 354-2000}
+
+\advisor                    {\textbf{Profesor Guía:} Agustín Chiu}
+\ogrsmember                 {\textbf{Ayudante Tutor:} Max Burr}
+\date                       {Octubre 2026}
+\copyrightname              {Grupo 29}
+\copyrightyear              {2026}
+
+\NoChapterPageNumber
+\pagenumbering{roman}
+\maketitle
+
+\pdfbookmark{\contentsname}{toc}
+\tableofcontents
+\phantomsection \label{listoffigures}
+\listoffigures
+\phantomsection \label{listoftables}
+\listoftables
+\cleardoublepage
+
+\phantomsection \label{resumen}
+\chapter*{RESUMEN}
+\input{./chapters/resumen.tex}
+\cleardoublepage
+
+\pagenumbering{arabic}
+
+\chapter[INTRODUCCIÓN]{Introducción} \label{ch:introduccion}
+\input{./chapters/cap01_introduccion.tex}
+
+\chapter[DESCRIPCIÓN DETALLADA DEL PROBLEMA Y DATOS]{Descripción detallada del problema y datos} \label{ch:problema}
+\input{./chapters/cap02_problema_datos.tex}
+
+\chapter[EVOLUCIÓN Y DISCUSIÓN METODOLÓGICA]{Evolución y discusión metodológica} \label{ch:evolucion}
+\input{./chapters/cap03_evolucion.tex}
+
+\chapter[CASO BASE]{Caso base} \label{ch:caso-base}
+\input{./chapters/cap04_caso_base.tex}
+
+\chapter[METODOLOGÍA HÍBRIDA PROPUESTA]{Metodología híbrida propuesta} \label{ch:metodologia}
+\input{./chapters/cap05_metodologia.tex}
+
+\chapter[IMPLEMENTACIÓN COMPUTACIONAL Y TRAZABILIDAD]{Implementación computacional y trazabilidad} \label{ch:implementacion}
+\input{./chapters/cap06_implementacion.tex}
+
+\chapter[RESULTADOS Y ANÁLISIS DE KPIS]{Resultados y análisis de KPIs} \label{ch:resultados}
+\input{./chapters/cap07_resultados.tex}
+
+\chapter[SUPUESTOS, RIESGOS Y PLAN DE SENSIBILIDAD]{Supuestos, riesgos y plan de sensibilidad} \label{ch:supuestos}
+\input{./chapters/cap08_supuestos.tex}
+
+\chapter[CONCLUSIONES]{Conclusiones} \label{ch:conclusiones}
+\input{./chapters/cap09_conclusiones.tex}
+
+\chapter[PASOS FUTUROS]{Pasos futuros} \label{ch:pasos-futuros}
+\input{./chapters/cap10_pasos_futuros.tex}
+
+\cleardoublepage
+\phantomsection \label{references}
+\bibliographystyle{apacite}
+\renewcommand{\bibname}{REFERENCIAS}
+\bibliography{referencias}
+
+\appendix
+
+\newpage
+\section[Notación]{Notación} \label{an:notacion}
+\input{./chapters/anexo_a_notacion.tex}
+
+\newpage
+\section[Correcciones respecto del informe 1 y la presentación]{Correcciones respecto del informe 1 y la presentación} \label{an:correcciones}
+\input{./chapters/anexo_b_correcciones.tex}
+
+\newpage
+\section[Barrido de presupuesto de búsqueda]{Barrido de presupuesto de búsqueda} \label{an:barrido}
+\input{./chapters/anexo_c_barrido.tex}
+
+\newpage
+\section[Parámetros del escenario]{Parámetros del escenario} \label{an:parametros}
+\input{./chapters/anexo_d_parametros.tex}
+
+\newpage
+\section[Declaración de uso de IA]{Declaración de uso de IA en este informe y presentación asociada} \label{an:ia}
+\input{./chapters/anexo_e_declaracion_ia.tex}
+
+\end{document}

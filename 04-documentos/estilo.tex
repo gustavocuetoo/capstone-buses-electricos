@@ -1,0 +1,114 @@
+% ============================================================
+% estilo.tex — preámbulo compartido por los tres documentos
+% Se incluye con \input{estilo} después de \documentclass
+% ============================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish]{babel}
+
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{colortbl}
+
+\usepackage{xcolor}
+\definecolor{ink}{RGB}{0,62,92}           % azul principal
+\definecolor{inklight}{RGB}{92,132,153}   % azul apagado
+\definecolor{rulegray}{RGB}{205,214,219}  % líneas divisorias
+\definecolor{critred}{RGB}{158,38,32}     % prioridad crítica
+\definecolor{amber}{RGB}{176,98,16}       % prioridad alta
+\definecolor{slate}{RGB}{104,112,118}     % prioridad media
+\definecolor{headrow}{RGB}{0,62,92}       % encabezado de tabla
+\definecolor{softrow}{RGB}{242,246,248}   % fila alterna
+
+\usepackage{natbib}   % debe cargarse antes que hyperref
+\usepackage[colorlinks=true,linkcolor=ink,citecolor=inklight,urlcolor=inklight]{hyperref}
+
+% ---------- títulos ----------
+\addtokomafont{title}{\color{ink}\sffamily}
+\addtokomafont{author}{\color{slate}\normalsize}
+\addtokomafont{date}{\color{slate}\normalsize}
+\addtokomafont{disposition}{\color{ink}\sffamily}
+\setkomafont{section}{\color{ink}\sffamily\large\bfseries}
+\setkomafont{subsection}{\color{ink}\sffamily\normalsize\bfseries}
+
+% ---------- lista de campos alineada (reemplaza las cajas) ----------
+\newlist{campos}{description}{1}
+\setlist[campos]{
+  labelwidth=2.9cm,
+  leftmargin=3.2cm,
+  labelsep=0.3cm,
+  align=left,
+  font=\normalfont\sffamily\bfseries\small\color{ink},
+  itemsep=2.5pt,
+  topsep=4pt,
+  parsep=0pt,
+  before=\small
+}
+
+% ---------- etiqueta de prioridad ----------
+\newcommand{\prio}[2]{%
+  {\setlength{\fboxsep}{3pt}%
+   \colorbox{#1}{\textcolor{white}{\sffamily\bfseries\scriptsize\strut\,#2\,}}}%
+}
+\newcommand{\critica}{\prio{critred}{CRÍTICA}}
+\newcommand{\alta}{\prio{amber}{ALTA}}
+\newcommand{\media}{\prio{slate}{MEDIA}}
+
+\newsavebox{\cajaetiqueta}
+\newlength{\sepetiqueta}\setlength{\sepetiqueta}{10pt}
+
+% ---------- encabezado de una entrada (pregunta o ficha) ----------
+% #1 = clave corta (Q1 / P-04)   #2 = título   #3 = etiqueta derecha
+\newcommand{\entrada}[3]{%
+  \par\addvspace{14pt}%
+  \noindent{\color{rulegray}\rule{\linewidth}{0.6pt}}%
+  \par\addvspace{5pt}%
+  \noindent
+  \sbox\cajaetiqueta{#3}%
+  \begin{minipage}[t]{\dimexpr\linewidth-\wd\cajaetiqueta-\sepetiqueta\relax}
+    \raggedright\sffamily\bfseries\color{ink}#1\,\textcolor{rulegray}{\textbar}\, #2
+  \end{minipage}\hspace{\sepetiqueta}\usebox\cajaetiqueta%
+  \par\addvspace{3pt}%
+}
+
+% variante sin clave a la izquierda (para fichas bibliográficas)
+\newcommand{\entradasimple}[2]{%
+  \par\addvspace{14pt}%
+  \noindent{\color{rulegray}\rule{\linewidth}{0.6pt}}%
+  \par\addvspace{5pt}%
+  \noindent
+  \sbox\cajaetiqueta{#2}%
+  \begin{minipage}[t]{\dimexpr\linewidth-\wd\cajaetiqueta-\sepetiqueta\relax}
+    \raggedright\sffamily\bfseries\color{ink}#1
+  \end{minipage}\hspace{\sepetiqueta}\usebox\cajaetiqueta%
+  \par\addvspace{3pt}%
+}
+
+% permite cortar nombres largos de campo en \texttt sin salirse del margen
+\newcommand{\campoTT}[2]{\texttt{#1\_}\allowbreak\texttt{#2}}
+
+% ---------- nota destacada, sin caja pesada ----------
+\newenvironment{nota}{%
+  \par\addvspace{8pt}\small
+  \begin{list}{}{%
+    \setlength{\leftmargin}{10pt}\setlength{\rightmargin}{0pt}
+    \setlength{\labelwidth}{0pt}\setlength{\itemindent}{0pt}
+    \setlength{\listparindent}{0pt}}
+  \item[]\color{black}%
+}{%
+  \end{list}\addvspace{6pt}%
+}
+
+% ---------- tablas ----------
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\thead}[1]{\textcolor{white}{\sffamily\bfseries\small #1}}
+
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{5pt}

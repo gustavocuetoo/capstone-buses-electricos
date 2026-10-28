@@ -1,0 +1,51 @@
+# Alcance del grafo de graphify: lo necesario para escribir el Informe 2.
+# Se excluyen datos crudos, salidas generadas, duplicados y material ajeno,
+# que inflan el grafo y cuestan tokens sin aportar al informe.
+
+# Entornos y comprimidos
+.venv-optimizacion/
+*.zip
+
+# Datos crudos y salidas numéricas (se consultan con código, no con el grafo)
+01-datos/
+data-alumnos/
+03-resultados/
+**/gtfs/
+*.json
+*.csv
+*.ndjson
+*.sol
+*.mps
+*.log
+*.png
+*.jpg
+*.webp
+
+# Instancias y corridas de los solvers
+metodo_hibrido/instancia_*/
+caso_base_simple_gurobi/instancia_*/
+caso_base_simple_gurobi/corrida_gurobi/
+caso_base_simple_gurobi/evidencia_dinamica/
+metodo_hibrido/resultados/**/*.txt
+
+# Versión anterior del código: solo se conservan sus documentos de modelo
+CODIGO apstone/gtfs/
+CODIGO apstone/output/
+CODIGO apstone/informe/
+CODIGO apstone/tmp/
+CODIGO apstone/*.pdf
+CODIGO apstone/fase1/requirements.txt
+
+# PDFs compilados que duplican sus fuentes .md
+04-documentos/pdf/bibliografia.pdf
+04-documentos/pdf/preguntas_profesor.pdf
+
+# Informe 2: PDF compilado y figuras generadas por script (cambian en cada compilación)
+08-entrega2/informe2/informe2.pdf
+08-entrega2/informe2/figures/
+
+# Material que no entra al informe
+05-entrega1/presentacion/
+05-entrega1/Presentación_1.pdf
+07-interrogacion1/
+00-enunciado/AGENT.md

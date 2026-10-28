@@ -1,0 +1,160 @@
+% !TEX program = pdflatex
+% ============================================================
+% Informe del caso base simple (partición óptima de cadenas sin recarga)
+% ICS2122 Capstone, Grupo 29. Dos planas, autocontenido: compila con pdfLaTeX.
+% Cifras: caso_base_simple_gurobi/corrida_gurobi/ (corrida con Gurobi del 06-oct-2026).
+% ============================================================
+\documentclass[fontsize=10.5pt,a4paper]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-tabla,es-noshorthands,es-nodecimaldot]{babel}
+\usepackage[a4paper,margin=1.9cm,top=1.4cm,bottom=1.6cm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{booktabs,tabularx,array}
+
+% paleta del proyecto (la misma de 04-documentos/estilo.tex)
+\usepackage[table]{xcolor}
+\definecolor{ink}{RGB}{0,62,92}
+\definecolor{inklight}{RGB}{92,132,153}
+\definecolor{critred}{RGB}{158,38,32}
+\definecolor{slate}{RGB}{104,112,118}
+\definecolor{rulegray}{RGB}{205,214,219}
+\definecolor{softrow}{RGB}{242,246,248}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{tcolorbox}
+\usepackage[colorlinks=true,linkcolor=ink,urlcolor=inklight]{hyperref}
+
+\setkomafont{disposition}{\color{ink}\sffamily\bfseries}
+\setkomafont{section}{\color{ink}\sffamily\normalsize\bfseries}
+\RedeclareSectionCommand[beforeskip=7pt,afterskip=2pt]{section}
+\setlist{itemsep=1pt,topsep=2pt,parsep=0pt,leftmargin=14pt}
+\setlength{\parskip}{3pt}
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.15}
+\newcommand{\hd}[1]{\leavevmode{\sffamily\bfseries\color{ink}#1}}
+\newcommand{\arch}[1]{\texttt{#1}}
+\newtcolorbox{clave}{colback=softrow, colframe=ink, boxrule=0pt, leftrule=3pt,
+  sharp corners, left=7pt, right=7pt, top=3pt, bottom=3pt, fontupper=\small}
+
+\begin{document}
+
+{\sffamily\color{ink}\LARGE\bfseries Caso base: partición óptima de cadenas sin recarga\par}
+\vspace{2pt}
+{\sffamily\small\color{slate} ICS2122 Capstone · Grupo 29 · Muestra de 212 rutas · 6 de octubre de 2026\par}
+\vspace{4pt}
+
+\section{Qué resuelve}
+
+El caso base cubre las \textbf{212 rutas y sus 33.220 corridas} sin usar los electroterminales: ningún bus recarga durante el día. Parte de las \textbf{3.561 cadenas} de servicios de la fase 2 del prototipo anterior. Cada cadena es una secuencia de servicios del mismo sector, compatibles en horario y traslado, que un solo bus podría atender si la batería no se agotara. Como la batería sí se agota, el modelo decide \emph{dónde cortar} cada cadena en jornadas factibles, es decir, cuántos buses usar y qué tramo atiende cada uno, minimizando el costo total.
+
+Supuestos (los del escenario recibido): batería de 350\,kWh, reserva de 35\,kWh y consumo de 1,4\,kWh/km, lo que da una autonomía de $315/1{,}4 = 225$\,km por jornada; costo de USD 250 por bus y USD 0,50 por km. Cada bus sale con batería llena desde uno de los cuatro terminales de espera T y vuelve a uno, sin límite de flota ni de capacidad en los T. No usa la solución del método híbrido ni sus búsquedas.
+
+\section{Modelo: un camino mínimo por cadena}
+
+Para una cadena con servicios $s_1,\dots,s_n$ se crean los nodos $0,1,\dots,n$. Un arco $(a,b)$ con $a<b$ es una jornada: un bus que atiende los servicios $s_{a+1},\dots,s_b$. Sus kilómetros son
+\[
+k_{ab} = d\bigl(T^{\text{ini}}_{a+1},\, o_{a+1}\bigr) + \sum_{j=a+1}^{b} \ell_j + \sum_{j=a+1}^{b-1} d\bigl(f_j,\, o_{j+1}\bigr) + d\bigl(f_b,\, T^{\text{fin}}_b\bigr),
+\]
+donde $\ell_j$ es el largo del servicio $j$, $o_j$ y $f_j$ su parada de inicio y de fin, y $T^{\text{ini}}$, $T^{\text{fin}}$ el terminal factible más cercano a cada extremo. El arco existe solo si la salida y el regreso caben en el horizonte y si $1{,}4\,k_{ab} \le 350-35$. Sin recargas, la energía solo baja, así que basta revisar el final de la jornada para garantizar la reserva en todo momento. El costo del arco es $c_{ab} = 250 + 0{,}5\,k_{ab}$. Con $z_{ab}\in\{0,1\}$ igual a 1 si se elige esa jornada:
+\[
+\min \sum_{(a,b)} c_{ab}\, z_{ab}
+\quad\text{s.a.}\quad
+\sum_{b>v} z_{vb} - \sum_{a<v} z_{av} =
+\begin{cases} 1 & v=0\\ -1 & v=n\\ 0 & \text{en otro caso}\end{cases}
+\qquad z_{ab}\in\{0,1\}.
+\]
+Un camino de 0 a $n$ cubre cada servicio exactamente una vez, y cada arco del camino es un bus. La matriz es la de un flujo en red, así que la relajación lineal ya es entera; las variables se dejan binarias para presentarlo como programa entero. El modelo no corta \emph{cuando se acaba la batería}: puede terminar antes una jornada si así ahorra kilómetros vacíos.
+
+\begin{center}
+\begin{tikzpicture}[x=2.3cm,y=1cm,>={Stealth[length=5pt]},
+  nodo/.style={circle,draw=ink,fill=white,inner sep=1.5pt,minimum size=15pt,font=\sffamily\footnotesize},
+  serv/.style={font=\sffamily\scriptsize,text=slate,fill=white,inner sep=1pt},
+  et/.style={font=\sffamily\scriptsize,fill=white,inner sep=1pt}]
+  \foreach \i in {0,...,6} \node[nodo] (n\i) at (\i,0) {\i};
+  \foreach \i/\hora in {1/07:28,2/09:45,3/12:10,4/16:08,5/19:06,6/22:00}{
+    \pgfmathtruncatemacro{\j}{\i-1}
+    \draw[rulegray] (n\j) -- (n\i) node[serv,midway]{\hora};}
+  % óptimo (arriba)
+  \draw[->,very thick,critred] (n0) to[bend left=55] node[et,above,text=critred]{43,3 km · USD 271,7} (n1);
+  \draw[->,very thick,critred] (n1) to[bend left=24] node[et,above,text=critred]{193,1 km · USD 346,5} (n6);
+  % voraz (abajo)
+  \draw[->,thick,dashed,slate] (n0) to[bend right=24] node[et,below,text=slate]{196,8 km · USD 348,4} (n5);
+  \draw[->,thick,dashed,slate] (n5) to[bend right=55] node[et,below=3pt,text=slate]{62,7 km · USD 281,4} (n6);
+  \node[font=\sffamily\scriptsize\bfseries,text=critred,anchor=west] at (6.25,0.8) {óptimo: USD 618,2};
+  \node[font=\sffamily\scriptsize\bfseries,text=slate,anchor=west] at (6.25,-0.8) {voraz: USD 629,8};
+\end{tikzpicture}
+\end{center}
+\vspace{-6pt}
+{\small\textbf{Figura 1.} Cadena real B00970: seis servicios (los dos primeros de la ruta 503 y los otros de la 401; en cada tramo, su hora de inicio) y sus 20 jornadas factibles, de las que se dibujan cuatro. Atenderla con un solo bus exige 232,7\,km, es decir 325,8\,kWh, más que los 315 disponibles. Las dos soluciones usan dos buses, pero el corte óptimo (rojo) recorre 23,1\,km menos que la regla voraz de seguir hasta agotar la batería (gris).\par}
+
+\section{Por qué se puede resolver por partes y cómo se resolvió}
+
+Sin recargas, sin límite de flota y con capacidad ilimitada en los T, las cadenas no comparten ningún recurso. El costo total es la suma de los costos de cada cadena, así que resolver las 3.561 cadenas por separado es una \textbf{descomposición exacta} de este caso base, no una aproximación. En total hay 185.703 jornadas candidatas, pero cada modelo es pequeño: mediana de 44 variables y el mayor con \textbf{465 variables binarias y 31 restricciones}, sin restricciones indicadoras, sin grandes M y sin variables de batería, porque la energía se revisa al generar cada arco.
+
+Se resolvió con \arch{ejecutar.py -{}-motor gurobi}, sin modificar el código: Gurobi 12.0.3, un hilo, \texttt{MIPGap}\,=\,0 y un límite de 60\,s por cadena. Como la licencia académica estaba vencida, se usó la licencia restringida que trae \arch{gurobipy}; alcanza porque ningún modelo se acerca a su tope de 2.000 variables y 2.000 restricciones. El código verifica en tres niveles y se detiene ante cualquier discrepancia:
+\begin{enumerate}
+  \item Cada modelo debe terminar en estado óptimo. Los \textbf{3.561 terminaron con gap 0}, en 0,58\,s de solver en total (máximo 0,007\,s por cadena) y 3,8\,s de corrida completa.
+  \item El óptimo de Gurobi se compara con un camino mínimo por programación dinámica sobre la misma red. Coinciden en todas las cadenas (diferencia máxima de $10^{-13}$\,USD). En 982 jornadas Gurobi corta en otro punto, por empates de igual costo.
+  \item El plan completo se reconstruye actividad por actividad (vacíos, esperas y servicios) y pasa el validador original del grupo, que confirma que el costo auditado es igual al optimizado.
+\end{enumerate}
+
+\section{Solución que entrega}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}l r X@{}}
+\toprule
+\hd{Indicador} & \hd{Valor} & \hd{Lectura} \\
+\midrule
+Buses & \textbf{5.150} & 1.972 cadenas con un bus y 1.589 con dos; ninguna necesita tres. \\
+\rowcolor{softrow} Costo total & \textbf{USD 1.685.098,05} & Flota USD 1.287.500 (76,4\,\%) y km USD 397.598,05. \\
+Km recorridos & 795.196 & 704.414 de servicio y 90.782 en vacío (11,4\,\%). \\
+\rowcolor{softrow} Recargas & 0 & Electricidad comprada: USD 0; los electroterminales quedan sin uso. \\
+Energía mínima & 35,05\,kWh & La reserva es de 35\,kWh; la jornada más larga recorre 224,96 de 225\,km posibles. \\
+\rowcolor{softrow} Corridas por bus & 6 (mediana) & Entre 1 y 30; un bus recorre en promedio 154,4\,km. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Si la batería no limitara, cada cadena sería un solo bus y bastarían 3.561. Operar sin recargas cuesta entonces \textbf{1.589 buses más (+44,6\,\%)}, uno extra por cada cadena que no cabe en 225\,km. Cortar de forma óptima no cambia la flota respecto de la regla voraz, porque en ambos casos una cadena usa un bus si cabe entera y dos si no, pero sí los kilómetros: la regla voraz da 5.150 buses, 805.278\,km y USD 1.690.138,96. El óptimo corta distinto en 1.450 cadenas y ahorra \textbf{10.082\,km y USD 5.040,91} (0,3\,\%).
+
+\section{Comparación con el método híbrido (mismas 212 rutas)}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}X r r r r@{}}
+\toprule
+\hd{Método} & \hd{Buses} & \hd{Km} & \hd{USD/día} & \hd{Diferencia con el caso base} \\
+\midrule
+Caso base sin recarga & 5.150 & 795.196 & 1.685.098 & --- \\
+\rowcolor{softrow} Híbrido, ensayo oficial (guía de la Entrega 2) & 3.973 & 802.226 & 1.404.610 & $-$1.177 buses ($-$22,9\,\%), $-$USD 280.488 ($-$16,6\,\%) \\
+Híbrido, corrida refinada del 6 de octubre & 3.873 & 798.659 & 1.374.632 & $-$1.277 buses ($-$24,8\,\%), $-$USD 310.466 ($-$18,4\,\%) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+El caso base recorre \emph{menos} kilómetros que el híbrido, así que \textbf{todo el ahorro del híbrido viene de la flota}. En el ensayo oficial, el híbrido ahorra USD 294.250 en buses y paga USD 13.762 más en kilómetros, energía y sesiones de carga.
+
+\begin{clave}
+\textbf{Cómo presentarlo.} El óptimo vale \emph{solo} dentro de esta partición sin recargas: no es el óptimo del problema original ni una cota inferior para él. Es un punto de comparación sencillo, no un competidor que use toda la infraestructura, y la diferencia con el híbrido combina recargar y reasignar servicios, así que no se le puede atribuir entera a la heurística. Además: (i) las cadenas son fijas y no se intercambian servicios entre ellas; (ii) los terminales de cada extremo se fijan en el T factible más cercano; (iii) como en el escenario recibido, la energía con que parte cada bus no se cobra, y que se compren 0\,kWh no significa que el consumo sea cero; (iv) representa un solo día de operación.
+\end{clave}
+
+\section{Cómo reproducirlo}
+
+Desde la carpeta \arch{caso\_base\_simple\_gurobi/}, con Python 3.10 o posterior y \arch{gurobipy} 12:
+\begin{tcolorbox}[colback=softrow,colframe=softrow,sharp corners,boxrule=0pt,left=7pt,top=2pt,bottom=2pt,fontupper=\small\ttfamily]
+python -m unittest -v test\_modelo\\
+python ejecutar.py -{}-motor gurobi -{}-salida corrida\_gurobi\\
+python ejecutar.py -{}-motor dinamica -{}-salida corrida\_dinamica \textrm{\textit{\color{slate}(verificación sin Gurobi)}}
+\end{tcolorbox}
+La carpeta de salida debe ser nueva. Si una cadena no llega al óptimo, el programa se detiene y deja \arch{fallo.json} en vez de entregar otra solución (se aumenta \arch{-{}-tiempo-cadena}). Con la licencia académica vencida, basta ocultar \arch{gurobi.lic}, por ejemplo apuntando \texttt{HOME} a una carpeta vacía.
+
+{\footnotesize\raggedright\color{slate} Resultados: \arch{caso\_base\_simple\_gurobi/corrida\_gurobi/}. Híbrido: \arch{metodo\_hibrido/resultados/ensayo\_212/} y \arch{mejor\_20261006\_refinamiento/}.\par}
+
+\end{document}

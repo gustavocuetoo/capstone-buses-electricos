@@ -1,0 +1,187 @@
+% !TEX program = pdflatex
+% Requiere haber corrido antes:  python3 analisis_datos.py
+% Compilar: pdflatex discusion_metodologica && bibtex discusion_metodologica && pdflatex discusion_metodologica && pdflatex discusion_metodologica
+%
+% Destinado a la sección "Discusión metodológica" del Informe 1 (50 puntos).
+% Para pasarlo a la plantilla del curso basta cambiar la fuente en estilo.tex
+% por \usepackage{mathptmx} (Times New Roman, 11 pt).
+\documentclass[11pt,a4paper,parskip=half]{scrartcl}
+\input{estilo}
+\bibliographystyle{apalike}
+\input{../03-resultados/metricas}
+
+\title{Discusión metodológica}
+\subject{\normalsize ICS2122 — Taller de Investigación Operativa (Capstone)}
+\subtitle{\normalsize Planificación de la operación de buses eléctricos, Red Metropolitana de Movilidad\\[2pt]
+Alternativas de resolución, ventajas y desventajas, y elección argumentada}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-2.2\baselineskip}
+
+\begin{nota}
+\textbf{\textcolor{ink}{Alcance de esta sección.}} No se presenta una formulación matemática detallada, que corresponde a etapas posteriores del proyecto. Lo que sí se fija es qué hay que decidir, qué restringe esas decisiones, qué familias de métodos podrían resolverlas y por qué elegimos una ruta y no otra. Las escalas y resultados que se citan provienen de las fuentes revisadas en la bibliografía, y se indica explícitamente cuando una fuente no reporta un tamaño de instancia.
+\end{nota}
+
+\section*{1\quad Qué hay que decidir}
+\addcontentsline{toc}{section}{Qué hay que decidir}
+
+Antes de comparar métodos conviene precisar el objeto sobre el que operan. El problema corresponde a la variante \textit{multi-depósito con recarga parcial y capacidad de carga limitada} del \textit{Electric Vehicle Scheduling Problem} (E-VSP), nomenclatura que el enunciado no usa pero que ordena toda la literatura del área \citep{perumal_evspreview_2022}.
+
+\begin{campos}
+\item[Decisiones] Qué vehículo cubre cada corrida programada; en qué secuencia las encadena; qué desplazamientos sin pasajeros (\textit{deadhead}) realiza entre ellas; y cuándo, dónde y cuánta energía recarga. De esas decisiones se desprende, de forma derivada, cuántos buses se activan.
+\item[Objetivo] Minimizar el costo total de operación, que \texttt{parameters.csv} entrega ya desagregado y en una misma unidad monetaria: costo fijo por vehículo utilizado, costo por kilómetro recorrido, costo por tiempo de espera, costo fijo por actividad de recarga y costo de la energía, este último dependiente del bloque tarifario en que ocurre la carga.
+\item[Restricciones] Cobertura exacta de cada corrida; factibilidad temporal del encadenamiento, incluyendo el tiempo de \textit{deadhead}; balance de estado de carga (SoC) a lo largo del día con cotas mínima y máxima; capacidad de la infraestructura de recarga; capacidad de estacionamiento de cada electroterminal; y condiciones de cierre al final del horizonte.
+\item[Naturaleza] El problema es NP-difícil ya en su versión sin energía: el \textit{Multi-Depot Vehicle Scheduling Problem} lo es, a diferencia del caso mono-depósito, que es polinomial \citep{kliewer_timespacemdvsp_2006}. Agregar el seguimiento de SoC y la contención por cargadores solo endurece el problema.
+\end{campos}
+
+\begin{nota}
+\textbf{\textcolor{ink}{El acoplamiento que hace difícil este caso.}} \citet{perumal_evspreview_2022} reportan que la literatura suele resolver el \textit{scheduling} de vehículos y la programación de la recarga \textbf{por separado}, de forma secuencial. El enunciado exige lo contrario: que ambas decisiones se tomen de manera simultánea, porque una asignación de viajes energéticamente atractiva puede ser mala si obliga a \textit{deadheads} largos, y una programación de carga eficiente puede ser infactible si todos los buses llegan al mismo electroterminal a la misma hora. Ese acoplamiento es el criterio con el que evaluamos cada familia metodológica.
+\end{nota}
+
+\section*{2\quad Familias metodológicas}
+\addcontentsline{toc}{section}{Familias metodológicas}
+
+\entrada{A}{Flujo en red sobre \textit{time-space network}}{\alta}
+\begin{campos}
+\item[En qué consiste] Representar el día como una red de eventos espacio-temporales, donde los nodos son combinaciones de lugar e instante y los arcos son actividades: cubrir una corrida, desplazarse vacío, esperar o recargar. El plan óptimo es entonces un flujo de costo mínimo sobre esa red.
+\item[Evidencia] \citet{kliewer_timespacemdvsp_2006} muestran que agregar los arcos temporalmente equivalentes reduce drásticamente el número de variables frente a la representación tradicional basada en conexiones, sin perder exactitud; resuelven instancias reales de una empresa de transporte alemana. \citet{bunte_vspoverview_2009} sistematizan ambas representaciones.
+\item[Ventajas] Es la representación que mejor escala entre las exactas, y sobre la que se construye casi toda la literatura posterior de E-VSP. La estructura de red permite aprovechar solvers de flujo maduros y entrega cotas duales útiles.
+\item[Desventajas] En su forma pura no modela energía. Incorporar el SoC obliga a agregarlo como dimensión del nodo o como recurso acoplado, lo que rompe la estructura de flujo puro y devuelve el problema al terreno de la programación entera general.
+\item[Aplicabilidad] Es nuestra representación base, pero solo eso: el punto de partida sobre el que hay que montar la capa energética.
+\end{campos}
+
+\entrada{B}{Generación de columnas y \textit{branch-and-price}}{\alta}
+\begin{campos}
+\item[En qué consiste] Descomponer el problema en un maestro que selecciona itinerarios completos de vehículo y un subproblema de \textit{pricing} que genera itinerarios prometedores. El subproblema es donde se imponen las restricciones difíciles: autonomía, recarga parcial y disponibilidad de cargadores.
+\item[Evidencia] \citet{adler_altfuelvsp_2017} resuelven la variante con autonomía limitada y estaciones de reabastecimiento fijas mediante \textit{branch-and-price}, probándola sobre el sistema metropolitano de Phoenix. \citet{li_limitedenergy_2014} usa generación de columnas para \textit{scheduling} con energía limitada. \citet{vankootenniekerk_schedulingev_2017} recurren a ella para instancias grandes cuando el modelo entero exacto deja de ser tratable. \citet{devos_capacitatedcharging_2024} la aplican al caso con \textbf{capacidad limitada de estaciones y recarga parcial}, que es exactamente la variante del enunciado.
+\item[Ventajas] Es el único enfoque exacto que aborda simultáneamente recarga parcial y cargadores finitos. Entrega garantía de optimalidad y, si se detiene antes, una cota que permite cuantificar la calidad de cualquier solución heurística.
+\item[Desventajas] Escala limitada. El trabajo más reciente que localizamos, \citet{wu_waitingtimebranchprice_2025}, resuelve a optimalidad instancias de hasta \textbf{101 corridas}, superando el mejor exacto previo que llegaba a 91. Nuestra red completa tiene \corridasReales{} corridas: tres órdenes de magnitud más. Además, su implementación es considerablemente más costosa que la de un modelo entero directo.
+\item[Aplicabilidad] Viable únicamente sobre instancias reducidas. Su valor para nosotros no es resolver el caso real sino \emph{validar} el modelo y producir la cota contra la cual medir la heurística.
+\end{campos}
+
+\entrada{C}{Metaheurísticas}{\alta}
+\begin{campos}
+\item[En qué consiste] Construir una solución factible y mejorarla iterativamente mediante operadores de destrucción y reparación, o mediante búsqueda local con criterios de aceptación probabilísticos, sin garantía de alcanzar el óptimo.
+\item[Evidencia] \citet{wen_alnsevsp_2016} desarrollan una \textit{Adaptive Large Neighborhood Search} (ALNS) para el E-VSP multi-depósito con recarga total o parcial, con el objetivo explícito de resolver instancias grandes. \citet{li_limitedenergy_2014} explora \textit{simulated annealing} para generar planes factibles con rapidez.
+\item[Ventajas] Escala a instancias de tamaño real, que es precisamente donde los métodos exactos fallan. Es flexible: incorporar una restricción adicional, como la capacidad de carga, exige modificar los operadores pero no rehacer la formulación. Produce soluciones factibles desde temprano, lo que permite iterar.
+\item[Desventajas] Sin garantía de optimalidad ni cota propia: por sí sola no permite afirmar qué tan buena es la solución. Requiere calibrar parámetros, lo que consume tiempo de desarrollo y hace los resultados menos reproducibles. Ninguna de las fuentes revisadas en esta familia modela capacidad limitada de cargadores, de modo que esa extensión quedaría de nuestra cuenta.
+\item[Aplicabilidad] Es la ruta realista para la instancia grande. Su principal debilidad —la ausencia de cota— se corrige apoyándose en la familia B.
+\end{campos}
+
+\entrada{D}{Descomposición de Benders}{\media}
+\begin{campos}
+\item[En qué consiste] Separar el problema en un maestro con las decisiones estructurales y subproblemas que evalúan la operación, comunicándolos mediante cortes que el maestro incorpora iterativamente.
+\item[Evidencia] \citet{legault_bendersfleetelectrification_2025} desarrollan una descomposición de Benders lógica acelerada que integra inversión en flota e infraestructura con \textit{scheduling} y operación de carga, reportando aceleraciones de hasta tres órdenes de magnitud y una heurística complementaria con brechas bajo el 1\,\% sobre datos de tránsito de Chicago. Es un \textit{preprint} sin revisión por pares, y se cita como tal.
+\item[Ventajas] Es el enfoque que mejor maneja la estructura de dos niveles cuando existen decisiones estratégicas y operativas acopladas. Los cortes permiten explotar la separabilidad del problema por período o por electroterminal.
+\item[Desventajas] Su ventaja depende de que exista una separación natural entre niveles. En nuestro caso la flota y la infraestructura vienen dadas, de modo que el nivel estratégico —donde la técnica rinde— simplemente no está. Implementarla bien es exigente y su beneficio aquí es especulativo.
+\item[Aplicabilidad] Descartada para el caso base. Se mantiene como alternativa si el equipo decide separar la asignación de buses a electroterminales de la secuenciación dentro de cada uno, que es la única estructura de dos niveles que este problema ofrece.
+\end{campos}
+
+\entrada{E}{Modelos bajo incertidumbre}{\media}
+\begin{campos}
+\item[En qué consiste] Tratar el consumo energético y los tiempos de viaje como variables aleatorias en lugar de valores fijos, exigiendo que las restricciones se cumplan con una probabilidad mínima (\textit{chance constraints}) o en el peor caso de un conjunto de escenarios (optimización robusta).
+\item[Evidencia] \citet{perumal_evspreview_2022} identifican la robustez y el \textit{rescheduling} como el vacío más citado del área, y \citet{wang_bevretrospective_2025} confirman que sigue abierto en 2025. \citet{ricard_chanceconstrained_2026} proponen un modelo \textit{chance-constrained} con consumo y degradación estocásticos, resuelto mediante \textit{branch-and-price} con \textit{pricing} estocástico.
+\item[Ventajas] Es la crítica más previsible en la defensa del proyecto: un plan calculado con consumos exactos puede fallar el primer día con tacos o con más pasajeros. Abordarlo, aunque sea parcialmente, es diferenciador.
+\item[Desventajas] Multiplica el costo computacional sobre un problema que ya es difícil en su versión determinista. Además, exige distribuciones de probabilidad que los datos entregados no contienen: los archivos son valores puntuales, sin varianza ni escenarios. Estimarlas requeriría datos de operación real que no tenemos.
+\item[Aplicabilidad] Fuera del caso base. La vía factible es un análisis de sensibilidad ex-post sobre el plan determinista, y dejar el tratamiento estocástico como extensión declarada si el modelo base funciona a tiempo.
+\end{campos}
+
+\entrada{F}{Simulación como herramienta complementaria}{\media}
+\begin{campos}
+\item[En qué consiste] Evaluar un plan ya construido bajo perturbaciones —retrasos, variación de consumo, indisponibilidad de un cargador— para medir su robustez, en lugar de usarla para construir el plan.
+\item[Evidencia] El enunciado menciona explícitamente la simulación entre las herramientas cuyo valor se debe evaluar, junto con optimización, analítica y ciencia de datos. No identificamos en nuestra revisión un trabajo de E-VSP que use simulación como método de construcción del plan; su rol habitual en la literatura es de evaluación.
+\item[Ventajas] Es mucho más barata de implementar que un modelo estocástico completo y responde la misma pregunta de fondo: qué tan frágil es el plan. Se apoya en un plan que de todos modos hay que producir.
+\item[Desventajas] No optimiza: solo mide. Si el plan resulta frágil, la simulación no indica cómo corregirlo. Sus resultados dependen de supuestos de variabilidad que, como en la familia E, no vienen en los datos y habría que declarar.
+\item[Aplicabilidad] Complemento natural del caso base determinista y respuesta económica a la crítica de robustez, sin asumir el costo de la familia E.
+\end{campos}
+
+\clearpage
+\section*{3\quad Comparación}
+\addcontentsline{toc}{section}{Comparación}
+
+\begin{longtable}{@{}L{2.5cm}L{2.3cm}L{3.2cm}L{2.4cm}L{4.6cm}@{}}
+\rowcolor{headrow}
+\thead{Familia} & \thead{Garantía} & \thead{Escala en la fuente} & \thead{¿Cargadores finitos?} & \thead{Riesgo principal} \\
+\endfirsthead
+\rowcolor{headrow}
+\thead{Familia} & \thead{Garantía} & \thead{Escala en la fuente} & \thead{¿Cargadores finitos?} & \thead{Riesgo principal} \\
+\endhead
+\midrule
+A. Flujo en \textit{time-space} & Óptimo del modelo & Instancias reales; la fuente no reporta el tamaño & No modela energía & Al agregar SoC deja de ser flujo puro \\
+\rowcolor{softrow}
+B. \textit{Branch-and-price} & Óptimo con cota & \textbf{101 corridas} \citep{wu_waitingtimebranchprice_2025} & \textbf{Sí} \citep{devos_capacitatedcharging_2024} & No alcanza la escala del caso real \\
+C. Metaheurísticas & Sin garantía & Instancias grandes; sin tamaño explícito & No en las fuentes revisadas & Imposible saber qué tan buena es la solución \\
+\rowcolor{softrow}
+D. Benders & Óptimo o brecha $<$1\,\% & Datos de Chicago; \textit{preprint} & Sí, junto con inversión & El nivel estratégico no existe en nuestro caso \\
+E. Incertidumbre & Probabilística & No reportada & No simultáneamente & Faltan distribuciones en los datos \\
+\rowcolor{softrow}
+F. Simulación & No optimiza & --- & Evaluable & Mide fragilidad pero no la corrige \\
+\bottomrule
+\end{longtable}
+
+\begin{nota}
+La columna de escala solo reporta cifras que las fuentes declaran de forma explícita. Donde una fuente afirma resolver «instancias grandes» sin cuantificarlas, así se indica, en lugar de atribuirle un número.
+\end{nota}
+
+\section*{4\quad Ruta escogida}
+\addcontentsline{toc}{section}{Ruta escogida}
+
+Proponemos una \textbf{estrategia híbrida en dos etapas}, que el enunciado admite explícitamente al permitir enfoques híbridos y de descomposición.
+
+\begin{campos}
+\item[Etapa 1] Formulación entera sobre \textit{time-space network} (familia A) con la capa energética incorporada, resuelta de forma exacta sobre una instancia reducida de un electroterminal. Sirve para verificar que el modelo representa correctamente el problema y para obtener cotas de optimalidad.
+\item[Etapa 2] Metaheurística tipo ALNS (familia C), extendida con la restricción de capacidad de carga que las fuentes de esa familia no cubren, aplicada a la instancia grande. La calidad se mide comparando su resultado contra el óptimo de la Etapa 1 sobre la instancia reducida.
+\item[Complemento] Simulación (familia F) sobre el plan final para evaluar robustez, y análisis de sensibilidad sobre consumo y tiempos de \textit{deadhead}, en lugar de un modelo estocástico completo.
+\end{campos}
+
+\subsection*{Por qué esta ruta y no otra}
+
+\begin{campos}
+\item[Contra el exacto puro] La brecha es de tres órdenes de magnitud. Con \corridasReales{} corridas en la red completa frente a las 101 que resuelve el mejor exacto publicado, comprometerse solo con un método exacto implicaría no entregar ningún plan sobre el caso real.
+\item[Contra la heurística pura] Sin cota, cualquier resultado es indefendible: no habría forma de responder cuánto se pierde respecto del óptimo. La Etapa 1 existe precisamente para producir esa referencia.
+\item[Contra Benders] Requiere una estructura de dos niveles que este problema no tiene, porque flota e infraestructura vienen dadas.
+\item[Contra el modelo estocástico] Exige distribuciones que los datos no contienen. Sensibilidad y simulación responden la misma inquietud a una fracción del costo.
+\end{campos}
+
+\subsection*{Riesgos y contingencias}
+
+\begin{longtable}{@{}L{5.6cm}L{4.6cm}L{5.2cm}@{}}
+\rowcolor{headrow}
+\thead{Riesgo} & \thead{Señal temprana} & \thead{Contingencia} \\
+\endfirsthead
+\rowcolor{headrow}
+\thead{Riesgo} & \thead{Señal temprana} & \thead{Contingencia} \\
+\endhead
+\midrule
+La instancia reducida es tan chica que la capacidad de carga nunca se activa y el modelo queda sin validar en su parte crítica &
+El óptimo no usa nunca más de un cargador simultáneo &
+Reducir artificialmente la capacidad de carga hasta que la restricción sea activa, y documentarlo \\
+\addlinespace
+\rowcolor{softrow}
+La ALNS no converge a soluciones competitivas en el tiempo disponible &
+Brecha alta y estable contra el óptimo de la instancia reducida &
+Reemplazar por una heurística constructiva más simple con búsqueda local, priorizando factibilidad sobre calidad \\
+\addlinespace
+El exacto no resuelve ni siquiera la instancia reducida &
+Sin solución entera tras un límite de tiempo razonable &
+Reportar la cota de la relajación lineal en lugar del óptimo entero, y reducir el horizonte \\
+\addlinespace
+\rowcolor{softrow}
+Los datos faltantes no se resuelven a tiempo &
+Sin respuesta sobre \texttt{transformer\_mw} y los demás campos ausentes &
+Fijar valores calibrados con el caso real de Santiago \citep{galarza_pilotstoscale_2020} y reportar sensibilidad sobre ellos \\
+\bottomrule
+\end{longtable}
+
+\begin{nota}
+\textbf{\textcolor{ink}{Dependencia crítica.}} Toda esta ruta supone que la instancia de trabajo es un subconjunto de la red. Con \flotaDeclarada{} buses declarados y \cuposTotales{} cupos de electroterminal frente a un pico de \picoSimultaneo{} viajes simultáneos, cubrir la red completa es infactible por construcción, no por dificultad computacional. La definición de ese subconjunto es previa a cualquier decisión metodológica.
+\end{nota}
+
+\clearpage
+\renewcommand{\refname}{Referencias citadas}
+\bibliography{referencias}
+
+\end{document}

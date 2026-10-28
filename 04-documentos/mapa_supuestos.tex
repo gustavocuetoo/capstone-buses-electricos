@@ -1,0 +1,140 @@
+% !TEX program = pdflatex
+% Compilar: pdflatex mapa_supuestos && bibtex mapa_supuestos && pdflatex mapa_supuestos && pdflatex mapa_supuestos
+\documentclass[11pt,a4paper,parskip=half]{scrartcl}
+\input{estilo}
+\usepackage{pdflscape}
+\bibliographystyle{apalike}
+
+\title{Mapa de supuestos}
+\subject{\normalsize ICS2122 — Taller de Investigación Operativa (Capstone)}
+\subtitle{\normalsize Enunciado $\times$ literatura $\times$ decisión propia\\[2pt]
+Planificación de la operación de buses eléctricos, Red Metropolitana de Movilidad}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-2.2\baselineskip}
+
+\begin{nota}
+\textbf{\textcolor{ink}{Cómo leer la tabla.}} Cada fila cruza tres cosas: qué dice —o qué calla— el enunciado sobre una dimensión del problema; cómo la trata la literatura verificada en \texttt{bibliografia.tex} (referencias \textbf{P-XX}); y qué decidimos nosotros, con la pregunta \textbf{QXX} de \texttt{preguntas\_profesor.tex} que respalda esa decisión. Cuando la celda dice \textit{«resuelto»}, el enunciado o los datos ya fijan el supuesto y no hace falta preguntar.
+\end{nota}
+
+\begin{landscape}
+
+\section*{1\quad Supuestos que el enunciado sí plantea}
+\addcontentsline{toc}{section}{Supuestos que el enunciado sí plantea}
+
+\begin{longtable}{@{}L{4.4cm}L{8.4cm}L{8.4cm}@{}}
+\rowcolor{headrow}
+\thead{Dimensión} & \thead{Cómo lo modela la literatura} & \thead{Qué decidimos nosotros} \\
+\endfirsthead
+\rowcolor{headrow}
+\thead{Dimensión} & \thead{Cómo lo modela la literatura} & \thead{Qué decidimos nosotros} \\
+\endhead
+\midrule
+
+\textbf{Cobertura exacta de viajes.} Cada viaje se cubre una vez, sin duplicidad ni omisión. &
+VSP/MDVSP clásico como problema de \textit{set partitioning} o \textit{covering}: P-01, P-02. &
+Restricción de cobertura exacta sobre el GTFS de un día tipo. \textcolor{slate}{Q3 fija cuál día.} \\
+\addlinespace
+\rowcolor{softrow}
+\textbf{Encadenamiento factible.} Un bus solo sigue a otro viaje si alcanza a terminar, desplazarse y llegar a horario. &
+Arcos factibles en red \textit{connection-based} o \textit{time-space}: P-01, P-02. &
+\textit{Time-space network} agregado \citep{kliewer_timespacemdvsp_2006}. \textcolor{slate}{Resuelto: el enunciado deja la metodología libre y exige justificarla.} \\
+\addlinespace
+\textbf{Autonomía de batería.} El bus consume energía al operar y no puede quedar sin carga. &
+SoC como dimensión de estado: P-08, P-09, P-10. P-21 muestra que el consumo real depende de ocupación y conductor, no solo de distancia. &
+Consumo lineal a 1{,}4~kWh/km, con SoC entre \texttt{min\_soc} y \texttt{max\_soc}. Se documenta la brecha frente a 1{,}006~kWh/km medido en Santiago. \textbf{Q5.} \\
+\addlinespace
+\rowcolor{softrow}
+\textbf{Cargadores finitos.} Número limitado de cargadores por electroterminal. &
+Cupos discretos de carga simultánea: P-11, P-12, P-13. &
+\textbf{No hay dato:} \texttt{num\_chargers} está documentado pero ausente, y \campoTT{max\_simultaneous}{charging} iguala la capacidad de estacionamiento, así que no restringe. \textbf{Q2.} \\
+\addlinespace
+\textbf{Capacidad eléctrica restringida.} Distinta del número de cargadores. &
+Potencia agregada en MW: P-23 la dimensiona a escala de sistema; P-06 aporta la perspectiva de red eléctrica. &
+\textbf{No hay dato:} \texttt{transformer\_mw} documentado pero ausente. Proponemos 6~MW por electroterminal calibrado con P-20, con sensibilidad. \textbf{Q2.} \\
+\addlinespace
+\rowcolor{softrow}
+\textbf{Deadhead con costo.} Los desplazamientos sin pasajeros generan tiempo y costo. &
+Ubicación de electroterminales como dato frente a decisión: P-14 la optimiza; P-15 advierte que electrificar puede obligar a rediseñar toda la cadena de planificación. &
+Ubicaciones fijas de \texttt{depots.csv}. Las distancias de \textit{deadhead} no vienen en ningún archivo y hay que calcularlas. \textbf{Q1.} \\
+\addlinespace
+\textbf{Trade-off energía vs.\ deadhead.} Una solución barata en energía puede ser cara en kilómetros vacíos. &
+P-04 reporta que la literatura suele tratar flota, \textit{deadhead} y energía como objetivos separados. &
+Función objetivo única aditiva, con análisis posterior del intercambio. \textbf{Q7.} \\
+\addlinespace
+\rowcolor{softrow}
+\textbf{Flota finita.} La operación usa un número finito de vehículos. &
+Flota fija: P-09. Flota como decisión de inversión (no aplica a un horizonte de un día): P-17. &
+\texttt{fleet\_size = 1200} como cota superior. \textcolor{slate}{Resuelto: el enunciado dice que la programación influye en «la cantidad de buses necesarios».} \\
+\addlinespace
+\textbf{Metodología libre.} Exacto, heurístico, metaheurístico, híbrido o descomposición. &
+Exactos: P-02, P-08, P-12, P-16. Heurísticos: P-07, P-10. Descomposición: P-17. &
+Dos etapas: exacto en instancia reducida, luego ALNS extendida para la instancia completa. \textbf{Q12}, \textbf{Q13.} \\
+\bottomrule
+\end{longtable}
+
+\clearpage
+\section*{2\quad Supuestos que el enunciado no plantea y hay que fijar}
+\addcontentsline{toc}{section}{Supuestos que el enunciado no plantea}
+
+\begin{longtable}{@{}L{4.4cm}L{8.4cm}L{8.4cm}@{}}
+\rowcolor{headrow}
+\thead{Dimensión} & \thead{Cómo lo modela la literatura} & \thead{Qué decidimos nosotros} \\
+\endfirsthead
+\rowcolor{headrow}
+\thead{Dimensión} & \thead{Cómo lo modela la literatura} & \thead{Qué decidimos nosotros} \\
+\endhead
+\midrule
+
+\textbf{Tabla de viajes.} Distancia, duración, energía y \textit{deadhead} por viaje. &
+No aplica: es un hallazgo de auditoría de datos, no un supuesto de la literatura. &
+17 de los 44 campos documentados no existen en ningún archivo. Se construyen desde el GTFS crudo. \textbf{Q1 (bloqueante).} \\
+\addlinespace
+\rowcolor{softrow}
+\textbf{Día tipo y escala.} El enunciado habla de «operación diaria» sin decir cuál día. &
+No aplica. &
+Día laboral (\texttt{service\_id = L}) sobre la red completa; todo recorte se declara. \textbf{Q3.} \\
+\addlinespace
+\textbf{Curva de carga.} ¿Lineal o no lineal? &
+P-08 compara explícitamente ambos modelos, con depreciación de batería por profundidad de descarga. &
+Carga a potencia constante, consistente con modelo lineal. \textbf{Q5.} \\
+\addlinespace
+\rowcolor{softrow}
+\textbf{Fin del día.} ¿Retorno al electroterminal de origen? ¿Carga mínima al cierre? &
+En el VSP clásico el retorno es a \emph{algún} depósito, no al de origen: P-01. &
+Termina en cualquier electroterminal con cupo, respetando el SoC mínimo al cierre. \textbf{Q6.} \\
+\addlinespace
+\textbf{Incertidumbre.} Los datos son valores puntuales, sin distribuciones. &
+P-04 identifica la robustez como el vacío más citado del área; P-18 la aborda con restricciones probabilísticas; P-05 confirma que sigue abierta en 2025. &
+Determinista con sensibilidad ex-post ($\pm$15\,\% consumo, $\pm$10\,\% \textit{deadhead}). \textbf{Q10.} \\
+\addlinespace
+\rowcolor{softrow}
+\textbf{Baseline y criterio de éxito.} No se indica contra qué comparar. &
+P-21 y P-22 comparan contra operación diésel, comparación imposible aquí por falta de datos. &
+Heurística \textit{greedy} propia más \textit{gap} contra la relajación lineal. \textbf{Q9.} \\
+\addlinespace
+\textbf{Herramientas de software.} No se mencionan solvers. &
+P-16 alcanza 101 viajes a optimalidad con \textit{branch-and-price} sobre solver comercial. &
+Se asume Gurobi académico; si no está, se reducen las instancias exactas. \textbf{Q11.} \\
+\addlinespace
+\rowcolor{softrow}
+\textbf{Escala real vs.\ datos.} El enunciado describe la RM completa; los datos dan 1.200 buses y 5 electroterminales. &
+RED tenía 6.756 buses y 380 rutas en 2018 según P-20. &
+\texttt{01-datos} como universo cerrado; las fuentes reales solo para discutir realismo. \textbf{Q4.} \\
+\addlinespace
+\textbf{Exclusiones.} Intercambio de baterías y turnos de conductores. &
+P-10 modela intercambio de baterías; P-03 ubica el \textit{crew scheduling} como problema hermano. &
+Ambos fuera de alcance, declarado explícitamente. \textbf{Q8.} \\
+\bottomrule
+\end{longtable}
+
+\end{landscape}
+
+\clearpage
+\renewcommand{\refname}{Referencias citadas}
+\bibliography{referencias}
+
+\end{document}

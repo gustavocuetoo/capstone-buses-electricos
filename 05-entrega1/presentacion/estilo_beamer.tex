@@ -1,0 +1,86 @@
+% ============================================================
+% estilo_beamer.tex — preámbulo de la presentación
+% Réplica de la paleta de 04-documentos/estilo.tex para que el
+% informe y el deck se vean como un mismo trabajo.
+% ============================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% ---------- paleta compartida con el informe ----------
+\definecolor{ink}{RGB}{0,62,92}
+\definecolor{inklight}{RGB}{92,132,153}
+\definecolor{rulegray}{RGB}{205,214,219}
+\definecolor{critred}{RGB}{158,38,32}
+\definecolor{amber}{RGB}{176,98,16}
+\definecolor{slate}{RGB}{104,112,118}
+\definecolor{headrow}{RGB}{0,62,92}
+\definecolor{softrow}{RGB}{242,246,248}
+
+% ---------- tema ----------
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{structure}{fg=ink}
+\setbeamercolor{frametitle}{fg=ink}
+\setbeamercolor{title}{fg=ink}
+\setbeamercolor{itemize item}{fg=inklight}
+\setbeamercolor{itemize subitem}{fg=inklight}
+\setbeamerfont{frametitle}{series=\bfseries,size=\large}
+\setbeamerfont{title}{series=\bfseries}
+\setbeamertemplate{itemize item}{\textbf{\textperiodcentered}}
+
+% línea bajo el título de cada lámina
+\setbeamertemplate{frametitle}{%
+  \vspace{6pt}%
+  \usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle\par
+  \vspace{2pt}{\color{rulegray}\rule{\textwidth}{0.6pt}}\par\vspace{-2pt}%
+}
+
+% ---------- numeración de diapositivas (exigida por los lineamientos) ----------
+\setbeamertemplate{footline}{%
+  \hfill\usebeamerfont{footline}\color{slate}\scriptsize
+  \insertframenumber{} / \inserttotalframenumber\hspace{12pt}\vspace{6pt}%
+}
+
+% ---------- tablas, igual que en el informe ----------
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\thead}[1]{\textcolor{white}{\bfseries #1}}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+
+% ---------- cifra destacada ----------
+% #1 = número   #2 = qué es
+\newcommand{\cifra}[2]{%
+  \begin{minipage}[t]{0.31\textwidth}
+    \raggedright
+    {\color{ink}\bfseries\fontsize{22}{24}\selectfont #1}\\[2pt]
+    {\color{slate}\footnotesize #2}
+  \end{minipage}%
+}
+
+% variante apilada: ocupa el ancho de su columna
+\newcommand{\cifravert}[2]{%
+  \par\noindent
+  {\color{ink}\bfseries\fontsize{17}{19}\selectfont #1}\ \ {\color{slate}\footnotesize #2}%
+  \par\addvspace{6pt}%
+}
+
+% ---------- conclusión de la lámina ----------
+\newcommand{\remate}[1]{%
+  \vspace{4pt}{\color{rulegray}\rule{\textwidth}{0.6pt}}\par\vspace{3pt}
+  {\color{ink}\small\textbf{#1}}%
+}
+
+% ---------- etiquetas de estado ----------
+\newcommand{\etiqueta}[2]{%
+  {\setlength{\fboxsep}{2.5pt}\colorbox{#1}{\textcolor{white}{\bfseries\scriptsize\strut\,#2\,}}}%
+}

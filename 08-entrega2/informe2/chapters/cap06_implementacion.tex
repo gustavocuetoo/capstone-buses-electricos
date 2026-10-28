@@ -1,0 +1,57 @@
+% Capítulo 6. Implementación computacional y trazabilidad. Spec: ESQUEMA.md §4, capítulo 6.
+
+El método del capítulo~\ref{ch:metodologia} está implementado en Python, en la carpeta \texttt{metodo\_hibrido} del repositorio del proyecto (\url{https://github.com/nfariasl/capstone-grupo29}). Aquí se describe su organización, sus herramientas, su verificación y cómo se reproduce la solución del capítulo~\ref{ch:resultados}.
+
+\section{Módulos y flujo de ejecución}
+\label{sec:modulos}
+
+La Figura~\ref{fig:flujo} muestra el orden en que trabajan los módulos. La instancia (corridas, distancias viales y parámetros del escenario) se lee una vez. La construcción cronológica arma un plan inicial factible; el archivo que la implementa se llama \texttt{caso\_base.py} por razones históricas, pero no es el caso base del capítulo~\ref{ch:caso-base}. Después, las búsquedas por parejas y por tríos proponen cambios entre jornadas, y para cada propuesta un modelo de programación entera mixta (MILP) local decide las recargas y los terminales de esas jornadas. Ningún cambio se acepta sin pasar por el auditor. Al final se exportan el plan de cada bus, sus actividades, sus recargas y un resumen de indicadores.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=9mm and 5mm, caja/.style={draw, rounded corners, align=center,
+  font=\footnotesize, minimum height=11mm, text width=26mm}, flecha/.style={-Stealth}]
+\node[caja] (inst) {Instancia\\\scriptsize\texttt{instancia\_212/}};
+\node[caja, right=of inst] (cons) {Construcción\\cronológica\\\scriptsize\texttt{caso\_base.py}};
+\node[caja, right=of cons] (par) {Parejas\\\scriptsize\texttt{intercambios.py}};
+\node[caja, right=of par] (tri) {Tríos\\\scriptsize\texttt{trios.py}};
+\node[caja, below=of tri] (milp) {MILP local\\\scriptsize\texttt{conjunta.py}\\\texttt{recarga.py}};
+\node[caja, below=of par] (aud) {Auditoría\\\scriptsize\texttt{verificar.py}\\\scriptsize acepta si baja el costo};
+\node[caja, below=of cons] (exp) {Exportación\\\scriptsize\texttt{ejecutar.py}\\\texttt{buscar\_mejor.py}};
+\draw[flecha] (inst) -- (cons);
+\draw[flecha] (cons) -- (par);
+\draw[flecha] (par) -- (tri);
+\draw[flecha] (tri) -- (milp);
+\draw[flecha] (milp) -- (aud);
+\draw[flecha] (aud) -- (exp);
+\end{tikzpicture}
+\caption{Módulos del método híbrido y orden en que se ejecutan. Las búsquedas por parejas y por tríos llaman al MILP local para cada cambio que proponen.}
+\label{fig:flujo}
+\end{figure}
+
+\section{Herramientas}
+\label{sec:herramientas}
+
+El código usa Python~3.12 y NumPy. Los modelos locales se resuelven con Gurobi~12 a través de su interfaz \texttt{gurobipy}, con la licencia restringida que se instala con el paquete, que admite hasta dos mil variables y dos mil restricciones por modelo, con un límite de dos segundos cada uno. En la búsqueda que produjo la solución informada se resolvieron \ModelosLocales{} modelos locales y se descartaron \ModelosDescartados{} que superaban ese tamaño.
+
+\section{Verificación}
+\label{sec:verificacion}
+
+El auditor (\texttt{verificar.py}) es independiente del constructor y de las búsquedas: reconstruye cada plan desde sus actividades y comprueba que cada corrida se cubra exactamente una vez, con su horario y sus paradas; que cada bus pueda llegar a tiempo de una actividad a la siguiente; que una jornada no cruce sectores; que la energía nunca baje de la reserva, y que las plazas y conexiones de cada electroterminal nunca se excedan. Cada etapa trabaja sobre una copia del plan y solo reemplaza a la anterior si el auditor la aprueba y su costo es estrictamente menor. El código tiene 22 pruebas automáticas (14 de la construcción y 8 de las búsquedas), todas aprobadas con la versión usada aquí.
+
+\section{Trazabilidad y reproducción}
+\label{sec:reproduccion}
+
+Cada corrida guarda sus parámetros, las versiones de Python, NumPy y Gurobi, y la huella SHA-256 de cada archivo de entrada y de código (\texttt{ejecucion.json}); la solución final guarda además la huella de cada archivo exportado (\texttt{verificacion\_final.json}). El código del repositorio coincide con esas huellas, salvo \texttt{buscar\_mejor.py}, al que después de obtener la solución se le agregó la opción de elegir la instancia. Las cifras de este informe las genera un script desde esos archivos, así que cada número es rastreable. La solución informada se obtuvo en dos pasos, una búsqueda de 600 segundos por etapa desde la construcción y un refinamiento de 240 segundos desde ese resultado (\MinutosRefinado{} minutos en total); como el presupuesto es de reloj, repetirlos entrega una solución similar, pero no idéntica (sección~\ref{sec:variabilidad}):
+
+\begin{small}
+\begin{verbatim}
+python metodo_hibrido/buscar_mejor.py --salida mejor_600 \
+    --presupuesto 600 --vecinos 8 --alternativas 3 --rondas 30 \
+    --licencia-restringida
+python metodo_hibrido/buscar_mejor.py --salida refinamiento \
+    --desde mejor_600/04_final/planes.json \
+    --presupuesto 240 --vecinos 12 --alternativas 5 --rondas 30 \
+    --licencia-restringida
+\end{verbatim}
+\end{small}

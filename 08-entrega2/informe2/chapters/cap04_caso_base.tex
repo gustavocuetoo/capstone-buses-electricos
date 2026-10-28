@@ -1,0 +1,50 @@
+% Capítulo 4. Caso base. Spec: ESQUEMA.md §4, capítulo 4.
+
+El caso base es la línea de comparación de los indicadores del capítulo~\ref{ch:resultados}: una forma intuitiva de programar la flota, sin optimización, que incluye la recarga porque es una parte esencial del problema, como observó el equipo docente en la presentación de la Entrega~2.
+
+\section{Política miope por ruta con recarga}
+\label{sec:politica-miope}
+
+La política decide corrida por corrida, sin mirar las que vienen después; por eso se le llama miope:
+
+\begin{enumerate}
+\item Las corridas se recorren en el orden de su hora de salida.
+\item Cada ruta tiene sus propios buses: un bus nunca atiende corridas de dos rutas, aunque ambas sean del mismo sector.
+\item Cada corrida se asigna al bus de su ruta que lleva más tiempo libre y alcanza a llegar a tiempo a su inicio.
+\item Si la batería no alcanza para la corrida más el regreso a un terminal con la reserva de \Reserva~kWh, el bus va antes al electroterminal más cercano con cupo y carga hasta el 100\,\%, a la tarifa de esa hora; si ahí no alcanza a cargar a tiempo, prueba con el siguiente.
+\item Si ningún bus de la ruta puede tomar la corrida, se agrega uno nuevo, con la batería llena, desde el terminal de espera más cercano.
+\item Después de su última corrida, cada bus vuelve al terminal de espera más cercano.
+\end{enumerate}
+
+\section{Por qué es una línea base defendible}
+\label{sec:caso-base-defendible}
+
+La política reproduce cómo se programaría la flota sin investigación operativa: buses asignados a una ruta que recargan cuando hace falta, como un bus diésel que carga combustible cuando se le acaba. No resuelve ningún modelo, así que toda diferencia con el modelo proviene de coordinar mejor las decisiones. La comparación se hace en el mismo terreno: las mismas \RutasMuestra{} rutas y \CorridasMuestra{} corridas laborales del modelo, es decir, la misma instancia reducida del capítulo~\ref{ch:problema}, con el mismo horizonte, las mismas constantes y los mismos electroterminales. Su plan se revisó con el mismo auditor que revisa las soluciones del modelo (cobertura exacta, continuidad, energía, reserva y capacidades compartidas), que lo aprobó y reprodujo sin diferencias sus buses, kilómetros, energía, sesiones y costo. La implementación tiene seis pruebas automáticas propias. Su limitación al comparar es que, como siempre carga hasta el 100\,\%, termina el día con más energía en las baterías que el modelo; por eso se compara también un costo ajustado por la energía final (sección~\ref{sec:energia}).
+
+Este caso base reemplaza al de la presentación de la Entrega~2, que no recargaba: cortaba las cadenas de corridas del prototipo anterior (capítulo~\ref{ch:evolucion}) en jornadas dentro de la autonomía de \Autonomia~km y necesitaba \BusesSinRecargas{} buses y USD~\CostoSinRecargas{} al día. Se reemplazó porque una línea base sin recarga deja fuera una parte esencial del problema y exagera la ganancia de cualquier modelo que sí recargue. Lo que mostraba sigue siendo útil: sin recarga, \BusesExtraSinRecargas{} cadenas necesitan un segundo bus solo porque la batería no alcanza. Cómo se cubre el día siguiente se discute en el capítulo~\ref{ch:supuestos}.
+
+\section{Resultado y sensibilidad al umbral de carga}
+\label{sec:resultado-caso-base}
+
+La Tabla~\ref{tab:caso-base} resume el plan. La flota explica el \PctFlotaBase\,\% del costo y los kilómetros, el \PctKmBase\,\%; la electricidad y las sesiones pesan poco en el costo, aunque determinan cuántos buses hacen falta. Como cada ruta reposiciona sus propios buses, el \PctVacioBase\,\% de los kilómetros se recorre sin pasajeros.
+
+\begin{table}[htbp]
+\centering
+\caption{Plan del caso base miope (\RutasMuestra{} rutas, día laboral, umbral de carga de 0\,\%).}
+\label{tab:caso-base}
+\begin{tabular}{lrr}
+\toprule
+Indicador & Valor & \% del costo total \\
+\midrule
+Buses utilizados & \BusesBase & --- \\
+Costo total (USD/día) & \CostoBase & 100 \\
+\quad Flota & \CostoFlotaBase & \PctFlotaBase \\
+\quad Kilómetros & \CostoKmBase & \PctKmBase \\
+\quad Electricidad & \CostoEnergiaBase & \PctEnergiaBase \\
+\quad Sesiones de carga & \CostoSesionesBase & \PctSesionesBase \\
+Kilómetros en vacío & \PctVacioBase\,\% del total & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La política admite un umbral: con un umbral de 30\,\%, por ejemplo, el bus va a cargar apenas su batería baja del 30\,\%, aunque todavía le alcance para la corrida siguiente. Subir el umbral solo empeora el caso base, porque multiplica las visitas a los electroterminales: con umbrales de 20, 30 y 50\,\% necesita \BusesUmbralVeinte, \BusesUmbralTreinta{} y \BusesUmbralCincuenta{} buses y cuesta USD~\CostoUmbralVeinte, \CostoUmbralTreinta{} y \CostoUmbralCincuenta{} al día. Para no inflar la ganancia del modelo se usa el umbral de 0\,\%, el más favorable.

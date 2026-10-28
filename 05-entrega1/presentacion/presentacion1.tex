@@ -1,0 +1,457 @@
+% ============================================================
+% Presentación 1 — ICS2122 Taller de Investigación Operativa
+% Ninguna cifra está escrita a mano: todas vienen de
+% ../../03-resultados/, generado por 02-codigo/.
+% ============================================================
+\documentclass[aspectratio=169,11pt]{beamer}
+\input{estilo_beamer}
+
+\newcommand{\RES}{../../03-resultados}
+\input{\RES/metricas}
+\input{\RES/metricas_entrega1}
+
+\title{Planificación de la operación de buses eléctricos}
+\subtitle{Red Metropolitana de Movilidad — Entrega 1}
+\author{Grupo \textbf{[N]} \quad\textbar\quad ICS2122 Taller de Investigación Operativa}
+\date{3 de septiembre de 2026}
+
+\begin{document}
+
+% ------------------------------------------------------------------ 1
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% ------------------------------------------------------------------ 2
+\begin{frame}{El problema}
+  \small
+  Programar la operación de \textbf{un día completo} de la flota de buses
+  eléctricos de la RED: qué bus cubre qué viaje, cómo se encadena con el
+  siguiente, y cuándo y dónde recarga.
+
+  \vspace{6pt}
+  \begin{columns}[t]
+    \begin{column}{0.31\textwidth}
+      {\color{ink}\bfseries Qué se decide}
+      \begin{itemize}\footnotesize
+        \item Asignación de viajes a buses
+        \item Encadenamiento y traslados en vacío
+        \item Momento, lugar y duración de cada recarga
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      {\color{ink}\bfseries Qué restringe}
+      \begin{itemize}\footnotesize
+        \item Cada viaje se cubre exactamente una vez
+        \item Autonomía: \autonomiaUtil{} km útiles por carga
+        \item \numElectroterminales{} electroterminales, \cuposTotales{} cupos
+        \item Potencia eléctrica limitada
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      {\color{ink}\bfseries Qué entregamos}
+      \begin{itemize}\footnotesize
+        \item Un plan diario factible
+        \item Evaluado con KPIs de flota, energía, costo y servicio
+        \item Con una cota que diga cuán lejos está del óptimo
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \remate{En la literatura se llama \textit{Multi-Depot Electric Vehicle
+  Scheduling Problem} con programación de carga acoplada. El enunciado no lo
+  nombra, pero esa etiqueta es la llave de toda la bibliografía.}
+\end{frame}
+
+% ------------------------------------------------------------------ 3
+\begin{frame}{Con qué datos contamos}
+  \scriptsize
+  \begin{columns}[t]
+    \begin{column}{0.56\textwidth}
+      \begin{tabular}{@{}L{2.5cm} L{4.4cm}@{}}
+        \rowcolor{headrow}
+        \thead{Archivo} & \thead{Qué aporta} \\
+        \midrule
+        \texttt{gtfs/trips} & \registrosViaje{} viajes de bus del día laboral \\
+        \rowcolor{softrow}
+        \texttt{gtfs/frequencies} & Convierte cada viaje en varias corridas reales \\
+        \texttt{gtfs/stop\_times} & Horarios y secuencia de paradas \\
+        \rowcolor{softrow}
+        \texttt{gtfs/stops} & Coordenadas de \textbf{12.877} paradas \\
+        \texttt{shape\_distances} & Distancia de cada recorrido \\
+        \rowcolor{softrow}
+        \texttt{charger\_capacity} & \numElectroterminales{} electroterminales, \cuposTotales{} cupos \\
+        \texttt{electricity\_prices} & Tarifa por tramo horario \\
+        \rowcolor{softrow}
+        \texttt{parameters} & Batería, autonomía, potencia, costos \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      {\color{critred}\bfseries\small Lo que NO está}
+      \begin{itemize}\scriptsize
+        \item \camposAusentes{} de \camposDocumentados{} campos del diccionario
+              no existen en ningún archivo: terminales de cada viaje, distancias
+              de traslado en vacío, número de cargadores, potencia del
+              transformador.
+      \end{itemize}
+      \vspace{4pt}
+      {\color{ink}\bfseries\small Lo que sí pudimos reconstruir}
+      \begin{itemize}\scriptsize
+        \item Origen y destino de \pctGeoReconstruido{}\,\% de los viajes,
+              cruzando \texttt{stop\_times} con \texttt{stops}, y con eso los
+              traslados en vacío que faltaban.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \remate{Un dato ausente no siempre es un dato perdido: buena parte de lo
+  que falta se deriva del propio GTFS.}
+\end{frame}
+
+% ------------------------------------------------------------------ 4
+\begin{frame}{Cómo es un día de operación}
+  \begin{columns}[c]
+    \begin{column}{0.5\textwidth}
+      \includegraphics[width=\linewidth]{\RES/fig_duracion.pdf}\\[2pt]
+      \includegraphics[width=\linewidth]{\RES/fig_distancia.pdf}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \cifravert{\corridasReales}{corridas que cubrir}
+      \cifravert{\duracionMediana{} min}{mediana de viaje}
+      \cifravert{\distanciaMediana{} km}{mediana de viaje}
+      \cifravert{\kmTotales{} km}{en el día}
+
+      \vspace{1pt}
+      {\scriptsize\color{slate}\itshape \registrosViaje{} registros en
+      \texttt{trips.txt} no son \registrosViaje{} viajes: se repiten según
+      \texttt{frequencies.txt} y expandirlos multiplica el problema por
+      \factorFrecuencia{}.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ------------------------------------------------------------------ 5
+\begin{frame}{La curva del día fija el tamaño de la flota}
+  \begin{columns}[c]
+    \begin{column}{0.62\textwidth}
+      \includegraphics[width=\linewidth]{\RES/fig_concurrencia.pdf}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \scriptsize
+      A las \horaPico{} hay \textbf{\picoSimultaneo{} viajes simultáneos}.
+      Ningún plan puede usar menos buses que eso: es una cota inferior dura.
+
+      \vspace{6pt}
+      Validación externa: la RED operaba \flotaRealRED{} buses en 2018.
+      Nuestra cota queda a \desvioValidacion\,\% de esa cifra, lo que sugiere
+      que el cálculo es correcto.
+
+      \vspace{6pt}
+      {\color{critred}\bfseries El problema:} el archivo de parámetros declara
+      \flotaDeclarada{} buses.
+    \end{column}
+  \end{columns}
+  \remate{La forma de la curva, no el promedio, es lo que dimensiona la flota.}
+\end{frame}
+
+% ------------------------------------------------------------------ 6
+\begin{frame}{Los datos no vienen limpios: \chequeosTotal{} verificaciones}
+  \scriptsize
+  \input{\RES/tabla_calidad_deck}
+  \vspace{4pt}
+  \remate{\chequeosOk{} verificaciones en orden, \chequeosAlerta{} alertas y
+  \chequeosFalla{} fallas. Las dos fallas cambian el alcance del proyecto,
+  no son detalles de limpieza.}
+\end{frame}
+
+% ------------------------------------------------------------------ 7
+\begin{frame}{Dos hallazgos que obligan a filtrar antes de modelar}
+  \small
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      {\color{ink}\bfseries 1. El GTFS no trae solo buses}
+      \begin{itemize}\footnotesize
+        \item \viajesNoBus{} de \viajesDelDia{} viajes del día
+              (\pctNoBus\,\%) son líneas de Metro y el Metrotren Rancagua.
+        \item Programarlos con la flota de buses eléctricos no tiene sentido:
+              se descartan filtrando por \texttt{route\_type}.
+        \item Tres paradas del feed están fuera de la Región Metropolitana,
+              a más de 90 km del centro: son estaciones del Metrotren.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      {\color{ink}\bfseries 2. El consumo declarado no calza}
+      \begin{itemize}\footnotesize
+        \item \texttt{battery\_kwh}\,/\,\texttt{range\_km} implica
+              \consumoImplicito{} kWh/km.
+        \item El piloto real Metbus--Enel--BYD en Santiago reporta
+              \consumoReal{} kWh/km.
+        \item La diferencia es de \textbf{\desvioConsumo\,\%}: son \energiaImplicita{} GWh/día
+              frente a \energiaReal{}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \remate{Sin estos dos filtros, cada cifra del proyecto arrastra el error.
+  Trabajamos con el valor del curso y reportamos sensibilidad al otro.}
+\end{frame}
+
+% ------------------------------------------------------------------ 8
+\begin{frame}{Qué le toca a un bus típico}
+  \vspace{4pt}
+  \cifra{\viajesPorBus}{viajes por bus al día}\hfill
+  \cifra{\kmPorBus~km}{recorridos por bus al día}\hfill
+  \cifra{\recargasPorBus}{recargas por bus al día}
+
+  \vspace{16pt}
+  \small
+  Cada recarga completa toma \tiempoRecarga{} minutos a
+  \textbf{180 kW}, y devuelve \autonomiaUtil{} km útiles.
+  Un bus consume \energiaPorBus{} kWh en el día: menos de una batería
+  completa, pero no lo suficiente como para ignorar la recarga.
+
+  \vspace{6pt}
+  La flota entera necesita \energiaImplicita{} GWh diarios. Los
+  \cuposTotales{} cupos suman \potenciaInstalada{} MW instalados y podrían
+  entregar \capacidadCargaDia{} GWh en 24 h: usamos el
+  \usoCapacidadCarga\,\% de esa capacidad.
+
+  \remate{En agregado la energía alcanza. El problema es que nadie recarga
+  en agregado: todos quieren hacerlo en la misma ventana nocturna.}
+\end{frame}
+
+% ------------------------------------------------------------------ 9
+\begin{frame}{La restricción que define el alcance del proyecto}
+  \small
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      El servicio completo exige \horasBus{} horas-bus.
+
+      \vspace{4pt}
+      El pico de viajes simultáneos exige \picoSimultaneo{} buses,
+      antes de considerar traslados y recargas.
+
+      \vspace{8pt}
+      {\color{critred}\bfseries Los \flotaDeclarada{} buses declarados
+      son menos que los viajes simultáneos en la hora punta.}
+
+      \vspace{8pt}
+      Con \flotaDeclarada{} buses cada uno tendría que hacer
+      \viajesPorBusDecl{} viajes y \kmPorBusDecl{} km diarios: son
+      \recargasPorBusDecl{} recargas por bus.
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      {\color{ink}\bfseries Esto no es un problema computacional}
+
+      \vspace{4pt}
+      Es infactible por construcción. Solo hay tres lecturas posibles:
+
+      \begin{enumerate}\footnotesize
+        \item La instancia es un \textbf{subconjunto} de la red, no la red completa.
+        \item Los \flotaDeclarada{} buses son referenciales y la flota es una variable.
+        \item Hay un error en los datos entregados.
+      \end{enumerate}
+
+      \vspace{6pt}
+      \textit{Es la primera pregunta que le haremos al profesor. Mientras tanto
+      trabajamos con la lectura (1).}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ------------------------------------------------------------------ 10
+\begin{frame}{Por qué el problema es difícil}
+  \begin{columns}[c]
+    \begin{column}{0.44\textwidth}
+      \includegraphics[width=\linewidth]{\RES/fig_deadhead.pdf}
+      \vspace{2pt}
+      {\scriptsize\color{slate} Distancia entre el fin de un viaje y el inicio
+      de otro con el que podría encadenarse.}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \small
+      Encadenar viajes genera \textbf{\arcosFull{} millones} de conexiones
+      horariamente posibles: unas \arcosPorCorrida{} por corrida.
+      Cada una sería una variable binaria.
+
+      \vspace{6pt}
+      Pero la geografía las poda:
+      \begin{itemize}\footnotesize
+        \item De las conexiones con menos de \holguraAjustada{} min de holgura,
+              solo el \fraccionGeoFactible\,\% da tiempo de trasladarse.
+        \item Solo el \fraccionBarata\,\% de las conexiones tiene un traslado
+              corto (bajo \deadheadBarato{} km).
+        \item La mediana del traslado entre dos viajes encadenables es
+              \deadheadMediana{} km; el percentil 90 llega a \deadheadPnoventa{} km.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \remate{Casi todas las conexiones legales son malas. El valor del modelo está
+  en encontrar ese \fraccionBarata\,\% que además cierra el balance de energía.}
+\end{frame}
+
+% ------------------------------------------------------------------ 11
+\begin{frame}{Familia de instancias: de lo verificable a lo real}
+  \scriptsize
+  \input{\RES/tabla_instancias_deck}
+  \vspace{4pt}
+  \remate{Todas son el mismo día laboral; cambia cuántas de las \numRutas{}
+  rutas se incluyen. La columna de arcos es la que decide qué método es viable
+  en cada escala.}
+\end{frame}
+
+% ------------------------------------------------------------------ 12
+\begin{frame}{Con qué vamos a medir una solución}
+  \scriptsize
+  \input{\RES/tabla_kpis_deck}
+  \vspace{3pt}
+  \remate{Los ocho primeros ya tienen valor de referencia sobre los datos
+  entregados; los cuatro últimos solo existen una vez que hay un plan.}
+\end{frame}
+
+% ------------------------------------------------------------------ 13
+\begin{frame}{Qué encontramos en la literatura}
+  \small
+  \begin{columns}[t]
+    \begin{column}{0.32\textwidth}
+      {\color{ink}\bfseries El acoplamiento es la novedad}
+      \footnotesize\\[3pt]
+      La revisión de Perumal et al. (2022) reporta que la literatura resuelve
+      el \textit{scheduling} de vehículos y la programación de la recarga
+      \textbf{por separado}. El enunciado exige tomarlas juntas.
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      {\color{ink}\bfseries Los exactos no escalan}
+      \footnotesize\\[3pt]
+      El mejor método exacto publicado (Wu et al., 2025) resuelve a optimalidad
+      instancias de \textbf{101 corridas}. Nuestro caso completo tiene
+      \corridasReales{}: tres órdenes de magnitud más.
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      {\color{ink}\bfseries La capacidad de carga casi no se modela}
+      \footnotesize\\[3pt]
+      De Vos et al. (2024) es de los pocos trabajos que combina capacidad
+      limitada de estación con recarga parcial, que es exactamente nuestra
+      variante.
+    \end{column}
+  \end{columns}
+  \remate{La brecha entre lo que la literatura resuelve exactamente y el tamaño
+  de nuestro caso es la que determina la metodología, no una preferencia nuestra.}
+\end{frame}
+
+% ------------------------------------------------------------------ 14
+\begin{frame}{Metodologías consideradas}
+  \scriptsize
+  \begin{tabular}{@{}L{2.6cm} L{2.2cm} L{2.9cm} L{4.3cm}@{}}
+    \rowcolor{headrow}
+    \thead{Familia} & \thead{Garantía} & \thead{Escala reportada} & \thead{Por qué no basta sola} \\
+    \midrule
+    Flujo en \textit{time-space} & Óptimo del modelo & Instancias reales & Al incorporar el estado de carga deja de ser flujo puro \\
+    \rowcolor{softrow}
+    \textit{Branch-and-price} & Óptimo con cota & 101 corridas & Tres órdenes de magnitud bajo nuestro caso \\
+    Metaheurísticas (ALNS) & Sin garantía & Instancias grandes & Sin cota, no se puede defender la calidad \\
+    \rowcolor{softrow}
+    Descomposición de Benders & Óptimo o brecha $<$1\,\% & Datos de Chicago & Supone decisiones de inversión que aquí ya están dadas \\
+    Modelos estocásticos & Probabilística & No reportada & Exigen distribuciones que los datos no traen \\
+    \rowcolor{softrow}
+    Simulación & No optimiza & --- & Mide fragilidad, pero no la corrige \\
+    \bottomrule
+  \end{tabular}
+  \remate{Ninguna familia cubre sola el caso: exacta y escala son excluyentes
+  a este tamaño.}
+\end{frame}
+
+% ------------------------------------------------------------------ 15
+\begin{frame}{Ruta escogida: híbrida en dos etapas}
+  \small
+  \begin{columns}[t]
+    \begin{column}{0.3\textwidth}
+      {\color{ink}\bfseries Etapa 1 — Exacta}
+      \footnotesize\\[3pt]
+      Modelo entero sobre \textit{time-space network} con la capa energética,
+      resuelto sobre \textbf{I-001} e \textbf{I-010}.
+      \\[3pt]
+      \textit{Para qué:} verificar que el modelo representa el problema y
+      producir la cota de referencia.
+    \end{column}
+    \begin{column}{0.3\textwidth}
+      {\color{ink}\bfseries Etapa 2 — Heurística}
+      \footnotesize\\[3pt]
+      ALNS extendido con la restricción de capacidad de carga, aplicado a
+      \textbf{I-050} y hacia arriba.
+      \\[3pt]
+      \textit{Para qué:} llegar a la escala real. Su calidad se mide contra el
+      óptimo de la Etapa 1.
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      {\color{ink}\bfseries Complemento — Robustez}
+      \footnotesize\\[3pt]
+      Simulación sobre el plan final y análisis de sensibilidad en consumo
+      (\consumoReal{} vs. \consumoImplicito{} kWh/km) y en tiempos de traslado.
+      \\[3pt]
+      \textit{Por qué así:} un modelo estocástico completo exige distribuciones
+      que los datos no contienen.
+    \end{column}
+  \end{columns}
+  \remate{Lo que perdemos: la solución del caso grande no tendrá garantía de
+  optimalidad. Lo decimos de entrada, y por eso la Etapa 1 existe.}
+\end{frame}
+
+% ------------------------------------------------------------------ 16
+\begin{frame}{Pasos siguientes}
+  \small
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      {\color{ink}\bfseries Próximas cuatro semanas}
+      \begin{itemize}\footnotesize
+        \item Validar los supuestos abiertos con el equipo docente
+              (flota, consumo, capacidad de carga, deadhead).
+        \item Construir el generador de instancias y congelar \textbf{I-010}.
+        \item Formular y resolver el modelo exacto sobre \textbf{I-001}.
+        \item Primer plan factible sobre \textbf{I-010} con KPIs medidos.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      {\color{ink}\bfseries Lo que ya está resuelto}
+      \begin{itemize}\footnotesize
+        \item Datos verificados, filtrados y reproducibles de punta a punta.
+        \item Geografía reconstruida: los traslados en vacío ya son calculables.
+        \item Familia de instancias definida y dimensionada.
+        \item KPIs y metodología escogida y argumentada.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \remate{La pregunta del principio era qué bus cubre qué viaje y cuándo
+  recarga. Hoy sabemos cuán grande es esa pregunta, qué datos la responden y
+  cuáles todavía faltan.}
+\end{frame}
+
+% ------------------------------------------------------------------ anexo
+\appendix
+\begin{frame}{Anexo — Tabla de instancias completa}
+  \tiny
+  \input{\RES/tabla_instancias}
+\end{frame}
+
+\begin{frame}{Anexo — Verificación de datos completa}
+  \tiny
+  \input{\RES/tabla_calidad}
+\end{frame}
+
+\begin{frame}{Anexo — Distancia a electroterminal}
+  \begin{columns}[c]
+    \begin{column}{0.6\textwidth}
+      \includegraphics[width=\linewidth]{\RES/fig_pullout.pdf}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \scriptsize
+      Distancia desde el inicio de cada viaje al electroterminal más cercano.
+      Media \pullOutMedio{} km, percentil 90 \pullOutPnoventa{} km.
+      \\[4pt]
+      Supuestos: velocidad en vacío \velocidadDeadhead{} km/h,
+      factor de rodeo \factorRodeo{} sobre la distancia recta.
+      Velocidad comercial observada: \velocidadComercial{} km/h.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,266 @@
+% !TEX program = pdflatex
+% Compilar: pdflatex preguntas_profesor && bibtex preguntas_profesor && pdflatex preguntas_profesor && pdflatex preguntas_profesor
+\documentclass[11pt,a4paper,parskip=half]{scrartcl}
+\input{estilo}
+\bibliographystyle{apalike}
+
+\title{Preguntas para el profesor}
+\subject{\normalsize ICS2122 — Taller de Investigación Operativa (Capstone)}
+\subtitle{\normalsize Planificación de la operación de buses eléctricos, Red Metropolitana de Movilidad\\[2pt]
+13 preguntas verificadas contra el enunciado y contra los datos entregados}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-2.2\baselineskip}
+
+\begin{nota}
+\textbf{\textcolor{ink}{Cómo se filtraron estas preguntas.}} Se partió de 15 preguntas candidatas. Cada una se contrastó, una por una, contra el texto del enunciado y contra los archivos de \texttt{data-alumnos/}. \textbf{Cuatro se descartaron} porque el enunciado sí las responde (ver §6, con la cita textual que las responde), \textbf{dos se fusionaron} en una sola, y \textbf{tres se agregaron} al detectar vacíos que las candidatas originales no cubrían. Cada pregunta que quedó trae una línea \textit{«En simple»} que explica en lenguaje corriente qué se está preguntando y por qué importa.
+\end{nota}
+
+\section*{1\quad Resumen para escanear}
+\addcontentsline{toc}{section}{Resumen para escanear}
+
+\begin{longtable}{@{}L{0.8cm}L{5.2cm}L{1.8cm}L{6.8cm}@{}}
+\rowcolor{headrow}
+\thead{\#} & \thead{Tema} & \thead{Prioridad} & \thead{Qué se bloquea sin respuesta} \\
+\endfirsthead
+\rowcolor{headrow}
+\thead{\#} & \thead{Tema} & \thead{Prioridad} & \thead{Qué se bloquea sin respuesta} \\
+\endhead
+\midrule
+Q1 & Falta la tabla de viajes    & \critica & No se puede construir ninguna instancia \\
+\rowcolor{softrow}
+Q2 & Falta el dato de capacidad de carga & \critica & La restricción central del enunciado no es modelable \\
+Q3 & Qué día tipo se planifica   & \critica & No queda definido el tamaño del problema \\
+\rowcolor{softrow}
+Q4 & Alcance de los datos vs.\ la RM real & \alta & Define si hay que discutir la brecha con la realidad \\
+\midrule
+Q5 & Consumo y curva de carga    & \alta   & Fija la complejidad del submodelo energético \\
+\rowcolor{softrow}
+Q6 & Fin del día y día siguiente & \alta   & Define las condiciones de borde del horizonte \\
+Q7 & Función objetivo exacta     & \alta   & Sin esto no hay criterio de optimización \\
+\rowcolor{softrow}
+Q8 & Exclusiones de alcance      & \media  & Acota qué no hay que modelar \\
+\midrule
+Q9  & Baseline y criterio de éxito & \alta  & Define contra qué se compara el resultado \\
+\rowcolor{softrow}
+Q10 & Incertidumbre               & \alta  & Determinista vs.\ estocástico \\
+Q11 & Solver permitido            & \media & Condiciona qué tamaño es resoluble \\
+\midrule
+\rowcolor{softrow}
+Q12 & Validación de la ruta metodológica & \alta  & Confirma el plan de trabajo \\
+Q13 & Desarrollo incremental      & \media & Afecta el cronograma \\
+\bottomrule
+\end{longtable}
+
+\section*{2\quad Bloqueantes}
+\addcontentsline{toc}{section}{Bloqueantes}
+
+\entrada{Q1}{Faltan 17 de los 44 campos documentados: ¿los construimos nosotros o falta un archivo?}{\critica}
+\begin{campos}
+\item[En simple] El curso entregó un diccionario que dice qué datos se van a usar, pero los datos mismos de cada viaje no están en ninguna parte. Hay que fabricarlos desde los horarios crudos, y eso es varias semanas de trabajo. Queremos saber si se les quedó un archivo afuera o si armarlo es parte del proyecto.
+\item[Evidencia] \texttt{parametros\_descripcion.csv} documenta 44 campos. Al cruzarlos con los encabezados de todos los CSV y de los archivos GTFS entregados, \textbf{17 no existen en ningún archivo}, entre ellos \texttt{duration\_min}, \texttt{energy\_kwh}, \texttt{origin\_lat}/\texttt{lon}, \texttt{dest\_lat}/\texttt{lon}, \texttt{start\_stop}/\texttt{end\_stop}, \texttt{deadhead\_distance\_km}, \texttt{deadhead\_time\_min}, \texttt{pullout\_km}/\texttt{time} y \texttt{pullin\_km}/\texttt{time}. Lo único disponible es el GTFS crudo y \texttt{shape\_distances.csv} (distancia por \textit{shape}, no por viaje).
+\item[Pregunta] ¿Debemos construir la tabla de viajes desde el GTFS, o falta un archivo por entregar? Si la construimos: ¿el \textit{deadhead} se calcula como distancia geográfica en línea recta, o se espera distancia por red vial real?
+\item[Supuesto] La construimos: duración y distancia desde \texttt{stop\_times.txt} y \texttt{shape\_distances.csv}; energía como distancia $\times$ 1{,}4~kWh/km (tasa implícita de \texttt{vehicles.csv}); \textit{deadhead} como distancia en línea recta multiplicada por un factor de circuidad urbana, declarado como supuesto y no como dato.
+\item[Impacto] Define si el primer mes del proyecto es ingeniería de datos o modelamiento.
+\end{campos}
+
+\entrada{Q2}{El enunciado exige dos restricciones de carga; los datos no traen ninguna de las dos}{\critica}
+\begin{campos}
+\item[En simple] El enunciado dice que hay un número limitado de enchufes \textbf{y} un límite de electricidad total, que son cosas distintas: puedes tener enchufes libres pero el transformador no dar abasto. Los datos no traen ni lo uno ni lo otro. El único campo parecido que existe dice que pueden cargar tantos buses como caben estacionados, o sea que no limita nada. Sin un número real, la restricción que el enunciado pone en el centro del problema queda vacía.
+\item[Evidencia] Los tres campos que definirían esta restricción están documentados pero ausentes: \texttt{num\_chargers}, \texttt{transformer\_mw} y \texttt{max\_charges}. El campo que sí existe, \campoTT{max\_simultaneous}{charging}, es \textbf{idéntico a la capacidad de estacionamiento} en los cinco electroterminales (150/150, 180/180, 120/120, 100/100, 150/150), por lo que como está entregado no restringe la operación. En la literatura estas dos restricciones se modelan por separado: cupos discretos en \citet{devos_capacitatedcharging_2024} y \citet{jiang_limitedcapacitylargescale_2022}; potencia agregada en \citet{zapata_gridimpact_2022}.
+\item[Pregunta] ¿Qué valores usamos para número de cargadores y potencia disponible por electroterminal? ¿Hay un archivo pendiente, o debemos proponer valores y justificarlos?
+\item[Supuesto] Proponemos valores calibrados con el caso real de Santiago documentado en \citet{galarza_pilotstoscale_2020}: razón aproximada de 2 buses por cargador y 6~MW por electroterminal, y reportamos análisis de sensibilidad sobre ambos.
+\item[Impacto] Determina si el modelo es un flujo en red con un recurso discreto simple o requiere restricciones de recurso acopladas por bloque horario, lo que cambia el método de solución.
+\end{campos}
+
+\entrada{Q3}{¿Qué día tipo se planifica?}{\critica}
+\begin{campos}
+\item[En simple] El archivo de horarios trae seis calendarios distintos (lunes a viernes, sábado, domingo, etc.) y nadie dijo cuál hay que planificar. El número de viajes cambia mucho entre uno y otro, así que sin esto no sabemos qué tan grande es el problema.
+\item[Evidencia] \texttt{calendar.txt} define los servicios \texttt{L}, \texttt{S}, \texttt{D}, \texttt{F}, \texttt{LJ} y \texttt{V}, vigentes entre 2026-07-04 y 2026-12-31; \texttt{trips.txt} contiene $\sim$26.000 viajes repartidos entre todos ellos. El enunciado habla de «operación diaria» y «demanda diaria», pero no indica el día.
+\item[Pregunta] ¿Se planifica un día laboral tipo (\texttt{service\_id = L})? ¿Se espera cubrir las 428 rutas del GTFS o un subconjunto acotado?
+\item[Supuesto] Día laboral tipo (\texttt{service\_id = L}) sobre la red completa; si resulta intratable, se reduce por electroterminal y se reporta explícitamente el recorte.
+\item[Impacto] Fija el tamaño de instancia y, con él, qué métodos son viables.
+\end{campos}
+
+\entrada{Q4}{¿Los datos son un universo cerrado o hay que contrastarlos con la RM real?}{\alta}
+\begin{campos}
+\item[En simple] Los datos dicen 1.200 buses y 5 electroterminales; Santiago real tiene bastante más. Queremos saber si trabajamos como si eso fuera todo Santiago, o si el informe debe advertir que no es la red real.
+\item[Evidencia] \citet{galarza_pilotstoscale_2020} documenta 6.756 buses y 380 rutas en RED el año 2018. Ningún valor de \texttt{01-datos} coincide con cifras oficiales verificadas: por ejemplo \texttt{charge\_power\_kw = 180} frente a los 50--150~kW reportados por el Ministerio de Energía.
+\item[Pregunta] ¿Tratamos \texttt{01-datos} como un universo cerrado y autosuficiente, o se espera que contrastemos sus valores contra fuentes públicas reales?
+\item[Supuesto] Universo cerrado para todas las restricciones del modelo; las fuentes reales se usan solo para discutir realismo, en una subsección aparte.
+\item[Impacto] Define si el informe necesita una sección de brecha con la realidad.
+\end{campos}
+
+\section*{3\quad Modelamiento}
+\addcontentsline{toc}{section}{Modelamiento}
+
+\entrada{Q5}{Consumo energético y curva de carga: ¿nos quedamos con el modelo lineal?}{\alta}
+\begin{campos}
+\item[En simple] Los datos suponen que el bus gasta siempre lo mismo por kilómetro y que carga a velocidad constante hasta llenarse. En la realidad el consumo depende del clima, del conductor y de cuánta gente lleva, y las baterías cargan lento cuando están casi llenas. Además el dato real de un piloto en Santiago da un consumo bastante menor que el que implican los datos del curso.
+\item[Evidencia] \texttt{vehicles.csv} implica 1{,}4~kWh/km ($350/250$) y potencia de carga constante de 180~kW. El piloto Metbus--Enel--BYD documentado en \citet{galarza_pilotstoscale_2020} reporta \textbf{1{,}006~kWh/km} medido en operación real. \citet{basso_disaggregatedenergy_2024}, con datos desagregados reales de RED, muestran que el consumo depende de ocupación y modo de conducción. \citet{vankootenniekerk_schedulingev_2017} comparan explícitamente carga lineal contra curva no lineal con depreciación de batería.
+\item[Pregunta] ¿Aceptan consumo lineal y carga a potencia constante, o esperan una representación más rica? ¿Y qué hacemos con la discrepancia 1{,}4 vs.\ 1{,}006~kWh/km?
+\item[Supuesto] Lineal en distancia con la tasa de \texttt{vehicles.csv} y carga a potencia constante; la discrepancia se documenta como limitación y se incluye 1{,}006~kWh/km como escenario de sensibilidad.
+\item[Impacto] Lineal es tratable de forma exacta; no lineal obliga a discretizar o aproximar.
+\end{campos}
+
+\entrada{Q6}{Condiciones de fin de día: ¿el bus vuelve a su electroterminal y con cuánta carga?}{\alta}
+\begin{campos}
+\item[En simple] El plan cubre un día. Pero no está dicho qué pasa al final: ¿el bus tiene que volver al mismo electroterminal de donde salió, o puede terminar en cualquiera? ¿Y tiene que quedar con batería suficiente para empezar el día siguiente, o puede terminar casi vacío? Si no lo fijamos, el modelo puede hacer trampa: dejar todos los buses descargados a las 23:59 y salir «óptimo».
+\item[Evidencia] El enunciado no menciona retorno a depósito ni continuidad entre días; habla solo de «planificar la operación diaria». Los datos tampoco lo fijan: \texttt{depots.csv} da capacidad de estacionamiento por electroterminal, lo que sugiere pernoctación, pero nada exige volver al de origen. En el VSP clásico \citep{bunte_vspoverview_2009} el retorno es a \emph{algún} depósito, no necesariamente al de origen.
+\item[Pregunta] ¿Debe cada bus terminar en su electroterminal de origen? ¿Se exige un estado de carga mínimo al cierre del día, o basta con respetar el SoC mínimo durante la operación?
+\item[Supuesto] El bus puede terminar en cualquier electroterminal con cupo disponible, y se exige terminar con al menos el SoC mínimo de seguridad, sin condición adicional de recarga nocturna.
+\item[Impacto] Sin condición de cierre, el modelo produce planes que no son sostenibles al día siguiente.
+\end{campos}
+
+\entrada{Q7}{¿Qué minimizamos exactamente?}{\alta}
+\begin{campos}
+\item[En simple] Hay varias cosas que queremos que sean chicas: cuántos buses usamos, cuántos kilómetros van vacíos, cuánta plata en electricidad y cuánto esperan los buses. Los datos vienen todos en dólares, así que se pueden sumar en un solo número, pero también se podría mostrar el intercambio entre ellos como una curva. Queremos saber cuál esperan.
+\item[Evidencia] \texttt{parameters.csv} entrega \texttt{cost\_per\_km}, \texttt{waiting\_cost\_per\_min}, \texttt{vehicle\_fixed\_cost} y \texttt{fixed\_charge\_cost}, más la tarifa horaria de \texttt{electricity\_prices.csv} (seis bloques, de 0{,}10 a 0{,}22~USD/kWh). El enunciado menciona «costos totales de operación» y subraya el intercambio energía vs.\ \textit{deadhead}, pero nunca declara la función objetivo. \citet{perumal_evspreview_2022} reportan que la literatura suele tratar flota, \textit{deadhead} y energía como objetivos separados.
+\item[Pregunta] ¿Una única función de costo total aditiva con los componentes entregados, o un análisis multiobjetivo con frontera de Pareto entre costo energético y costo de \textit{deadhead}/flota?
+\item[Supuesto] Función objetivo única aditiva con todos los componentes de \texttt{parameters.csv}, más un análisis posterior del intercambio entre componentes, sin optimización multiobjetivo formal.
+\item[Impacto] Decide si basta un solver mono-objetivo estándar.
+\end{campos}
+
+\entrada{Q8}{Exclusiones de alcance: intercambio de baterías y turnos de conductores}{\media}
+\begin{campos}
+\item[En simple] Dos cosas que aparecen en la literatura y que damos por fuera: (a) cambiar la batería del bus en vez de enchufarlo, como cambiar pilas; (b) asignar los turnos de los conductores. Ninguna de las dos aparece en el enunciado ni en los datos, pero preferimos confirmarlo antes que suponerlo, porque la segunda haría el problema muchísimo más difícil.
+\item[Evidencia] \citet{li_limitedenergy_2014} modela intercambio de baterías como alternativa a la recarga; \texttt{vehicles.csv} tiene un solo tipo de vehículo sin parámetro de intercambio. Para turnos, \citet{desaulniers_publictransit_2007} ubican el \textit{crew scheduling} como problema hermano del \textit{vehicle scheduling}; ningún archivo entregado menciona jornadas, descansos ni conductores.
+\item[Pregunta] ¿Confirmamos que ambos quedan fuera de alcance, y que el proyecto es exclusivamente asignación de buses a viajes más programación de recarga?
+\item[Supuesto] Ambos fuera de alcance, declarado explícitamente en el informe.
+\item[Impacto] Bajo si se confirma; alto si se esperara integrar turnos, que exigiría un modelo mucho más complejo.
+\end{campos}
+
+\section*{4\quad Evaluación y herramientas}
+\addcontentsline{toc}{section}{Evaluación y herramientas}
+
+\entrada{Q9}{¿Contra qué se compara el resultado y cuándo es «suficientemente bueno»?}{\alta}
+\begin{campos}
+\item[En simple] Cuando entreguemos «este plan cuesta X», ese número solo no dice nada si no hay con qué compararlo. Y tampoco sabemos cuándo damos el trabajo por terminado: ¿basta que el plan sea factible, o hay que demostrar qué tan lejos está del óptimo?
+\item[Evidencia] El enunciado pide «evaluar el valor de las herramientas de Investigación Operativa» pero no define baseline ni criterio de calidad. Los datos no incluyen un escenario de referencia ni una solución previa. \citet{basso_disaggregatedenergy_2024} y \citet{oemick_economicsocialeval_2019} comparan contra operación diésel, comparación que aquí no es posible por falta de datos.
+\item[Pregunta] ¿Se exige reportar \textit{gap} de optimalidad, o basta con factibilidad más comparación contra un baseline propio?
+\item[Supuesto] Reportamos ambos: comparación contra una heurística \textit{greedy} construida por el equipo, y \textit{gap} contra la cota de la relajación lineal en las instancias donde el exacto corre.
+\item[Impacto] Define si hay que construir un baseline adicional y cuánto esfuerzo va a demostrar calidad de solución.
+\end{campos}
+
+\entrada{Q10}{¿Determinista o hay que modelar la incertidumbre?}{\alta}
+\begin{campos}
+\item[En simple] Todos los datos son números exactos: este viaje dura 45 minutos y consume tanto. En la realidad hay tacos y el consumo varía. Modelar eso con probabilidades es bastante más difícil. Nos llama la atención que el enunciado mencione «simulación» entre las herramientas, lo que podría estar insinuando justamente esto.
+\item[Evidencia] El enunciado lista «optimización, simulación, analítica y ciencia de datos» como herramientas a evaluar, pero todo su planteamiento es determinista y los datos entregados son valores puntuales sin distribuciones. \citet{perumal_evspreview_2022} identifican la robustez como el vacío más citado del área, y \citet{ricard_chanceconstrained_2026} ya lo abordan con restricciones probabilísticas.
+\item[Pregunta] ¿La mención de «simulación» implica que se espera tratar variabilidad de tiempos de viaje y consumo, o basta un modelo determinista con análisis de sensibilidad?
+\item[Supuesto] Determinista, con sensibilidad ex-post sobre consumo ($\pm$15\,\%) y tiempos de \textit{deadhead} ($\pm$10\,\%); sin restricciones probabilísticas en la formulación.
+\item[Impacto] Es la diferencia entre un modelo tratable y uno con programación estocástica o robusta.
+\end{campos}
+
+\entrada{Q11}{¿Qué solver podemos usar?}{\media}
+\begin{campos}
+\item[En simple] Los solvers comerciales resuelven problemas bastante más grandes que los libres. Saber cuál podemos usar cambia qué tamaño de instancia es realista prometer.
+\item[Evidencia] El enunciado exige «generar planes operacionales factibles» pero no menciona herramientas de software. La diferencia importa: \citet{wu_waitingtimebranchprice_2025} resuelven a optimalidad hasta 101 viajes con \textit{branch-and-price} sobre solver comercial, muy por debajo de la escala de este caso.
+\item[Pregunta] ¿Hay licencia académica de Gurobi o CPLEX disponible para el curso, o debemos restringirnos a solvers de código abierto como HiGHS o CBC?
+\item[Supuesto] Asumimos licencia académica de Gurobi disponible; si no la hay, se ajusta el tamaño de las instancias exactas hacia abajo y se documenta el cambio.
+\item[Impacto] Condiciona directamente qué instancia se puede resolver de forma exacta.
+\end{campos}
+
+\section*{5\quad Validación del enfoque}
+\addcontentsline{toc}{section}{Validación del enfoque}
+
+\entrada{Q12}{¿Ven riesgos en la ruta exacto $\rightarrow$ heurística?}{\alta}
+\begin{campos}
+\item[En simple] Esta no pide información, pide visto bueno. El método exacto hoy resuelve como cien viajes y acá hay miles. El plan es hacer el exacto en un pedazo chico para verificar que el modelo está bien planteado, y después una heurística rápida para el problema completo, usando el pedazo chico para medir cuánto se pierde.
+\item[Evidencia] \citet{wu_waitingtimebranchprice_2025} alcanzan 101 viajes a optimalidad, superando el mejor exacto previo de 91. \citet{wen_alnsevsp_2016} muestran que una metaheurística (ALNS) escala a instancias grandes resignando la garantía de optimalidad. El enunciado admite explícitamente enfoques híbridos y de descomposición.
+\item[Pregunta] Planeamos un MILP sobre \textit{time-space network} en instancia reducida, y luego ALNS extendida con capacidad de carga para la instancia completa. ¿Ven riesgos, o preferirían que concentráramos el esfuerzo en una sola de las dos etapas?
+\item[Supuesto] Seguimos con las dos etapas, reportando el \textit{gap} de la heurística contra el óptimo de la instancia reducida como evidencia de calidad.
+\item[Impacto] Implica mantener dos implementaciones en vez de una.
+\end{campos}
+
+\entrada{Q13}{¿Es aceptable construir el modelo por capas?}{\media}
+\begin{campos}
+\item[En simple] Preferimos partir con un modelo que solo verifique que a los buses les alcanza la batería, sin la pelea por los cargadores, y recién después agregar esa competencia. Es una pregunta de orden de trabajo más que de modelamiento.
+\item[Evidencia] La literatura que escala a instancias grandes (\citet{wen_alnsevsp_2016}; \citet{adler_altfuelvsp_2017}) no modela capacidad de carga simultánea; solo \citet{devos_capacitatedcharging_2024} lo hace de forma exacta, y a costa de instancias pequeñas. Es decir, la brecha que este proyecto debe cerrar es exactamente el paso entre ambas etapas.
+\item[Pregunta] ¿Es aceptable presentar como resultado mínimo viable el modelo sin capacidad de carga, y la versión con capacidad como extensión, si el tiempo no alcanza para ambas?
+\item[Supuesto] Desarrollo incremental: primero E-VSP con energía, después capacidad de cargadores, y potencia agregada al final si el tiempo lo permite.
+\item[Impacto] Define qué versión del modelo se presenta como resultado principal.
+\end{campos}
+
+\section*{6\quad Preguntas descartadas tras la verificación}
+\addcontentsline{toc}{section}{Preguntas descartadas tras la verificación}
+
+\begin{nota}
+Estas cuatro candidatas se eliminaron porque el enunciado sí las responde. Se listan con la cita textual que las resuelve, para dejar registro de que fueron revisadas y no simplemente omitidas. Lo que estaba en juego en cada una pasa a ser un supuesto declarado en §7.
+\end{nota}
+
+\begin{longtable}{@{}L{3.8cm}L{7.2cm}L{3.7cm}@{}}
+\rowcolor{headrow}
+\thead{Candidata} & \thead{Dónde queda respondida} & \thead{Qué hacemos} \\
+\endfirsthead
+\rowcolor{headrow}
+\thead{Candidata} & \thead{Dónde queda respondida} & \thead{Qué hacemos} \\
+\endhead
+\midrule
+¿La flota de 1.200 es fija o es una cota superior? &
+Enunciado: «Las decisiones de programación influyen directamente en \textit{la cantidad de buses necesarios} para cubrir la demanda diaria». El número de buses usados es un resultado del modelo, no un dato. &
+Se adopta como cota superior; minimizar buses activos entra en la función objetivo (Q7). \\
+\addlinespace
+\rowcolor{softrow}
+¿Usamos \textit{time-space network} o \textit{connection-based}? &
+Enunciado: «Los equipos podrán proponer distintas metodologías de solución \ldots\ siempre que sean capaces de generar planes factibles y \textit{justificar adecuadamente las decisiones de modelamiento adoptadas}». La elección es nuestra y debe justificarse. &
+Elegimos \textit{time-space network} agregado \citep{kliewer_timespacemdvsp_2006} y lo justificamos en el informe. \\
+\addlinespace
+¿Las ubicaciones de los electroterminales son dato o decisión? &
+Enunciado: la localización «juega un papel fundamental» como condición del problema, y el objetivo declarado es «planificar la operación diaria», no diseñar infraestructura. &
+Ubicaciones fijas según \texttt{depots.csv}; la localización queda fuera de alcance. \\
+\addlinespace
+\rowcolor{softrow}
+¿Se pueden modificar los horarios del GTFS? &
+Enunciado: el bus debe «comenzar el siguiente viaje \textit{respetando los horarios programados}», y cada viaje programado «debe ser atendido». El horario es dato de entrada. &
+Horarios intocables. De la candidata original solo sobrevive qué día se planifica (Q3). \\
+\bottomrule
+\end{longtable}
+
+\section*{7\quad Supuestos que adoptaremos si no hay respuesta}
+\addcontentsline{toc}{section}{Supuestos que adoptaremos si no hay respuesta}
+
+\begin{nota}
+Lista para llevar a la reunión de avance: si no alcanzan a responder, el equipo avanza con esto y lo declara en el informe.
+\end{nota}
+
+\begin{longtable}{@{}L{1.4cm}L{13.9cm}@{}}
+\rowcolor{headrow}
+\thead{Origen} & \thead{Supuesto adoptado} \\
+\endfirsthead
+\rowcolor{headrow}
+\thead{Origen} & \thead{Supuesto adoptado} \\
+\endhead
+\midrule
+Q1 & Construimos la tabla de viajes desde el GTFS; energía $=$ distancia $\times$ 1{,}4~kWh/km; \textit{deadhead} en línea recta con factor de circuidad. \\
+\rowcolor{softrow}
+Q2 & Proponemos capacidad de carga calibrada con el caso real de Santiago (2 buses por cargador, 6~MW por electroterminal) y reportamos sensibilidad. \\
+Q3 & Día laboral tipo (\texttt{service\_id = L}) sobre la red completa; todo recorte se declara. \\
+\rowcolor{softrow}
+Q4 & \texttt{01-datos} como universo cerrado; las fuentes reales solo para discutir realismo. \\
+Q5 & Consumo lineal y carga a potencia constante; 1{,}006~kWh/km como escenario de sensibilidad. \\
+\rowcolor{softrow}
+Q6 & El bus termina en cualquier electroterminal con cupo, respetando el SoC mínimo al cierre. \\
+Q7 & Función objetivo única aditiva, con análisis posterior del intercambio entre componentes. \\
+\rowcolor{softrow}
+Q8 & Intercambio de baterías y turnos de conductores, fuera de alcance. \\
+Q9 & Baseline \textit{greedy} propio más \textit{gap} contra la relajación lineal en instancias reducidas. \\
+\rowcolor{softrow}
+Q10 & Modelo determinista con sensibilidad ex-post; sin restricciones probabilísticas. \\
+Q11 & Se asume Gurobi académico; si no está, se reduce el tamaño de las instancias exactas. \\
+\rowcolor{softrow}
+Q12 & Dos etapas: exacto en instancia reducida, luego ALNS extendida para la instancia completa. \\
+Q13 & Desarrollo incremental: energía primero, capacidad de carga después. \\
+\midrule
+\rowcolor{softrow}
+--- & \textit{Descartadas:} flota de 1.200 como cota superior; \textit{time-space network} agregado; electroterminales en ubicación fija; horarios del GTFS intocables. \\
+\bottomrule
+\end{longtable}
+
+\clearpage
+\renewcommand{\refname}{Referencias citadas}
+\bibliography{referencias}
+
+\end{document}

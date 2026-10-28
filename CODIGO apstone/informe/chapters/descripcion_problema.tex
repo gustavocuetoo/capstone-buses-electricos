@@ -1,0 +1,371 @@
+% Sección para incluir desde Thesis.tex mediante:
+% \input{./chapters/descripcion_problema.tex}
+
+\section{Contexto y motivación del problema}
+
+La Red Metropolitana de Movilidad de Santiago opera diariamente una red de gran
+escala compuesta por numerosos recorridos, paradas, terminales y
+electroterminales. La incorporación de buses eléctricos permite reducir las
+emisiones locales y avanzar hacia una operación más sostenible, pero también
+introduce restricciones que no están presentes con la misma intensidad en una
+flota convencional. Cada vehículo dispone de una batería de capacidad limitada,
+consume energía durante sus desplazamientos y debe acceder oportunamente a
+infraestructura de carga para mantener la continuidad del servicio.
+
+La planificación no puede separar las decisiones de transporte de las decisiones
+energéticas. Cada corrida programada debe ser atendida por un bus disponible; el
+vehículo debe finalizar su actividad anterior, encontrarse o desplazarse hasta
+el punto de inicio de la siguiente y disponer de energía suficiente para
+completarla. Si necesita recargar, la visita debe insertarse en un intervalo
+temporal compatible con la programación y realizarse en un electroterminal
+habilitado. A su vez, los desplazamientos sin pasajeros generan tiempo, consumo
+de energía y costos que pueden cambiar la conveniencia de una asignación.
+
+La dificultad central consiste en construir cadenas operacionales factibles para
+los buses a partir de miles de corridas distribuidas durante el día. Una
+solución conveniente al considerar solamente la simultaneidad puede dejar de
+ser factible cuando se incorporan la ubicación de los extremos de cada
+recorrido, los desplazamientos sin pasajeros, el estado de carga y la
+disponibilidad de infraestructura. Del mismo modo, agregar buses reduce la carga
+de trabajo promedio por vehículo y puede facilitar la operación, pero aumenta el
+costo fijo de flota. El problema requiere evaluar conjuntamente estas
+relaciones.
+
+\section{Enunciado, alcance y objetivo}
+
+El problema consiste en determinar un plan diario para la operación de buses
+eléctricos que cubra todas las corridas requeridas por la red. El plan debe
+decidir cuántos buses utilizar, qué corridas asignar a cada uno, en qué orden
+ejecutarlas y cuándo y dónde realizar recargas. Cada corrida debe ser atendida
+exactamente una vez y ningún bus puede ejecutar actividades incompatibles en el
+tiempo. Además, la secuencia de actividades de cada vehículo debe respetar la
+continuidad espacial y mantener su estado de carga dentro de los límites
+permitidos.
+
+La cantidad de buses no se fija de manera exógena. Aunque el archivo de
+parámetros contiene una referencia de 1.200 buses, este valor no se utiliza como
+límite para el dimensionamiento, de acuerdo con la definición posterior de
+trabajar con flota irrestricta. En consecuencia, el tamaño de flota pasa a ser
+una decisión del problema.
+
+El objetivo general del proyecto es encontrar un plan operacional factible al
+menor costo diario posible. Sin embargo, el grupo todavía no ha acordado la
+forma matemática definitiva de representar este objetivo ni la manera de
+ponderar sus componentes. Entre los costos potencialmente relevantes se
+encuentran el uso de buses, los kilómetros recorridos, la energía, las
+actividades de carga, los desplazamientos sin pasajeros y los tiempos de espera.
+Por esta razón, en esta etapa se declara la minimización de costos como propósito
+del proyecto, pero no se propone aún una función objetivo específica.
+
+Las frecuencias entregadas representan el comportamiento ideal esperado de la
+red. A partir de ellas se construye una demanda operacional de corridas que el
+modelo intentará reproducir al menor costo posible. En consecuencia, el modelo
+no podrá reducir costos eliminando salidas o disminuyendo unilateralmente la
+frecuencia: el cumplimiento de ese comportamiento ideal será una exigencia de
+factibilidad. Se utilizará una misma estructura de modelo, parametrizada para
+resolver por separado los patrones laborales, de sábado y de domingo o festivo.
+De esta forma, cada tipo de día conservará sus propias corridas, frecuencias y
+condiciones de operación, pero los resultados podrán compararse bajo criterios
+comunes.
+
+Para esta etapa se supone que todos los buses comienzan con un estado de carga
+inicial de 100\%, pueden efectuar recargas parciales y pueden iniciar, recargar
+y finalizar su operación en cualquiera de los cinco electroterminales. Estos
+supuestos dan flexibilidad al modelo y deberán evaluarse mediante análisis de
+sensibilidad, ya que omiten acuerdos operacionales que en la realidad pueden
+asociar determinados buses o servicios con terminales específicos.
+
+El entregable esperado es una herramienta computacional reproducible que genere
+una asignación factible de corridas y recargas por bus, determine la flota
+utilizada y reporte el costo total y sus componentes. La solución también debe
+permitir comparar escenarios de demanda, autonomía, precios eléctricos y
+capacidad de infraestructura.
+
+\section{Información disponible y filtros aplicados}
+
+La información principal proviene de un conjunto GTFS y de archivos
+complementarios sobre vehículos, electroterminales, precios y parámetros. La
+Tabla~\ref{tab:fuentes_datos} resume la función de cada fuente dentro del
+problema.
+
+\begin{table}[H]
+\centering
+\caption{Fuentes de datos utilizadas en la descripción del problema}
+\label{tab:fuentes_datos}
+\small
+\begin{tabular}{p{0.29\textwidth}p{0.63\textwidth}}
+\toprule
+\textbf{Fuente} & \textbf{Información utilizada} \\
+\midrule
+\texttt{routes.txt} y \texttt{trips.txt} & Agencia, tipo de transporte,
+recorrido, patrón, geometría asociada y tipo de día. \\
+\texttt{frequencies.txt} & Inicio y término de las ventanas de frecuencia,
+intervalo entre salidas y condición \texttt{exact\_times}. \\
+\texttt{stop\_times.txt} & Secuencia de paradas y tiempos nominales acumulados
+de cada patrón. \\
+\texttt{stops.txt}, \texttt{shapes.txt} y
+\texttt{shape\_distances.csv} & Localización de paradas, trazado y distancia de
+los recorridos. \\
+\texttt{vehicles.csv} y \texttt{parameters.csv} & Batería, autonomía,
+potencia de carga, límites de SOC y costos unitarios. \\
+\texttt{depots.csv} & Identificación, ubicación y capacidad física de los
+electroterminales. \\
+\texttt{electricity\_prices.csv} & Periodos horarios y precio de la electricidad. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El conjunto contiene 427 registros en \texttt{routes.txt}. Para aislar el
+problema de buses RED se seleccionaron los registros con
+\texttt{agency\_id=RM} y \texttt{route\_type=3}, obteniéndose 417 recorridos.
+Este filtro excluye los servicios que no corresponden a buses de la agencia RM,
+entre ellos los patrones ferroviarios o de Metro presentes en el GTFS.
+
+Luego se cruzaron los recorridos seleccionados con \texttt{trips.txt} mediante
+\texttt{route\_id}. Se conservaron los servicios \texttt{L}, \texttt{S} y
+\texttt{D}, interpretados respectivamente como laboral, sábado y domingo o
+festivo. El filtro redujo los 26.137 registros originales de
+\texttt{trips.txt} a 14.464 patrones de buses: 6.620 laborales, 4.215 de sábado
+y 3.629 de domingo o festivo. Cada uno de estos patrones dispone de una fila
+correspondiente en \texttt{frequencies.txt}.
+
+Las 14.464 filas seleccionadas en \texttt{frequencies.txt} presentan
+\texttt{exact\_times=0}. En consecuencia, el archivo describe un servicio
+basado en frecuencias y no una lista de salidas exactas observadas. Para obtener
+una instancia operacional determinística se reconstruyeron salidas en
+\texttt{start\_time}+n\,\texttt{headway\_secs}, mientras la hora resultante
+fuera estrictamente menor que \texttt{end\_time}. Esta convención permite
+cuantificar la escala y analizar simultaneidad, pero los horarios obtenidos deben
+interpretarse como representativos de la frecuencia declarada.
+
+Para calcular la duración de cada patrón se identificaron su primera y última
+parada en \texttt{stop\_times.txt} y se utilizo
+
+\begin{equation}
+ T_i = arrival_{i,\mathrm{última}}-departure_{i,\mathrm{primera}}.
+ \label{eq:duracion_patron}
+\end{equation}
+
+El subconjunto de buses contiene 849.671 registros de paradas. En todos ellos
+\texttt{arrival\_time} coincide con \texttt{departure\_time}; por consiguiente,
+la base no entrega un tiempo de detención explícito. Esto no hace nula la
+duración del recorrido, pues los tiempos acumulados aumentan entre paradas, pero
+impide separar tiempo de movimiento y permanencia. Las duraciones empleadas son
+nominales y no observaciones de tráfico real.
+
+La distancia se obtuvo desde \texttt{shape\_distances.csv} a través de
+\texttt{shape\_id}. Los 14.464 patrones utilizan 839 geometrías distintas y
+todas cuentan con una distancia calculada. Finalmente, se estimó el consumo
+energético multiplicando la distancia por 1,4 kWh/km. Este factor se deriva de
+una batería nominal de 350 kWh y una autonomía declarada de 250 km. Con un SOC
+mínimo de 10\%, la energía utilizable por ciclo es 315 kWh y la autonomía
+utilizable estimada es 225 km.
+
+\section{Resultados del análisis preliminar}
+
+La expansión de las frecuencias produjo 64.502 corridas laborales, 43.619 de
+sábado y 37.377 de domingo o festivo. La Tabla~\ref{tab:escala_demanda} presenta
+los principales resultados agregados.
+
+\begin{table}[H]
+\centering
+\caption{Escala diaria reconstruida por tipo de día}
+\label{tab:escala_demanda}
+\small
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Día} & \textbf{Patrones} & \textbf{Corridas} &
+\textbf{Km de servicio} & \textbf{Energía MWh} &
+\textbf{$F^{\mathrm{LB}}$} & \textbf{Hora peak} \\
+\midrule
+Laboral & 6.620 & 64.502 & 1.345.412,69 & 1.883,58 & 6.601 & 08:00 \\
+Sábado & 4.215 & 43.619 & 924.133,56 & 1.293,79 & 3.860 & 15:00 \\
+Domingo/festivo & 3.629 & 37.377 & 794.791,91 & 1.112,71 & 2.900 & 18:00 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Características promedio de las corridas reconstruidas}
+\label{tab:promedios_corridas}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Día} & \textbf{Km/corrida} & \textbf{Min/corrida} &
+\textbf{kWh/corrida} & \textbf{Corridas/$F^{\mathrm{LB}}$} \\
+\midrule
+Laboral & 20,86 & 78,57 & 29,20 & 9,77 \\
+Sábado & 21,19 & 72,79 & 29,66 & 11,30 \\
+Domingo/festivo & 21,26 & 66,73 & 29,77 & 12,89 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Para obtener una referencia mínima de flota, cada corrida reconstruida se
+representó mediante el intervalo comprendido entre su salida y su término
+nominal. Se reunieron los eventos de inicio y término de toda la red y se
+ordenaron cronológicamente. El contador aumenta en uno al comenzar una corrida y
+disminuye en uno al finalizarla. Si dos eventos coinciden, se procesa primero el
+término, lo que equivale a representar las corridas mediante intervalos
+semiabiertos y permitir una reutilización inmediata del bus.
+
+Los máximos del contador fueron 6.601 corridas simultáneas en un día laboral,
+3.860 el sábado y 2.900 el domingo o festivo, alcanzados por primera vez a las
+08:00, 15:00 y 18:00, respectivamente. Como un bus no puede ejecutar dos
+corridas simultáneamente, cualquier solución de cada instancia reconstruida
+debe satisfacer
+
+\begin{equation}
+ F_L \geq 6\,601, \qquad
+ F_S \geq 3\,860, \qquad
+ F_D \geq 2\,900.
+ \label{eq:cotas_flota_tipo_dia}
+\end{equation}
+
+Estas cifras son cotas inferiores condicionadas a la reconstrucción
+determinística de las frecuencias. No constituyen todavía flotas factibles, pues
+el conteo no asigna corridas a
+buses individuales ni considera desplazamientos sin pasajeros, recargas,
+compatibilidad geográfica o tiempos de regulación. La sensibilidad a un margen
+uniforme ilustra esta limitación: al extender la ocupación de cada corrida en 15
+minutos, las cotas aumentan a 7.470 buses en un día laboral, 4.460 el sábado y
+3.431 el domingo o festivo, incrementos de 13,2\%, 15,5\% y 18,3\%,
+respectivamente. Este escenario no predice atrasos, pero muestra que el resultado
+depende de los tiempos de preparación y recuperación incorporados.
+
+En comparación con el día laboral, el sábado tiene 32,4\% menos corridas, 31,3\%
+menos kilómetros de servicio y una cota de flota 41,5\% menor. El domingo o
+festivo tiene 42,1\% menos corridas, 40,9\% menos kilómetros y una cota de flota
+56,1\% menor. La distancia y energía promedio por corrida varían menos de 2\%
+entre tipos de día; por ello, la diferencia de flota se explica principalmente
+por la distribución temporal y la menor duración promedio de las corridas, y no
+por recorridos sustancialmente más cortos.
+
+Desde la perspectiva energética agregada, la flota de la cota laboral dispone al
+inicio de $6\,601\times315=2\,079\,315$ kWh utilizables, cifra superior a los
+1.883.577,77 kWh requeridos por los kilómetros de servicio. Esto implica una
+cota agregada de cero recargas intradía para el escenario laboral, pero no
+demuestra que una asignación sin recargas sea factible: la energía se encuentra
+distribuida entre buses y algunas cadenas pueden superar la autonomía individual.
+Aplicando el mismo cálculo agregado, el sábado presenta un déficit de 77.886,98
+kWh y el domingo o festivo uno de 199.208,67 kWh. Si una actividad pudiera
+reponer como máximo los 315 kWh utilizables, estos déficits implicarían al menos
+248 y 633 cargas equivalentes, respectivamente. Las recargas parciales permitirán
+distribuir la energía requerida, aunque potencialmente aumentarán la cantidad de
+actividades de carga.
+
+Los resultados también permiten interpretar el intercambio entre flota y
+utilización. Al dividir las corridas por su respectiva cota de flota se obtienen
+9,77 corridas por bus en un día laboral, 11,30 el sábado y 12,89 el domingo o
+festivo. La menor simultaneidad de los fines de semana permitiría, en principio,
+reutilizar con mayor intensidad cada bus. Agregar un vehículo reduce solo
+marginalmente estos promedios y añade un costo fijo de 250 USD; sin embargo, su
+efecto relevante dependerá de si permite evitar desplazamientos vacíos, recargas
+costosas o esperas por un valor superior a dicho costo. Esta comparación solo
+podrá resolverse al construir cadenas individuales y completar la información
+espacial faltante.
+
+\section{Infraestructura y parámetros económicos}
+
+La base identifica cinco electroterminales: Vespucio Norte, El Conquistador, Los
+Espinos, La Reina y Santa Rosa. Las capacidades registradas suman 700 buses. El
+campo disponible se denomina \texttt{capacity} y describe capacidad física de
+albergue; \texttt{depots.csv} no contiene el número de cargadores ni la potencia
+del transformador. En consecuencia, los datos actuales no permiten afirmar que
+puedan realizarse 700 cargas simultáneas ni imponer completamente la restricción
+eléctrica de cada instalación.
+
+La comparación entre los datos revela además una inconsistencia de escala que
+debe hacerse explícita. La referencia de 1.200 buses en
+\texttt{parameters.csv} y la capacidad agregada de 700 buses en
+\texttt{depots.csv} son inferiores a las tres cotas obtenidas al reconstruir
+simultáneamente la operación de la agencia RM: 6.601, 3.860 y 2.900 buses. Esto
+indica que estos parámetros no pueden imponerse como capacidades duras sobre la
+red completa sin una aclaración adicional sobre su alcance. En esta etapa se
+descarta el límite de 1.200 buses conforme al supuesto de flota irrestricta, y
+la capacidad de los terminales se conserva como información descriptiva, no
+como equivalente a capacidad de carga simultánea.
+
+El vehículo de referencia es un BYD K9 con batería de 350 kWh, autonomía de 250
+km, potencia máxima de carga de 180 kW y SOC permitido entre 10\% y 100\%. Los
+precios eléctricos varían entre 0,10 y 0,22 USD/kWh en seis períodos del día. Los
+demás parámetros económicos corresponden a 0,5 USD/km, 0,03 USD por minuto de
+espera, 250 USD por bus utilizado y 5 USD por actividad de carga. Estos valores
+permiten estimar y comparar costos mientras se define la formulación definitiva
+del criterio de optimización. Deben interpretarse como parámetros del caso de
+estudio y no necesariamente como costos contractuales observados.
+
+\section{Calidad, limitaciones y necesidades de información}
+
+El análisis permite cuantificar la escala del problema y construir referencias
+iniciales, pero aún existen limitaciones que condicionan el modelo final:
+
+\begin{itemize}
+ \item Las frecuencias tienen \texttt{exact\_times=0}; las salidas reconstruidas
+ son una convención determinística y no horarios exactos observados.
+ \item Las duraciones son nominales. No se dispone de realizaciones históricas
+ que permitan estimar variabilidad por tráfico, incidentes o comportamiento
+ operacional.
+ \item Los tiempos de llegada y salida coinciden en todas las paradas de buses,
+ por lo que no se representa explícitamente la detención para subida y bajada de
+ pasajeros.
+ \item No existe una matriz completa de distancia y tiempo sin pasajeros entre
+ el final de una corrida y el comienzo de otra, ni entre corridas y
+ electroterminales. Sin ella no es posible verificar completamente la
+ continuidad espacial.
+ \item Los buses no se encuentran individualizados y no se observan sus SOC
+ iniciales. El supuesto de inicio al 100\% reemplaza temporalmente esta
+ información.
+ \item El consumo de 1,4 kWh/km es constante y no incorpora pendiente, velocidad,
+ climatización, carga de pasajeros, congestión ni degradación de batería.
+ \item La capacidad de albergue de los electroterminales está disponible, pero
+ faltan el número de cargadores y la potencia eléctrica máxima de cada terminal.
+ \item Permitir que cualquier bus inicie, recargue y termine en cualquier
+ electroterminal omite posibles restricciones de propiedad, contrato o
+ asignación operacional.
+\end{itemize}
+
+Estas limitaciones no impiden formular una primera versión del problema, pero
+obligan a distinguir entre factibilidad dentro del modelo y factibilidad real.
+Las variables faltantes deben estimarse, obtenerse de una fuente adicional o
+tratarse mediante escenarios y análisis de sensibilidad.
+
+\section{Indicadores de desempeño}
+
+La presentación del proyecto define cuatro indicadores preliminares para medir
+una solución. Estos cubren las dimensiones de flota, energía, costo y eficiencia
+operacional, como se resume en la Tabla~\ref{tab:kpis_proyecto}.
+
+\begin{table}[H]
+\centering
+\caption{Indicadores de desempeño definidos para evaluar una solución}
+\label{tab:kpis_proyecto}
+\small
+\begin{tabular}{p{0.16\textwidth}p{0.38\textwidth}p{0.22\textwidth}p{0.12\textwidth}}
+\toprule
+\textbf{Dimensión} & \textbf{Indicador} & \textbf{Valor de referencia} &
+\textbf{Importancia} \\
+\midrule
+Flota & Buses utilizados & 6.601 (L); 3.860 (S); 2.900 (D) & 3/5 \\
+Energía & Porcentaje de ocupación de terminales & 90\% (630 buses) & 2/5 \\
+Costo & Costo total diario & 2.545.946 USD & 4/5 \\
+Eficiencia & Porcentaje del tiempo del bus fuera de servicio & Menor a 20\% & 2/5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los valores indicados son referencias preliminares y no resultados óptimos. Las
+cifras de flota corresponden a las cotas de simultaneidad de las instancias
+laboral, sábado y domingo o festivo reconstruidas. La ocupación de 90\% equivale
+a 630 de los 700 espacios
+físicos nominales registrados en los electroterminales y no debe interpretarse
+como capacidad de carga simultánea. El costo total diario de referencia fue
+calculado para el escenario laboral y se utilizará para comparar alternativas
+cuando se acuerde su composición definitiva. Finalmente,
+el indicador de eficiencia busca que el tiempo asociado a espera, recarga y
+desplazamientos sin pasajeros represente menos de 20\% del tiempo total de
+disponibilidad del bus. De manera complementaria, toda solución deberá mantener
+una cobertura de 100\% de las corridas del comportamiento ideal reconstruido.
