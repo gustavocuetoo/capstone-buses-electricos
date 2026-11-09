@@ -1,10 +1,13 @@
-"""Un único MILP para recargas y terminales de hasta tres secuencias fijas."""
+"""Un único MILP para recargas y terminales de hasta ocho secuencias fijas."""
 import time
 from collections import defaultdict
 import numpy as np
 import gurobipy as gp
 from metodo_hibrido.recarga import opciones
 from metodo_hibrido.calendario import actividad, esperar, agregar_viaje
+
+# Pares y tríos usan 2 y 3; el estudio de 09-entrega3/octetos llega a grupos de 8.
+MAX_SECUENCIAS = 8
 
 def acoplar(model, intervals, calendar, charging=False, max_buses=2):
     """Intervalos semiabiertos; restricciones exactas contra la ocupación ajena."""
@@ -32,8 +35,8 @@ def acoplar(model, intervals, calendar, charging=False, max_buses=2):
     return constraints
 
 def resolver_conjunto(sequences,chain,d,starts,calendar,tariffs,limit=2.,deadline=None):
-    if not 1<=len(sequences)<=3 or any(not ts for ts in sequences):
-        raise ValueError('Se requieren entre una y tres secuencias no vacías')
+    if not 1<=len(sequences)<=MAX_SECUENCIAS or any(not ts for ts in sequences):
+        raise ValueError(f'Se requieren entre una y {MAX_SECUENCIAS} secuencias no vacías')
     if len({t['sector_id'] for ts in sequences for t in ts})!=1:
         raise ValueError('El grupo debe pertenecer al mismo sector')
     model=gp.Model('recargas_conjuntas');model.Params.OutputFlag=0
@@ -68,7 +71,7 @@ def resolver_conjunto(sequences,chain,d,starts,calendar,tariffs,limit=2.,deadlin
                 origin='S:'+prev['fin_stop_id'];target='S:'+trip['inicio_stop_id']
                 km,dt=d[origin,target]
                 if prev['fin_s']+dt>trip['inicio_s']:return None,dict(estado='enlace_temporal')
-                opts=opciones(origin,target,prev['fin_s'],trip['inicio_s'],d,calendar,tariffs,interior=len(sequences)==3)
+                opts=opciones(origin,target,prev['fin_s'],trip['inicio_s'],d,calendar,tariffs,interior=len(sequences)>=3)
                 y=model.addVars(len(opts),vtype='B',name=f'visita_{b}_{j}')
                 q=model.addVars(len(opts),lb=0,name=f'carga_{b}_{j}')
                 model.addConstr(y.sum()<=1)
@@ -95,29 +98,35 @@ def resolver_conjunto(sequences,chain,d,starts,calendar,tariffs,limit=2.,deadlin
         result=[]
         for trips,initials,finals,x,z,choices in solutions:
             begin=next(t for t in initials if x[t].X>.5);final=next(t for t in finals if z[t].X>.5)
-            acts=[];now=calendar.t0;loc=begin
-            for j,trip in enumerate(trips):
-                target='S:'+trip['inicio_stop_id'];selected=None
-                if j:
-                    opts,y,q=choices[j]
-                    selected=next(((c,q[k].X) for k,c in enumerate(opts) if y[k].X>.5),None)
-                if selected:
-                    c,amount=selected
-                    esperar(acts,loc,now,c['start']-c['dt1'])
-                    agregar_viaje(acts,loc,c['e'],c['start']-c['dt1'],d)
-                    blocks=(c['end']-c['start'])//300
-                    for s in range(c['start'],c['end'],300):
-                        acts.append(actividad('carga',c['e'],c['e'],s,s+300,q=max(0.,amount)/blocks))
-                    now=agregar_viaje(acts,c['e'],target,c['end'],d)
-                else:
-                    departure=trip['inicio_s']-d[loc,target][1]
-                    esperar(acts,loc,now,departure)
-                    now=agregar_viaje(acts,loc,target,departure,d)
-                esperar(acts,target,now,trip['inicio_s'])
-                loc='S:'+trip['fin_stop_id'];now=trip['fin_s']
-                acts.append(actividad('servicio',target,loc,trip['inicio_s'],now,trip['distancia_servicio_km'],trip=trip['corrida_id']))
-            now=agregar_viaje(acts,loc,final,now,d);esperar(acts,final,now,calendar.horizon)
-            result.append(dict(bus_id='',cadena_fase2=chain,sector_id=trips[0]['sector_id'],terminal_inicial=begin,
-                               terminal_final=final,corridas=[t['corrida_id'] for t in trips],actividades=acts))
+            charges={}
+            for j,(opts,y,q) in choices.items():
+                selected=next(((c,q[k].X) for k,c in enumerate(opts) if y[k].X>.5),None)
+                if selected:charges[j]=selected
+            result.append(armar_plan(trips,begin,final,charges,chain,calendar,d))
         return result,info
     finally:model.dispose()
+
+
+def armar_plan(trips,begin,final,charges,chain,calendar,d):
+    """Actividades de una jornada fija; charges[j]=(opción, kWh) es la recarga antes del servicio j."""
+    acts=[];now=calendar.t0;loc=begin
+    for j,trip in enumerate(trips):
+        target='S:'+trip['inicio_stop_id'];selected=charges.get(j) if j else None
+        if selected:
+            c,amount=selected
+            esperar(acts,loc,now,c['start']-c['dt1'])
+            agregar_viaje(acts,loc,c['e'],c['start']-c['dt1'],d)
+            blocks=(c['end']-c['start'])//300
+            for s in range(c['start'],c['end'],300):
+                acts.append(actividad('carga',c['e'],c['e'],s,s+300,q=max(0.,amount)/blocks))
+            now=agregar_viaje(acts,c['e'],target,c['end'],d)
+        else:
+            departure=trip['inicio_s']-d[loc,target][1]
+            esperar(acts,loc,now,departure)
+            now=agregar_viaje(acts,loc,target,departure,d)
+        esperar(acts,target,now,trip['inicio_s'])
+        loc='S:'+trip['fin_stop_id'];now=trip['fin_s']
+        acts.append(actividad('servicio',target,loc,trip['inicio_s'],now,trip['distancia_servicio_km'],trip=trip['corrida_id']))
+    now=agregar_viaje(acts,loc,final,now,d);esperar(acts,final,now,calendar.horizon)
+    return dict(bus_id='',cadena_fase2=chain,sector_id=trips[0]['sector_id'],terminal_inicial=begin,
+                terminal_final=final,corridas=[t['corrida_id'] for t in trips],actividades=acts)
