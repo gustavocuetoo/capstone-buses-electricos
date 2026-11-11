@@ -33,6 +33,18 @@ class Corridas(unittest.TestCase):
             self.assertEqual([f['metodo'] for f in nuevas], ['pares'])
             self.assertEqual(len(read_csv(salida)), 2)
 
+    def test_planes_guarda_una_carpeta_auditada_por_corrida_y_reescribe_una_incompleta(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            planes = Path(tmp) / 'planes'
+            # Una carpeta que quedó de una corrida interrumpida (sin fila en la tabla) se reemplaza.
+            (planes / f'{CASO.name}_pares_5s').mkdir(parents=True)
+            salida = Path(tmp) / 'tabla.csv'
+            correr([CASO], ['solo_base', 'pares'], [5], salida=salida, planes=planes)
+            self.assertTrue(all(f['error'] == '' for f in read_csv(salida)))
+            for nombre in (f'{CASO.name}_solo_base_0s', f'{CASO.name}_pares_5s'):
+                for archivo in ('planes.json', 'resumen.json', 'jornadas.csv'):
+                    self.assertTrue((planes / nombre / archivo).exists(), f'{nombre}/{archivo}')
+
 
 if __name__ == '__main__':
     unittest.main()

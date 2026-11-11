@@ -11,6 +11,7 @@ Uso, desde la raíz del proyecto, con la licencia de Gurobi cargada:
 import argparse
 import csv
 import json
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -19,7 +20,7 @@ RAIZ = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(RAIZ))
 from metodo_hibrido.caso_base import load_instance, read_csv, solve  # noqa: E402
 from metodo_hibrido.creciente import buscar_creciente  # noqa: E402
-from metodo_hibrido.ejecutar import etapa  # noqa: E402
+from metodo_hibrido.ejecutar import etapa, export  # noqa: E402
 from metodo_hibrido.exacto import resolver_exacto  # noqa: E402
 from metodo_hibrido.grupos import buscar_grupos  # noqa: E402
 from metodo_hibrido.intercambios import buscar  # noqa: E402
@@ -60,7 +61,24 @@ def _heuristica(trips, params, base, metodo, seleccion, semilla, presupuesto):
     return plans, dict(intentos=intentos, mejoras=mejoras, motivo_fin='|'.join(motivos))
 
 
-def correr_uno(trips, params, base, metodo, seleccion, semilla, presupuesto):
+def _carpeta_planes(planes, instancia, metodo, seleccion, semilla, presupuesto):
+    if planes is None:
+        return None
+    partes = [instancia, metodo] + ([seleccion] if seleccion else []) + ([f's{semilla}'] if seleccion == 'azar' else [])
+    return Path(planes) / f"{'_'.join(partes)}_{int(presupuesto)}s"
+
+
+def _auditar(plans, trips, params, carpeta):
+    """Audita el plan; si hay carpeta, además lo exporta (una carpeta sin fila en la tabla quedó incompleta)."""
+    if carpeta is None:
+        return verificar(plans, trips, *params)[0]
+    if carpeta.exists():
+        shutil.rmtree(carpeta)
+    carpeta.parent.mkdir(parents=True, exist_ok=True)
+    return export(carpeta, plans, trips, params)
+
+
+def correr_uno(trips, params, base, metodo, seleccion, semilla, presupuesto, carpeta=None):
     tick = time.perf_counter()
     extra = {}
     if metodo == 'solo_base':
@@ -72,7 +90,7 @@ def correr_uno(trips, params, base, metodo, seleccion, semilla, presupuesto):
             raise RuntimeError(f"Sin solución en el tiempo dado (estado {info['estado']})")
     else:
         plans, extra = _heuristica(trips, params, base, metodo, seleccion, semilla, presupuesto)
-    reporte = verificar(plans, trips, *params)[0]
+    reporte = _auditar(plans, trips, params, carpeta)
     return dict(buses=reporte['buses'], costo_total_usd=round(reporte['costo_total_usd'], 4), km=round(reporte['km'], 4),
                 carga_kwh=round(reporte['carga_kwh'], 4), sesiones=reporte['sesiones'],
                 tiempo_s=round(time.perf_counter() - tick, 2), **extra)
@@ -96,7 +114,7 @@ def _hechas(salida):
 
 
 def correr(instancias, metodos, presupuestos, selecciones=('parecidos', 'azar'), semillas=(1, 2, 3),
-           salida=None, continuar=False, presupuesto_exacta=None):
+           salida=None, continuar=False, presupuesto_exacta=None, planes=None):
     salida = Path(salida)
     if salida.exists() and not continuar:
         raise FileExistsError(f'{salida} ya existe; usa --continuar o elige otro nombre')
@@ -120,7 +138,8 @@ def correr(instancias, metodos, presupuestos, selecciones=('parecidos', 'azar'),
                     fila = dict(zip(('instancia', 'metodo', 'seleccion', 'semilla', 'presupuesto_s'), clave),
                                 corridas=len(trips))
                     try:
-                        fila.update(correr_uno(trips, params, base, metodo, seleccion, semilla, presupuesto))
+                        destino = _carpeta_planes(planes, *clave)
+                        fila.update(correr_uno(trips, params, base, metodo, seleccion, semilla, presupuesto, destino))
                     except Exception as error:  # se registra y se sigue: la tabla debe decir qué falló
                         fila['error'] = f'{type(error).__name__}: {error}'[:300]
                     writer.writerow({k: fila.get(k, '') for k in CAMPOS})
@@ -143,12 +162,13 @@ def main():
     parser.add_argument('--semillas', type=int, nargs='*', default=[1, 2, 3])
     parser.add_argument('--salida', type=Path, required=True)
     parser.add_argument('--continuar', action='store_true')
+    parser.add_argument('--planes', type=Path, help='Carpeta donde guardar los planes auditados de cada corrida')
     args = parser.parse_args()
     if min(args.presupuestos) <= 0:
         parser.error('Los presupuestos deben ser positivos')
     instancias = args.instancias or [CASOS / r['nombre'] for r in read_csv(CASOS / 'indice.csv')]
     correr(instancias, args.metodos, args.presupuestos, args.selecciones, args.semillas, args.salida,
-           args.continuar, args.presupuesto_exacta)
+           args.continuar, args.presupuesto_exacta, args.planes)
 
 
 if __name__ == '__main__':

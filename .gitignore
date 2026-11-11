@@ -45,3 +45,6 @@ caso_base_simple_gurobi/corrida_gurobi/
 *.synctex.gz
 *.toc
 *.vrb
+
+# Planes completos del estudio de tamaño de grupo (~74 MB cada uno): se comparten por separado
+09-entrega3/octetos/resultados/planes_*/

@@ -67,9 +67,10 @@ Comandos, desde la raíz del proyecto y con la licencia académica cargada:
 ```
 
 Si una corrida se corta, se repite el mismo comando con `--continuar`. **Ensayo del 9-nov con la licencia gratuita (J22, 20 s):** solo pares llega a 3 buses y USD 1.044,58; tríos o cuartetos solos, a 3 buses y USD 1.088,46; los quintetos y octetos no alcanzan a formar grupos.
-- [ ] **Antes de correr:** renovar la licencia académica. Prueba del 9-nov: con la gratuita, hasta los tríos fallan en un caso muy chico y todos los tamaños fallan en el caso chico de 84 corridas. La licencia restringida del entorno vence el 23-nov
+- [x] **Antes de correr:** renovar la licencia académica (hecho el 10-nov; todo corre con `octetos/correr_todo.sh`). Prueba del 9-nov: con la gratuita, hasta los tríos fallan en un caso muy chico y todos los tamaños fallan en el caso chico de 84 corridas. La licencia restringida del entorno vence el 23-nov
 - [ ] Casos muy chicos y chicos: todos los métodos, incluida la respuesta perfecta
-- [ ] Muestra de 212 rutas: todos los métodos con 5, 10 y 20 minutos, para ver quién gana cuando hay poco tiempo y cuando hay más
+- [ ] **Red completa (417 rutas):** el día laboral con todos los métodos (incluidos los tríos solos, agregados el 10-nov por lo de chico_02) y 10, 20 y 40 minutos decide el método (regla en `octetos/elegir_metodo.py`: gana el más barato con el mismo tiempo en la mayoría de los tiempos; el 11-nov se quitó el umbral del 1 %). Sábado y domingo se corren solo con el elegido. Se guardan los planes (`resultados/planes_417_{L,S,D}/`). Termina ~mié 11 en la noche
+- [ ] **Ojo (chico_02, 10-nov):** pares+tríos se queda en 30 buses y tríos solos llegan a 29 (−2,6 %): los pares dejan un óptimo local del que los tríos no salen. Revisar si pasa en la red completa
 - [ ] Pasar cada resultado por el revisor automático. Lo que no pasa no se usa
 - [ ] *Si alcanza, de noche:* la red completa con el mejor grupo grande, para compararla con la nuestra
 

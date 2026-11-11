@@ -1,0 +1,12 @@
+﻿nombre,tipo,sector,rutas,corridas
+muy_chico_01_ruta_264N,muy_chico,1,264N,24
+muy_chico_02_ruta_J22,muy_chico,2,J22,24
+muy_chico_03_ruta_I10N,muy_chico,3,I10N,25
+muy_chico_04_ruta_401c,muy_chico,4,401c,24
+muy_chico_05_ruta_203N,muy_chico,5,203N,26
+muy_chico_06_ruta_C33c,muy_chico,4,C33c,26
+chico_02_sector_2_2_rutas,chico,2,408e|414e,84
+chico_03_sector_3_3_rutas,chico,3,210e|217e|320c,116
+chico_04_sector_4_3_rutas,chico,4,405c|406c|420,152
+chico_05_sector_5_4_rutas,chico,5,115c|209c|225c|282,157
+chico_06_sector_4_4_rutas,chico,4,421c|514c|C09c|D07c,141
