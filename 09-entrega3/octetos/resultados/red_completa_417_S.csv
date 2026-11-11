@@ -1,0 +1,5 @@
+﻿instancia,corridas,metodo,seleccion,semilla,presupuesto_s,buses,costo_total_usd,km,carga_kwh,sesiones,tiempo_s,intentos,mejoras,motivo_fin,optimo,cota_usd,error
+instancia_417_S,43619,solo_base,,0,0.0,4842,1789988.6794,1071993.207,143444.9896,3341,2.63,,,,,,
+instancia_417_S,43619,cuartetos,azar,1,2400.0,4521,1704731.4117,1070528.2315,147579.3313,2780,2404.0,57394,1375,presupuesto,,,
+instancia_417_S,43619,cuartetos,azar,2,2400.0,4506,1701287.2744,1070869.1191,147716.3579,2805,2404.47,48964,1392,presupuesto,,,
+instancia_417_S,43619,cuartetos,azar,3,2400.0,4525,1706115.7493,1070510.2032,147774.6251,2839,2404.41,48666,1283,presupuesto,,,

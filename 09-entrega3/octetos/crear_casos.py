@@ -2,11 +2,14 @@
 
 Cada caso es un subconjunto de rutas completas de la instancia de 212 rutas, de un solo sector:
   - 6 muy chicos: 1 ruta de 15 a 40 corridas, donde se puede buscar la respuesta perfecta;
-  - 6 chicos: 2, 3 o 4 rutas de 25 a 80 corridas cada una.
+  - 6 chicos: 2, 3 o 4 rutas de 25 a 80 corridas cada una;
+  - con --medianos, una escalera de 4 casos de ~200, 250, 300 y 400 corridas de un mismo sector, donde
+    cada caso contiene al anterior; sirve para ver hasta dónde llega la respuesta perfecta.
 Las corridas se copian sin cambios y el horizonte es el de la instancia de origen.
 
 Uso, desde la raíz del proyecto:
   .venv-optimizacion/bin/python 09-entrega3/octetos/crear_casos.py
+  .venv-optimizacion/bin/python 09-entrega3/octetos/crear_casos.py --medianos
 """
 import argparse
 import hashlib
@@ -29,6 +32,10 @@ CHICO_CORRIDAS = (25, 80)
 # (posición del sector en orden, número de rutas) de cada caso chico. El sector 4 es el que
 # tiene más rutas en el rango, por eso recibe dos casos.
 CHICOS = ((0, 2), (1, 2), (2, 3), (3, 3), (4, 4), (3, 4))
+# Escalera de casos medianos: corridas mínimas de cada peldaño y tamaño de las rutas que se suman.
+MEDIANOS = (200, 250, 300, 400)
+MEDIANO_RUTA_MIN, MEDIANO_RUTA_MAX = 25, 120
+MEDIANO_HOLGURA = 0.05
 
 
 def _rutas(corridas):
@@ -80,6 +87,32 @@ def elegir_casos(corridas):
     return muy_chicos + _chicos(conteo, sectores, [c['rutas'][0] for c in muy_chicos])
 
 
+def elegir_medianos(corridas, usadas):
+    """Escalera en el sector con más corridas en rutas libres de 25 a 120 corridas.
+
+    Cada peldaño parte del anterior y agrega, de a una, la ruta libre que deja el total más cerca de su
+    objetivo (empate: menos corridas, luego nombre), hasta quedar a menos de MEDIANO_HOLGURA de él.
+    """
+    conteo, sectores = _rutas(corridas)
+    usadas = set(usadas)
+    por_sector = {}
+    for ruta, n in conteo.items():
+        if MEDIANO_RUTA_MIN <= n <= MEDIANO_RUTA_MAX and ruta not in usadas:
+            por_sector.setdefault(sectores[ruta], {})[ruta] = n
+    sector = max(sorted(por_sector), key=lambda s: sum(por_sector[s].values()))
+    libres = dict(por_sector[sector])
+    rutas, total, casos = [], 0, []
+    for objetivo in MEDIANOS:
+        while total < objetivo * (1 - MEDIANO_HOLGURA) or not rutas or (casos and rutas == casos[-1]['rutas']):
+            if not libres:
+                raise ValueError(f'El sector {sector} no alcanza {objetivo} corridas en rutas libres')
+            ruta = min(libres, key=lambda r: (abs(total + libres[r] - objetivo), libres[r], r))
+            rutas, total = rutas + [ruta], total + libres.pop(ruta)
+        casos.append(dict(tipo='mediano', objetivo=objetivo, sector=sector, rutas=list(rutas),
+                          nombre=f'mediano_{objetivo}_sector_{sector}_{len(rutas)}_rutas'))
+    return casos
+
+
 def _distancias_del_caso(distancias, paradas):
     """Conserva los pares cuyos extremos de parada pertenecen al caso; terminales y electroterminales, todos."""
     def sirve(extremo):
@@ -96,11 +129,19 @@ def _escribir(carpeta, corridas, distancias, escenario):
 
 
 def crear_casos(destino=DESTINO, origen=INSTANCIA_212):
-    destino, origen = Path(destino), Path(origen)
-    corridas = read_csv(origen / 'corridas.csv')
-    casos = elegir_casos(corridas)
+    corridas = read_csv(Path(origen) / 'corridas.csv')
+    return _crear(elegir_casos(corridas), corridas, Path(destino), Path(origen), 'indice.csv')
+
+
+def crear_medianos(destino=DESTINO, origen=INSTANCIA_212):
+    corridas = read_csv(Path(origen) / 'corridas.csv')
+    usadas = {r for c in elegir_casos(corridas) for r in c['rutas']}
+    return _crear(elegir_medianos(corridas, usadas), corridas, Path(destino), Path(origen), 'indice_medianos.csv')
+
+
+def _crear(casos, corridas, destino, origen, nombre_indice):
     existentes = [c['nombre'] for c in casos if (destino / c['nombre']).exists()]
-    if existentes or (destino / 'indice.csv').exists():
+    if existentes or (destino / nombre_indice).exists():
         raise FileExistsError(f'Ya existen casos en {destino}: {existentes[:3]}')
     distancias = read_csv(origen / 'distancias.csv')
     base = json.loads((origen / 'escenario.json').read_text(encoding='utf-8-sig'))
@@ -117,15 +158,17 @@ def crear_casos(destino=DESTINO, origen=INSTANCIA_212):
         _escribir(destino / caso['nombre'], propias, _distancias_del_caso(distancias, paradas), escenario)
         indice.append(dict(nombre=caso['nombre'], tipo=caso['tipo'], sector=caso['sector'],
                            rutas='|'.join(caso['rutas']), corridas=len(propias)))
-    write_csv(destino / 'indice.csv', indice)
+    write_csv(destino / nombre_indice, indice)
     return indice
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--destino', type=Path, default=DESTINO)
+    parser.add_argument('--medianos', action='store_true', help='crea solo la escalera de casos medianos')
     args = parser.parse_args()
-    for fila in crear_casos(args.destino):
+    crear = crear_medianos if args.medianos else crear_casos
+    for fila in crear(args.destino):
         print(f"{fila['nombre']:<34} sector {fila['sector']}  {fila['corridas']:>4} corridas  {fila['rutas']}")
 
 

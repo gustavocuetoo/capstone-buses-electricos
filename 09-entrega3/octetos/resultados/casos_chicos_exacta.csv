@@ -1,0 +1,6 @@
+﻿instancia,corridas,metodo,seleccion,semilla,presupuesto_s,buses,costo_total_usd,km,carga_kwh,sesiones,tiempo_s,intentos,mejoras,motivo_fin,optimo,cota_usd,error
+chico_02_sector_2_2_rutas,84,exacta,,0,1800.0,29,8651.5697,2803.1395,0.0,0,60.14,,,estado_2,True,8651.569725156114,
+chico_03_sector_3_3_rutas,116,exacta,,0,1800.0,24,7430.8578,2861.7156,0.0,0,178.99,,,estado_2,True,7430.857782090614,
+chico_04_sector_4_3_rutas,152,exacta,,0,1800.0,42,13041.5016,5083.0032,0.0,0,492.39,,,estado_2,True,13041.501591941984,
+chico_05_sector_5_4_rutas,157,exacta,,0,1800.0,35,11225.7084,4951.4168,0.0,0,462.14,,,estado_2,True,11225.708424339817,
+chico_06_sector_4_4_rutas,141,exacta,,0,1800.0,28,8425.6529,2851.3057,0.0,0,303.75,,,estado_2,True,8425.652853550266,

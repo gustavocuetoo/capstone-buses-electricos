@@ -4,7 +4,8 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
-from crear_casos import INSTANCIA_212, crear_casos, elegir_casos
+from crear_casos import (INSTANCIA_212, MEDIANOS, crear_casos, crear_medianos, elegir_casos,
+                         elegir_medianos)
 from metodo_hibrido.caso_base import load_instance, read_csv, validate_inputs
 
 
@@ -51,6 +52,46 @@ class CasosEscritos(unittest.TestCase):
             crear_casos(Path(tmp))
             with self.assertRaises(FileExistsError):
                 crear_casos(Path(tmp))
+
+
+class CasosMedianos(unittest.TestCase):
+    def setUp(self):
+        self.corridas = read_csv(INSTANCIA_212 / 'corridas.csv')
+        self.usadas = {r for c in elegir_casos(self.corridas) for r in c['rutas']}
+        self.casos = elegir_medianos(self.corridas, self.usadas)
+
+    def test_hay_una_escalera_de_un_solo_sector_que_crece(self):
+        conteo = Counter(r['route_id'] for r in self.corridas)
+        sector = {r['route_id']: r['sector_id'] for r in self.corridas}
+        self.assertEqual([c['objetivo'] for c in self.casos], list(MEDIANOS))
+        self.assertEqual(len({c['sector'] for c in self.casos}), 1)
+        for anterior, caso in zip(self.casos, self.casos[1:]):
+            self.assertLess(set(anterior['rutas']), set(caso['rutas']))
+        for caso in self.casos:
+            total = sum(conteo[r] for r in caso['rutas'])
+            self.assertLessEqual(abs(total - caso['objetivo']), 0.1 * caso['objetivo'], caso['nombre'])
+            self.assertEqual({sector[r] for r in caso['rutas']}, {caso['sector']}, caso['nombre'])
+
+    def test_no_repite_rutas_de_los_casos_chicos(self):
+        self.assertFalse(set(self.casos[-1]['rutas']) & self.usadas)
+
+    def test_la_eleccion_no_depende_del_orden_de_las_corridas(self):
+        self.assertEqual(elegir_medianos(list(reversed(self.corridas)), self.usadas), self.casos)
+
+    def test_cada_caso_mediano_se_valida_y_copia_las_corridas_sin_cambios(self):
+        originales = {r['corrida_id']: r for r in self.corridas}
+        with tempfile.TemporaryDirectory() as tmp:
+            indice = crear_medianos(Path(tmp))
+            self.assertEqual(len(indice), len(MEDIANOS))
+            for fila in indice:
+                carpeta = Path(tmp) / fila['nombre']
+                validate_inputs(*load_instance(carpeta))
+                corridas = read_csv(carpeta / 'corridas.csv')
+                self.assertEqual(len(corridas), fila['corridas'])
+                for r in corridas:
+                    self.assertEqual(r, originales[r['corrida_id']])
+            with self.assertRaises(FileExistsError):
+                crear_medianos(Path(tmp))
 
 
 if __name__ == '__main__':
