@@ -1,0 +1,47 @@
+% Estilo común de los informes cortos de esta carpeta.
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[a4paper,left=2cm,right=2cm,top=2.0cm,bottom=1.5cm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[skins]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[font=small,labelfont=bf,skip=4pt]{caption}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Colores (los de sector son los mismos del mapa) ----------
+\definecolor{azul}{HTML}{1F4E79}
+\definecolor{azulclaro}{HTML}{E8F0F8}
+\definecolor{verdeclaro}{HTML}{EAF5EA}
+\definecolor{naranjoclaro}{HTML}{FFF3E0}
+\definecolor{gris}{HTML}{5F6B76}
+\definecolor{sector1}{HTML}{E34948}
+\definecolor{sector2}{HTML}{2A78D6}
+\definecolor{sector3}{HTML}{1BAF7A}
+\definecolor{sector4}{HTML}{EDA100}
+\definecolor{sector5}{HTML}{008300}
+\newcommand{\cuadro}[1]{\textcolor{#1!82!white}{\rule[-0.5pt]{7pt}{7pt}}\hspace{3pt}}
+
+% ---------- Títulos, encabezado y espacios ----------
+\titleformat{\section}{\large\bfseries\color{azul}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{0.9em}{0.25em}
+\setlength{\headheight}{13pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{gris}Grupo 29 · Capstone · Buses eléctricos en Santiago}
+\rhead{\small\color{gris}\thepage\ de 2}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlist{leftmargin=1.4em,itemsep=0.2em,topsep=0.2em,parsep=0pt}
+\newtcolorbox{caja}[2][azulclaro]{colback=#1,colframe=#1,boxrule=0pt,arc=2pt,
+  left=7pt,right=7pt,top=5pt,bottom=5pt,fonttitle=\bfseries\color{azul},
+  coltitle=azul,title={#2},attach title to upper={\par\vspace{2pt}}}
+

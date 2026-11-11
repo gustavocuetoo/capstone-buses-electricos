@@ -16,7 +16,7 @@ Texto utilizable en una lámina:
 
 Se revisa un día laboral representativo (`service_id=L`), con salidas reconstruidas desde frecuencias. Todas las 6.620 filas de frecuencia utilizadas tienen `exact_times=0`: los horarios individuales son una instancia determinística representativa de los datos, tal como declara el informe del grupo; no son observaciones de salidas reales.
 
-Las definiciones utilizadas son las del escenario vigente documentado en `CODIGO apstone/tres_fases/README.md` y en la guía de preparación de la entrega 2:
+Las definiciones utilizadas son las del escenario vigente documentado en `codigo/tres_fases/README.md` y en la guía de preparación de la entrega 2:
 
 - Flota dimensionada por el método, sin imponer la referencia de 1.200 buses. El usuario confirmó que modificarla fue autorizado; también lo documenta el informe del grupo, página 8.
 - Batería inicial de 350 kWh (100%), reserva de 35 kWh y máximo de 350 kWh; consumo de 1,4 kWh/km en servicio y en vacío.
@@ -77,7 +77,7 @@ El resultado acredita factibilidad matemática para los datos preparados y los s
 
 - [Enunciado oficial](</Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/00-enunciado/P7 Planificación de la operación de buses eléctricos en la Región Metropolitana.pdf>), páginas 1–2: cobertura, continuidad, energía, infraestructura compartida y justificación del modelamiento.
 - [Informe del grupo](</Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/05-entrega1/informe/Planificación_buses_GRUPO_29.pdf>), páginas 8–11: flota dimensionada autorizada, SOC inicial y reconstrucción determinística de 64.502 corridas.
-- [Escenario documentado del grupo](</Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/CODIGO apstone/tres_fases/README.md>): terminales, costos, horizonte, energía y capacidades.
+- [Escenario documentado del grupo](</Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/codigo/tres_fases/README.md>): terminales, costos, horizonte, energía y capacidades.
 - [Guía de preparación](</Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/08-entrega2/guia_preparacion_entrega_2.pdf>), página 6: supuestos vigentes del escenario de entrega 2.
 - [Auditor adicional reproducible](</Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/metodo_hibrido/revision_factibilidad_20261006/auditoria_independiente.py>).
 - [Resultado detallado del auditor adicional](</Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/metodo_hibrido/revision_factibilidad_20261006/auditoria_independiente.json>).

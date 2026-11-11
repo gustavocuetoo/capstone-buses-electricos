@@ -1,0 +1,11 @@
+{
+  "velocidad_vacio_kmh": 18.0,
+  "costo_bus_usd": 250.0,
+  "costo_km_usd": 0.5,
+  "costo_espera_min_usd": 0.03,
+  "regulacion_min": 0.0,
+  "soc_inicial_dia0": 1.0,
+  "capacidad_espera_limitada": false,
+  "permite_recarga_terminales_espera": false,
+  "nota": "La fase 1 no impone batería ni recarga. El SOC inicial se reserva para la fase energética. La espera cobrada es la comprendida entre corridas; no se cobra inactividad previa a la primera ni posterior a la última."
+}

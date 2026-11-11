@@ -1,0 +1,18 @@
+{
+  "fecha": "2026-10-06",
+  "fuente": "Mensajes del usuario del proyecto",
+  "flota_dimensionada": {
+    "confirmado": true,
+    "descripcion": "El usuario confirmó que se permitió modificar la referencia de 1.200 buses; el informe del grupo también lo documenta."
+  },
+  "limite_local_de_jornada_retirado": {
+    "confirmado": true,
+    "mensaje_usuario": "ese supuesto lo arme yo de forma local, nunca se hablo con el grupo, toda esa parte de codigo eliminala"
+  },
+  "capacidad_electrica": {
+    "confirmado": true,
+    "pregunta": "El enunciado exige una capacidad eléctrica limitada por electroterminal, pero los datos no incluyen la potencia del transformador. ¿El grupo o el profesor confirmó que basta con respetar los cupos de carga y los 180 kW por bus?",
+    "respuesta_usuario": "Sí, se acordó usar esos límites",
+    "restricciones_verificadas": "Conexiones originales por electroterminal y potencia individual máxima de 180 kW."
+  }
+}

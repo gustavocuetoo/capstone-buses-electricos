@@ -1,0 +1,17 @@
+{
+  "aprobado": true,
+  "origenes_recalculados": 352,
+  "pares_recalculados": 3699,
+  "conexiones_e_de_matriz_separada": 728,
+  "diferencia_maxima_km": 4.999565312857612e-07,
+  "testigo_diferencia": [
+    "S:PA115",
+    "S:PE187"
+  ],
+  "grafo_nodos": 1018534,
+  "grafo_arcos": 1924807,
+  "metodo": "Caminos mínimos dirigidos de SciPy, sobre el caché de red vial fuente; sin importar código del optimizador.",
+  "segundos": 55.75404204201186,
+  "sha256_grafo": "5ec4396731cf86029be6754dc7b5d34d4f11bb8ccf551bd93f38f90b93b77579",
+  "sha256_puntos": "dbd2896ed99962c31e282423d793acecdb02f117b21ebd37f52976dbcd6a1182"
+}

@@ -1,0 +1,123 @@
+{
+  "registros": {
+    "ensayo_212": "/Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/metodo_hibrido/resultados/ensayo_212/ejecucion.json",
+    "B240_r3": "/Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/metodo_hibrido/resultados/presupuesto/B240_r3/ejecucion.json",
+    "212_600": "/Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/metodo_hibrido/resultados/mejor_20261006_600/ejecucion.json",
+    "212_refinamiento": "/Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/metodo_hibrido/resultados/mejor_20261006_refinamiento/ejecucion.json",
+    "417_completa": "/Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/metodo_hibrido/resultados/completa_417_20261006/ejecucion.json"
+  },
+  "comparacion": [
+    {
+      "archivo": "caso_base.py",
+      "ensayo_212": "2c8312da465b33e24e35586008b9eafe269596f05816e4a2836ca719183335a9",
+      "B240_r3": "2c8312da465b33e24e35586008b9eafe269596f05816e4a2836ca719183335a9",
+      "212_600": "2c8312da465b33e24e35586008b9eafe269596f05816e4a2836ca719183335a9",
+      "212_refinamiento": "2c8312da465b33e24e35586008b9eafe269596f05816e4a2836ca719183335a9",
+      "417_completa": "2c8312da465b33e24e35586008b9eafe269596f05816e4a2836ca719183335a9",
+      "actual": "2c8312da465b33e24e35586008b9eafe269596f05816e4a2836ca719183335a9",
+      "nucleo": true
+    },
+    {
+      "archivo": "calendario.py",
+      "ensayo_212": "db651a1f4857e15d7f70dcb76c1dfa5d0bd840aaf386b898b55b069296e553d0",
+      "B240_r3": "db651a1f4857e15d7f70dcb76c1dfa5d0bd840aaf386b898b55b069296e553d0",
+      "212_600": "db651a1f4857e15d7f70dcb76c1dfa5d0bd840aaf386b898b55b069296e553d0",
+      "212_refinamiento": "db651a1f4857e15d7f70dcb76c1dfa5d0bd840aaf386b898b55b069296e553d0",
+      "417_completa": "db651a1f4857e15d7f70dcb76c1dfa5d0bd840aaf386b898b55b069296e553d0",
+      "actual": "db651a1f4857e15d7f70dcb76c1dfa5d0bd840aaf386b898b55b069296e553d0",
+      "nucleo": true
+    },
+    {
+      "archivo": "recarga.py",
+      "ensayo_212": "4dd2b1a9626de558ce1a3e84739979f03feb0f8e5858e590b9b8aef81c0d7b1f",
+      "B240_r3": "4dd2b1a9626de558ce1a3e84739979f03feb0f8e5858e590b9b8aef81c0d7b1f",
+      "212_600": "4dd2b1a9626de558ce1a3e84739979f03feb0f8e5858e590b9b8aef81c0d7b1f",
+      "212_refinamiento": "4dd2b1a9626de558ce1a3e84739979f03feb0f8e5858e590b9b8aef81c0d7b1f",
+      "417_completa": "4dd2b1a9626de558ce1a3e84739979f03feb0f8e5858e590b9b8aef81c0d7b1f",
+      "actual": "4dd2b1a9626de558ce1a3e84739979f03feb0f8e5858e590b9b8aef81c0d7b1f",
+      "nucleo": true
+    },
+    {
+      "archivo": "conjunta.py",
+      "ensayo_212": "fa5d572bf6fb98ce4e2a61c054c72d6d0bbbcc9579f1301e86ecf21a9e2e4c0b",
+      "B240_r3": "fa5d572bf6fb98ce4e2a61c054c72d6d0bbbcc9579f1301e86ecf21a9e2e4c0b",
+      "212_600": "fa5d572bf6fb98ce4e2a61c054c72d6d0bbbcc9579f1301e86ecf21a9e2e4c0b",
+      "212_refinamiento": "fa5d572bf6fb98ce4e2a61c054c72d6d0bbbcc9579f1301e86ecf21a9e2e4c0b",
+      "417_completa": "fa5d572bf6fb98ce4e2a61c054c72d6d0bbbcc9579f1301e86ecf21a9e2e4c0b",
+      "actual": "fa5d572bf6fb98ce4e2a61c054c72d6d0bbbcc9579f1301e86ecf21a9e2e4c0b",
+      "nucleo": true
+    },
+    {
+      "archivo": "intercambios.py",
+      "ensayo_212": "ef03b358716d997375dc9a1235fa4c2220acac7acf24206b10b32b7b5cc46a9e",
+      "B240_r3": "ef03b358716d997375dc9a1235fa4c2220acac7acf24206b10b32b7b5cc46a9e",
+      "212_600": "ef03b358716d997375dc9a1235fa4c2220acac7acf24206b10b32b7b5cc46a9e",
+      "212_refinamiento": "ef03b358716d997375dc9a1235fa4c2220acac7acf24206b10b32b7b5cc46a9e",
+      "417_completa": "ef03b358716d997375dc9a1235fa4c2220acac7acf24206b10b32b7b5cc46a9e",
+      "actual": "ef03b358716d997375dc9a1235fa4c2220acac7acf24206b10b32b7b5cc46a9e",
+      "nucleo": true
+    },
+    {
+      "archivo": "trios.py",
+      "ensayo_212": "64cd9edba5a789be2235a3bd22cfe12aa7bea6dd50b2be84b1617f454c3d1550",
+      "B240_r3": "64cd9edba5a789be2235a3bd22cfe12aa7bea6dd50b2be84b1617f454c3d1550",
+      "212_600": "64cd9edba5a789be2235a3bd22cfe12aa7bea6dd50b2be84b1617f454c3d1550",
+      "212_refinamiento": "64cd9edba5a789be2235a3bd22cfe12aa7bea6dd50b2be84b1617f454c3d1550",
+      "417_completa": "64cd9edba5a789be2235a3bd22cfe12aa7bea6dd50b2be84b1617f454c3d1550",
+      "actual": "64cd9edba5a789be2235a3bd22cfe12aa7bea6dd50b2be84b1617f454c3d1550",
+      "nucleo": true
+    },
+    {
+      "archivo": "verificar.py",
+      "ensayo_212": "ab842f97fb7722c706129e3bf943e9c0768a64d52d8669a990825ade881ab29e",
+      "B240_r3": "ab842f97fb7722c706129e3bf943e9c0768a64d52d8669a990825ade881ab29e",
+      "212_600": "ab842f97fb7722c706129e3bf943e9c0768a64d52d8669a990825ade881ab29e",
+      "212_refinamiento": "ab842f97fb7722c706129e3bf943e9c0768a64d52d8669a990825ade881ab29e",
+      "417_completa": "ab842f97fb7722c706129e3bf943e9c0768a64d52d8669a990825ade881ab29e",
+      "actual": "ab842f97fb7722c706129e3bf943e9c0768a64d52d8669a990825ade881ab29e",
+      "nucleo": true
+    },
+    {
+      "archivo": "ejecutar.py",
+      "ensayo_212": "431e0266bde91ef8751e1d3861a46350cd8827c8facc190c6ef4222afdabe9d7",
+      "B240_r3": "431e0266bde91ef8751e1d3861a46350cd8827c8facc190c6ef4222afdabe9d7",
+      "212_600": "431e0266bde91ef8751e1d3861a46350cd8827c8facc190c6ef4222afdabe9d7",
+      "212_refinamiento": "431e0266bde91ef8751e1d3861a46350cd8827c8facc190c6ef4222afdabe9d7",
+      "417_completa": "431e0266bde91ef8751e1d3861a46350cd8827c8facc190c6ef4222afdabe9d7",
+      "actual": "431e0266bde91ef8751e1d3861a46350cd8827c8facc190c6ef4222afdabe9d7",
+      "nucleo": true
+    },
+    {
+      "archivo": "test_caso_base.py",
+      "ensayo_212": "5b05fe2675a9386e8cfd220dfb8027bb4cb100900e8ad49403df25b4fd06ebaf",
+      "B240_r3": "5b05fe2675a9386e8cfd220dfb8027bb4cb100900e8ad49403df25b4fd06ebaf",
+      "212_600": "5b05fe2675a9386e8cfd220dfb8027bb4cb100900e8ad49403df25b4fd06ebaf",
+      "212_refinamiento": "5b05fe2675a9386e8cfd220dfb8027bb4cb100900e8ad49403df25b4fd06ebaf",
+      "417_completa": "5b05fe2675a9386e8cfd220dfb8027bb4cb100900e8ad49403df25b4fd06ebaf",
+      "actual": "5b05fe2675a9386e8cfd220dfb8027bb4cb100900e8ad49403df25b4fd06ebaf",
+      "nucleo": false
+    },
+    {
+      "archivo": "test_hibrido.py",
+      "ensayo_212": "51922c1f5f593482fa6d163c16ec078f10b470f1994af06d687c67da36886f59",
+      "B240_r3": "7db6676d06a52194611afca1a6dd444136a3cee33f41da050c30ca5a8f81620a",
+      "212_600": "7db6676d06a52194611afca1a6dd444136a3cee33f41da050c30ca5a8f81620a",
+      "212_refinamiento": "7db6676d06a52194611afca1a6dd444136a3cee33f41da050c30ca5a8f81620a",
+      "417_completa": "7db6676d06a52194611afca1a6dd444136a3cee33f41da050c30ca5a8f81620a",
+      "actual": "7db6676d06a52194611afca1a6dd444136a3cee33f41da050c30ca5a8f81620a",
+      "nucleo": false
+    },
+    {
+      "archivo": "buscar_mejor.py",
+      "ensayo_212": null,
+      "B240_r3": null,
+      "212_600": "56c3a291edea411132e8858d0b7cd430f72ccc0cee8d8c07f3c7c88fba224633",
+      "212_refinamiento": "56c3a291edea411132e8858d0b7cd430f72ccc0cee8d8c07f3c7c88fba224633",
+      "417_completa": "d52d3ca8822675dd12c3b342c24d63059897600144bf19e6d3cfcfeae00901e7",
+      "actual": "d52d3ca8822675dd12c3b342c24d63059897600144bf19e6d3cfcfeae00901e7",
+      "nucleo": false
+    }
+  ],
+  "entradas_212_identicas": true,
+  "nucleo_identico_en_cinco_registros": true
+}

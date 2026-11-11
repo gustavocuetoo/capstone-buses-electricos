@@ -27,13 +27,16 @@ gurobi.lic
 # Datos e instancias: se comparten por separado o se regeneran con los scripts
 01-datos/
 metodo_hibrido/instancia_*/
-CODIGO apstone/gtfs
+caso_base_simple_gurobi/instancia_*/
+codigo/gtfs
+codigo/mapa_red.png
 
 # Resultados de las corridas: se regeneran con los scripts
 03-resultados/
 metodo_hibrido/resultados/
-CODIGO apstone/output/
+codigo/output/
 caso_base_simple_gurobi/corrida_gurobi/
+08-entrega2/informe2/salidas/
 
 # Archivos auxiliares de compilación LaTeX
 *.aux
@@ -48,3 +51,6 @@ caso_base_simple_gurobi/corrida_gurobi/
 
 # Planes completos del estudio de tamaño de grupo (~74 MB cada uno): se comparten por separado
 09-entrega3/octetos/resultados/planes_*/
+
+# Grafo de conocimiento local (herramienta graphify; no la usa el grupo)
+graphify-out/

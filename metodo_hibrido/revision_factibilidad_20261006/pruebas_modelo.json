@@ -1,0 +1,13 @@
+{
+  "fecha": "2026-10-06",
+  "modulos": [
+    "metodo_hibrido.test_hibrido",
+    "metodo_hibrido.test_caso_base"
+  ],
+  "ejecutadas": 22,
+  "fallidas": 0,
+  "errores": 0,
+  "segundos_reportados": 0.973,
+  "resultado": "OK",
+  "fuente": "Salida observada de unittest durante esta auditoría"
+}

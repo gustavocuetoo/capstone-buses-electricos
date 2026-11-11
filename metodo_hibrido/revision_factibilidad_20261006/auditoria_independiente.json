@@ -1,0 +1,175 @@
+{
+  "aprobado": true,
+  "buses": 7427,
+  "corridas": 64502,
+  "actividades": 206426,
+  "tipos_actividad": {
+    "servicio": 64502,
+    "vacio": 62740,
+    "espera": 73184,
+    "carga": 6000
+  },
+  "km_servicio": 1345412.6895494524,
+  "km_vacio": 180496.079687,
+  "carga_kwh": 64533.53182964346,
+  "sesiones": 1437,
+  "energia_minima_kwh": 34.99999999214588,
+  "energia_maxima_kwh": 350.00000000001023,
+  "energia_final_total_kwh": 527711.25489862,
+  "costo_modelado_usd": 2638494.3273515655,
+  "recursos": {
+    "E1": {
+      "ocupacion_maxima": 150,
+      "cargas_simultaneas_maximas": 28,
+      "capacidad_fisica": 150,
+      "conexiones": 150,
+      "potencia_maxima_kw": 4705.57902893414,
+      "segundo_potencia_maxima": 61500
+    },
+    "E2": {
+      "ocupacion_maxima": 180,
+      "cargas_simultaneas_maximas": 45,
+      "capacidad_fisica": 180,
+      "conexiones": 180,
+      "potencia_maxima_kw": 7103.897427934222,
+      "segundo_potencia_maxima": 61200
+    },
+    "E3": {
+      "ocupacion_maxima": 120,
+      "cargas_simultaneas_maximas": 21,
+      "capacidad_fisica": 120,
+      "conexiones": 120,
+      "potencia_maxima_kw": 3048.9911967215894,
+      "segundo_potencia_maxima": 70500
+    },
+    "E4": {
+      "ocupacion_maxima": 100,
+      "cargas_simultaneas_maximas": 26,
+      "capacidad_fisica": 100,
+      "conexiones": 100,
+      "potencia_maxima_kw": 3931.439150892574,
+      "segundo_potencia_maxima": 61200
+    },
+    "E5": {
+      "ocupacion_maxima": 150,
+      "cargas_simultaneas_maximas": 39,
+      "capacidad_fisica": 150,
+      "conexiones": 150,
+      "potencia_maxima_kw": 5408.476196737213,
+      "segundo_potencia_maxima": 61500
+    }
+  },
+  "pares_de_traslado_utilizados": 4427,
+  "amplitud_maxima_s": 94751,
+  "tolerancia_bateria_kwh": 1e-06,
+  "salidas_por_terminal": {
+    "T01": 1551,
+    "T03": 1605,
+    "T02": 2823,
+    "T04": 1448
+  },
+  "finales_por_terminal": {
+    "T01": 1354,
+    "T03": 1743,
+    "T04": 1255,
+    "E3": 120,
+    "T02": 2375,
+    "E5": 150,
+    "E4": 100,
+    "E1": 150,
+    "E2": 180
+  },
+  "fecha_utc": "2026-10-06T20:17:22.936559+00:00",
+  "reconstruccion_gtfs": {
+    "rutas": 417,
+    "patrones": 6620,
+    "corridas": 64502,
+    "exact_times": {
+      "0": 6620
+    }
+  },
+  "cota_flota_simultaneidad": 6601,
+  "segundo_pico": 28800,
+  "pruebas_de_corrupcion": [
+    {
+      "prueba": "teletransporte",
+      "rechazada": true,
+      "motivo": "Discontinuidad: B00001/2"
+    },
+    {
+      "prueba": "horario modificado",
+      "rechazada": true,
+      "motivo": "Discontinuidad: B00001/3"
+    },
+    {
+      "prueba": "distancia modificada",
+      "rechazada": true,
+      "motivo": "Traslado alterado: B00001/2"
+    },
+    {
+      "prueba": "potencia individual excedida",
+      "rechazada": true,
+      "motivo": "Potencia individual excedida: B00001/24"
+    },
+    {
+      "prueba": "corridas omitidas",
+      "rechazada": true,
+      "motivo": "Cobertura incompleta o duplicada"
+    },
+    {
+      "prueba": "bus duplicado",
+      "rechazada": true,
+      "motivo": "Bus duplicado"
+    },
+    {
+      "prueba": "corridas duplicadas entre buses distintos",
+      "rechazada": true,
+      "motivo": "Cobertura incompleta o duplicada"
+    },
+    {
+      "prueba": "ocupación sobre capacidad",
+      "rechazada": true,
+      "motivo": "Estacionamiento excedido: E1/9000"
+    },
+    {
+      "prueba": "cargadores sobre capacidad",
+      "rechazada": true,
+      "motivo": "Cupos horarios excedidos: E1/9000"
+    },
+    {
+      "prueba": "reserva de batería violada",
+      "rechazada": true,
+      "motivo": "Batería fuera de rango: B00001/2: 345.7296332"
+    }
+  ],
+  "estados_accesos_pares_utilizados": {
+    "calculada": 4427
+  },
+  "codigo_y_entregables_sin_cambios": true,
+  "sha256_protegidos": {
+    "metodo_hibrido/resultados/completa_417_20261006/04_final/actividades.csv": "8178500a6124293e4fbc6941b90479065c1a348a334b2060175b8ca1f234964c",
+    "metodo_hibrido/resultados/completa_417_20261006/04_final/resumen.json": "3ac781ebce08e74827804fcd6f8a4a4ceb4fd108ab4ebfc32550f58d13a22553",
+    "metodo_hibrido/resultados/completa_417_20261006/04_final/recargas.csv": "6dd7daa63396562aea79a719533dc8ac6c5a165292309d0c94e2a9e2812deaea",
+    "metodo_hibrido/resultados/completa_417_20261006/04_final/jornadas.csv": "2c5cfd9accbc9059bbe9dfd20cd7b1adf26d0d00e2c714596084f3aba87b9102",
+    "metodo_hibrido/resultados/completa_417_20261006/04_final/planes.json": "e61be4ba6265c41766cfd8999d4c044dd54dd43dbb41a6c181f5247055456788",
+    "metodo_hibrido/test_hibrido.py": "7db6676d06a52194611afca1a6dd444136a3cee33f41da050c30ca5a8f81620a",
+    "metodo_hibrido/trios.py": "64cd9edba5a789be2235a3bd22cfe12aa7bea6dd50b2be84b1617f454c3d1550",
+    "metodo_hibrido/verificar.py": "ab842f97fb7722c706129e3bf943e9c0768a64d52d8669a990825ade881ab29e",
+    "metodo_hibrido/ejecutar.py": "431e0266bde91ef8751e1d3861a46350cd8827c8facc190c6ef4222afdabe9d7",
+    "metodo_hibrido/intercambios.py": "ef03b358716d997375dc9a1235fa4c2220acac7acf24206b10b32b7b5cc46a9e",
+    "metodo_hibrido/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "metodo_hibrido/calendario.py": "db651a1f4857e15d7f70dcb76c1dfa5d0bd840aaf386b898b55b069296e553d0",
+    "metodo_hibrido/caso_base.py": "2c8312da465b33e24e35586008b9eafe269596f05816e4a2836ca719183335a9",
+    "metodo_hibrido/verificar_exportado.py": "9a09638494b2418bc02a27ad0fcf7531c0e26c68b69fb13056e823ea9e5e5e1b",
+    "metodo_hibrido/conjunta.py": "fa5d572bf6fb98ce4e2a61c054c72d6d0bbbcc9579f1301e86ecf21a9e2e4c0b",
+    "metodo_hibrido/verificar_completa.py": "924f1f94bf0cf7f1a7de2b63f7da9c82264cc514f6cebc30d39bffc3ce39d0d8",
+    "metodo_hibrido/test_caso_base.py": "5b05fe2675a9386e8cfd220dfb8027bb4cb100900e8ad49403df25b4fd06ebaf",
+    "metodo_hibrido/buscar_mejor.py": "d52d3ca8822675dd12c3b342c24d63059897600144bf19e6d3cfcfeae00901e7",
+    "metodo_hibrido/recarga.py": "4dd2b1a9626de558ce1a3e84739979f03feb0f8e5858e590b9b8aef81c0d7b1f",
+    "metodo_hibrido/preparar_completa.py": "f388e07ca8b82e588b78d9214c2a4041f52962dce62d905b997162109252affa"
+  },
+  "capacidad_electrica_acordada_verificada": true,
+  "definicion_capacidad_electrica": "Cupos originales por electroterminal y 180 kW por bus; acuerdo confirmado por el usuario en esta revisión.",
+  "transformer_mw_entregado": false,
+  "alcance": "Día laboral representativo aislado; flota dimensionada; SOC inicial 100%; T ilimitados; espera sin costo; sin límite de jornada."
+}

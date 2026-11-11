@@ -1,19 +1,9 @@
-# Informe Entrega 1 — pendiente
+# Informe Entrega 1
 
-Todavía no se empieza el `.tex` del informe porque el curso va a publicar un
-**documento base** que los lineamientos recomiendan usar. Escribir el formato
-ahora significaría rehacerlo después.
+- `Planificación_buses_GRUPO_29.pdf`: el informe entregado.
+- `descripcion_problema.tex`: el capítulo «Descripción detallada del problema», en LaTeX.
+  El resto del informe se armó sobre la plantilla del curso (`pucthesis.cls`), que hoy está en
+  `08-entrega2/informe2/`.
 
-Lo que sí está listo para pegar dentro de ese documento base:
-
-| Sección del informe | Material ya escrito |
-|---|---|
-| Descripción del problema | `04-documentos/mapa_supuestos.tex` |
-| Análisis de datos | `04-documentos/analisis_datos.tex` + tablas de `03-resultados/` |
-| Discusión metodológica | `04-documentos/discusion_metodologica.tex` |
-| Bibliografía | `04-documentos/bibliografia.tex`, `04-documentos/referencias.bib` |
-| Pasos futuros / Gantt | `06-gestion/PLAN-ENTREGA1.md` (hay que pasarlo a Carta Gantt) |
-
-Restricciones que no hay que olvidar: máx. 20 páginas sin portada, índices ni
-anexos; Times New Roman 11; índice obligatorio; declaración de uso de IA firmada
-por todos al final.
+El material de apoyo está en `04-documentos/` (análisis de datos, supuestos, discusión
+metodológica y bibliografía) y las cifras se generan con `02-analisis-datos/`.

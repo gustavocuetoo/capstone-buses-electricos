@@ -21,12 +21,12 @@ HERE = Path(__file__).resolve().parent
 
 def main():
     started = perf_counter()
-    graph_file = ROOT / 'CODIGO apstone/output/fase1/red_vial_cache.npz'
-    points_file = ROOT / 'CODIGO apstone/output/fase1/puntos_red_cache.json'
+    graph_file = ROOT / 'codigo/output/fase1/red_vial_cache.npz'
+    points_file = ROOT / 'codigo/output/fase1/puntos_red_cache.json'
     graph = load_npz(graph_file)
     snaps = json.loads(points_file.read_text())['snaps']
     pairs = json.loads((HERE / 'pares_traslado_utilizados.json').read_text())
-    with (ROOT / 'CODIGO apstone/output/fase1/traslados.csv').open(encoding='utf-8-sig',newline='') as stream:
+    with (ROOT / 'codigo/output/fase1/traslados.csv').open(encoding='utf-8-sig',newline='') as stream:
         exported = {(r['origen_id'],r['destino_id']):float(r['distancia_km'])
                     for r in csv.DictReader(stream) if r['distancia_km']}
     assert np.all(np.isfinite(graph.data)) and np.all(graph.data >= 0)

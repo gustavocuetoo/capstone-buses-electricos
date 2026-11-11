@@ -1,0 +1,111 @@
+\documentclass[11pt,a4paper]{article}
+
+% Informe corto del Grupo 29: la metodología completa, en lenguaje simple.
+% Cifras: cifras_sectores.tex y cifras_metodo.tex (generadas por los scripts del mismo nombre).
+
+\input{estilo}
+\input{cifras_sectores}
+\input{cifras_metodo}
+\newcommand{\paso}[2]{\textbf{\color{azul}Paso #1: #2.}}
+
+\begin{document}
+
+{\LARGE\bfseries\color{azul} Cómo planificamos los buses eléctricos de Santiago}\par
+\vspace{2pt}
+{\large\color{gris} La metodología completa, explicada sin fórmulas}\par
+\vspace{4pt}
+
+\section{El problema}
+Un día laboral en Santiago tiene \TotalCorridas{} viajes de bus en \TotalRutas{} rutas. Cada viaje tiene una
+hora de salida y de llegada, un punto de inicio y uno de término. Hay que decidir qué bus hace cada viaje, y
+cuándo y dónde recarga, gastando lo menos posible.
+
+\textbf{Qué cuesta.} Cada bus que sale cuesta USD~250 al día. A eso se suman USD~0,5 por kilómetro, la
+electricidad (más cara o más barata según la hora) y USD~5 por cada vez que un bus se conecta a cargar.
+Lo que más pesa es la cantidad de buses: con menos buses, el plan es mucho más barato.
+
+\begin{caja}{Las reglas que nunca se pueden romper}
+\begin{itemize}
+  \item Cada viaje lo hace exactamente un bus.
+  \item Un bus no puede estar en dos lugares a la vez: entre un viaje y el siguiente debe alcanzar a llegar.
+  \item La batería es de 350~kWh, parte llena, gasta 1,4~kWh por kilómetro y nunca puede bajar de 35~kWh.
+  \item Solo se carga en los 5 electroterminales, en bloques de 5 minutos de hasta 15~kWh. Cada uno tiene
+        un número limitado de cargadores y de estacionamientos.
+  \item Al final del día, cada bus queda estacionado en un terminal.
+\end{itemize}
+\end{caja}
+
+\section{Preparación de los datos: los sectores}
+De los horarios oficiales (GTFS) sacamos los viajes, las distancias y los tiempos de traslado. Cada ruta se
+asigna al electroterminal que le queda más cerca, y eso define su \textbf{sector}. Son 5 sectores, que se
+ven en el mapa. Un bus solo hace viajes de un mismo sector, pero los cargadores de los 5 electroterminales
+los comparten todos.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.84\linewidth]{mapa_sectores.pdf}
+\caption*{\textbf{Los cinco sectores.} A la izquierda, cada parte de Santiago tiene el color del sector al que
+pertenece la mayoría de las rutas que pasan por ahí. A la derecha están las rutas reales.}
+\end{figure}
+
+\newpage
+
+\section{El método, en cuatro pasos}
+\paso{1}{un primer plan rápido} Se recorren los viajes en orden de hora. Cada viaje se le da a un bus del
+sector que esté libre, alcance a llegar y tenga batería. Si ninguno puede, se agrega un bus nuevo. Sale un
+plan válido de \BusesBase{} buses (USD~\CostoBase{} al día). Es rápido pero «miope»: decide sin mirar lo que
+viene después, así que sobran buses.
+
+\paso{2}{mejorar el plan eliminando buses} Se toma un bus con pocos viajes y se intenta repartir todos sus
+viajes entre otros 3 buses. Los cuatro forman un grupo, o «cuarteto». Esos 3 se sortean al azar entre los
+buses compatibles: los del mismo sector que tienen libre la hora del viaje y alcanzan a llegar. Si el
+reparto funciona, ese bus sale del plan. Esto se repite miles de veces, con grupos distintos, hasta que se
+acaba el tiempo.
+
+\paso{3}{recalcular las recargas} Cada vez que se cambia un grupo, un modelo matemático (resuelto con el
+programa Gurobi) decide cuándo y dónde recarga cada bus del grupo, al menor costo de electricidad. Respeta
+las baterías y los cargadores libres. Si no hay forma de cargar a tiempo, el cambio se descarta.
+
+\paso{4}{auditar} Un verificador independiente revisa el plan final regla por regla: viajes, horarios,
+batería, cargadores, estacionamientos y costo. Todos los planes pasaron sin errores.
+
+\section{Cómo elegimos el método}
+Probamos grupos de 2, 3, 4, 5 y 8 buses, más una mezcla que va agrandando el grupo. Comparamos dos formas de
+elegir los grupos:
+\begin{itemize}
+  \item \textbf{Por ranking:} siempre los candidatos «más compatibles», como en la Entrega~2.
+  \item \textbf{Al azar:} un sorteo entre todos los compatibles, repetido con 3 sorteos distintos para no
+        depender de la suerte.
+\end{itemize}
+Todos corrieron con el mismo tiempo (10, 20 y 40 minutos) y en el mismo computador. Gana el más barato con
+el mismo tiempo.
+
+\section{Resultado: día laboral, 40 minutos}
+\begin{minipage}[t]{0.655\linewidth}
+\vspace{0pt}
+\small
+\begin{tabularx}{\linewidth}{@{}Xrrr@{}}
+\toprule
+Método & Buses & USD al día & Costo \\
+\midrule
+\FilasMetodos
+\bottomrule
+\end{tabularx}
+
+\vspace{2pt}
+{\footnotesize\color{gris} Los métodos al azar muestran el promedio de sus 3 sorteos.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\linewidth}
+\vspace{0pt}
+\begin{caja}[verdeclaro]{Ganan los cuartetos al azar}
+\small
+\BusesCuartetos{} buses y $-$\AhorroCuartetos\,\% de costo. Son \MenosBusesCuartetos{} buses y unos
+USD~60.000 al día menos que el primer plan, y \MenosQueEntregaDos{} buses menos que lo entregado en la Entrega~2.
+\end{caja}
+\end{minipage}
+
+\vspace{4pt}
+\textbf{Elegir al azar es lo que más ayuda:} con tríos, duplica el ahorro. Con grupos de 5 o más el ahorro
+cae, porque coordinar a tantos buses a la vez casi nunca resulta.
+
+\end{document}

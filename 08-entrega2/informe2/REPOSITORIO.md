@@ -11,7 +11,7 @@ El informe tiene que traer el enlace a un repositorio con el código ordenado. E
 | `metodo_hibrido/*.py` | Método híbrido: construcción, parejas, tríos, MILP local, auditor y sus 22 pruebas |
 | `metodo_hibrido/instancia_212/` | Instancia de 212 rutas: `corridas.csv`, `distancias.csv`, `escenario.json` (5,7 MB) |
 | `metodo_hibrido/instancia_417/corridas.csv` | Corridas de la red completa; el capítulo 2 las usa para comparar la muestra con la red |
-| `CODIGO apstone/tres_fases/` | Prototipo de tres fases y el caso base miope (`caso_base.py`, `test_caso_base.py`) |
+| `codigo/tres_fases/` | Prototipo de tres fases y el caso base miope (`caso_base.py`, `test_caso_base.py`) |
 | `caso_base_simple_gurobi/` (sin `corrida_gurobi/planes.json`) | Caso base sin recargas de la presentación |
 | `01-datos/parameters.csv`, `01-datos/depots.csv` | Parámetros y electroterminales del curso |
 | `08-entrega2/informe2/` (sin `salidas/*.png` ni archivos auxiliares de LaTeX) | El informe: `.tex`, `scripts/`, `figures/`, `tablas/` y `salidas/auditoria_miope.json` |
@@ -23,14 +23,14 @@ Las carpetas completas pesan unos 150 MB cada una por las etapas intermedias. Ba
 - `metodo_hibrido/resultados/mejor_20261006_600/`: `comparacion.json`, `comparacion_etapas.csv`, `ejecucion.json`, `licencia.json`.
 - `metodo_hibrido/resultados/mejor_20261006_refinamiento/`: lo mismo, más `verificacion_final.json`, `INFORME.md` y `04_final/` (`resumen.json`, `jornadas.csv`, `actividades.csv`, `recargas.csv`; `planes.json` es opcional, 28 MB).
 - `metodo_hibrido/resultados/presupuesto/B*/comparacion.json`: las 15 corridas del barrido.
-- `CODIGO apstone/output/tres_fases/muestra_212/resumen.json`: piso de la Fase 1 y prototipo.
-- `CODIGO apstone/output/tres_fases/muestra_212_trios/comparacion.json`: prototipo con mejoras.
-- `CODIGO apstone/output/tres_fases/muestra_212_caso_base*/`: `resumen.json`, `jornadas.csv`, `actividades.csv`, `recargas.csv` del caso base miope y de sus umbrales.
+- `codigo/output/tres_fases/muestra_212/resumen.json`: piso de la Fase 1 y prototipo.
+- `codigo/output/tres_fases/muestra_212_trios/comparacion.json`: prototipo con mejoras.
+- `codigo/output/tres_fases/muestra_212_caso_base*/`: `resumen.json`, `jornadas.csv`, `actividades.csv`, `recargas.csv` del caso base miope y de sus umbrales.
 - `caso_base_simple_gurobi/corrida_gurobi/resumen.json`.
 
 ## No subir
 
-Entornos (`.venv*`, `.deps`), `__pycache__/`, `graphify-out/`, `CODIGO apstone/tmp/`, PDFs del curso y de otros grupos, y licencias de Gurobi (`gurobi.lic`).
+Entornos (`.venv*`, `.deps`), `__pycache__/`, `graphify-out/`, `codigo/tmp/`, PDFs del curso y de otros grupos, y licencias de Gurobi (`gurobi.lic`).
 
 ## Borrador del README raíz
 
@@ -51,7 +51,7 @@ python metodo_hibrido/buscar_mejor.py --salida refinamiento --desde mejor_600/04
 El presupuesto se mide en segundos de reloj: el resultado es similar, no idéntico, según el equipo.
 
 ## Reproducir el caso base
-python "CODIGO apstone/tres_fases/caso_base.py" --base "CODIGO apstone/output/tres_fases/muestra_212"
+python "codigo/tres_fases/caso_base.py" --base "codigo/output/tres_fases/muestra_212"
 python 08-entrega2/informe2/scripts/auditar_miope.py   # lo revisa con el auditor del método híbrido
 
 ## Compilar el informe

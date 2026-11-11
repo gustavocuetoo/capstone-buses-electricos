@@ -29,12 +29,12 @@ caso_base_simple_gurobi/evidencia_dinamica/
 metodo_hibrido/resultados/**/*.txt
 
 # Versión anterior del código: solo se conservan sus documentos de modelo
-CODIGO apstone/gtfs/
-CODIGO apstone/output/
-CODIGO apstone/informe/
-CODIGO apstone/tmp/
-CODIGO apstone/*.pdf
-CODIGO apstone/fase1/requirements.txt
+codigo/gtfs/
+codigo/output/
+codigo/informe/
+codigo/tmp/
+codigo/*.pdf
+codigo/fase1/requirements.txt
 
 # PDFs compilados que duplican sus fuentes .md
 04-documentos/pdf/bibliografia.pdf

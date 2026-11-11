@@ -3,7 +3,7 @@
 Uso, desde la raíz del proyecto:
   .venv-optimizacion/bin/python 09-entrega3/scripts/auditar_caso_base.py \\
       --instancia metodo_hibrido/instancia_417_S \\
-      --caso-base "CODIGO apstone/output/tres_fases/red_417_S_caso_base"
+      --caso-base "codigo/output/tres_fases/red_417_S_caso_base"
 Escribe auditoria_hibrido.json en la carpeta del caso base y termina con código 1 si no aprueba.
 """
 import argparse

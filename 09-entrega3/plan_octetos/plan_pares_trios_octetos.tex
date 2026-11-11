@@ -1,0 +1,185 @@
+\documentclass[11pt,a4paper]{article}
+
+% Plan corto del Grupo 29: pares y tríos contra grupos más grandes.
+% Se compila directo en Overleaf (pdfLaTeX).
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage[skins]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+% ---------- Colores ----------
+\definecolor{azul}{HTML}{1F4E79}
+\definecolor{azulclaro}{HTML}{E8F0F8}
+\definecolor{verde}{HTML}{2E7D32}
+\definecolor{verdeclaro}{HTML}{EAF5EA}
+\definecolor{naranjo}{HTML}{B85C00}
+\definecolor{naranjoclaro}{HTML}{FFF3E0}
+\definecolor{gris}{HTML}{5F6B76}
+
+\hypersetup{colorlinks=true, linkcolor=azul, urlcolor=azul}
+
+% ---------- Títulos de sección ----------
+\titleformat{\section}{\Large\bfseries\color{azul}}{}{0pt}{}[\vspace{-0.6em}{\color{azul}\rule{\linewidth}{0.8pt}}]
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+
+% ---------- Encabezado y pie ----------
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{gris}Grupo 29 · Capstone ICS2122}
+\rhead{\small\color{gris}Plan corto · 4 al 8 de noviembre}
+\cfoot{\small\color{gris}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- Cajas ----------
+\newtcolorbox{idea}[1]{enhanced, colback=azulclaro, colframe=azul, boxrule=0.8pt,
+  arc=2mm, left=3mm, right=3mm, top=2mm, bottom=2mm,
+  title={\bfseries #1}, coltitle=white, colbacktitle=azul}
+\newtcolorbox{ojo}[1]{enhanced, colback=naranjoclaro, colframe=naranjo, boxrule=0.8pt,
+  arc=2mm, left=3mm, right=3mm, top=2mm, bottom=2mm,
+  title={\bfseries #1}, coltitle=white, colbacktitle=naranjo}
+\newtcolorbox{meta}[1]{enhanced, colback=verdeclaro, colframe=verde, boxrule=0.8pt,
+  arc=2mm, left=3mm, right=3mm, top=2mm, bottom=2mm,
+  title={\bfseries #1}, coltitle=white, colbacktitle=verde}
+
+% ---------- Checklist ----------
+\newlist{tareas}{itemize}{1}
+\setlist[tareas]{label=$\square$, leftmargin=1.6em, itemsep=0.25em, topsep=0.3em}
+\newcommand{\opcional}{\textit{\color{gris}(si alcanza)}\ }
+
+% Encabezado de cada día del checklist
+\newcommand{\dia}[2]{%
+  \vspace{0.6em}\noindent
+  \colorbox{azul}{\color{white}\bfseries\strut\ #1\ }\hspace{0.6em}{\bfseries\color{azul}#2}\par\vspace{0.2em}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\renewcommand{\arraystretch}{1.35}
+
+\begin{document}
+
+% ================= TÍTULO =================
+\begin{center}
+  {\color{gris}\small GRUPO 29 · PLANIFICACIÓN DE BUSES ELÉCTRICOS EN LA RM}\\[0.4em]
+  {\LARGE\bfseries\color{azul} Pares y tríos contra grupos más grandes}\\[0.3em]
+  {\large ¿Por qué mejoramos el plan de a 2 y 3 buses, y no de a 4, 5 u 8?}\\[0.6em]
+  {\color{gris} Plan corto · de hoy, miércoles 4, al \textbf{domingo 8 de noviembre}}
+\end{center}
+
+\vspace{0.5em}
+
+% ================= LA IDEA =================
+\section{La idea, en simple}
+
+Nuestro programa trabaja en dos pasos:
+\begin{enumerate}[leftmargin=1.6em, itemsep=0.2em]
+  \item \textbf{Hace un plan rápido:} asigna los viajes uno a uno, en orden de hora.
+  \item \textbf{Mejora el plan por grupos:} toma 2 buses (\emph{pares}) o 3 buses (\emph{tríos}), les reparte de nuevo los viajes y deja el cambio si el costo baja.
+\end{enumerate}
+
+El profesor nos pidió demostrar que esta forma de mejorar es una buena elección. La pregunta natural es \textbf{por qué grupos de 2 y 3, y no de 4, 5 u 8}. Hay dos efectos que tiran en sentidos contrarios:
+
+\begin{idea}{El dilema que vamos a medir}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2em]
+  \item \textbf{Un grupo más grande} ve más combinaciones, así que en cada intento puede encontrar ahorros que un par no ve.
+  \item \textbf{Pero cada intento es mucho más lento,} así que en el mismo tiempo se alcanzan a revisar muchos menos grupos.
+\end{itemize}
+La comparación dice cuál de los dos efectos pesa más. Si los grupos grandes no ganan en el mismo tiempo, queda demostrado que pares y tríos son la mejor elección. Si ganan, lo sabremos a tiempo para cambiar.
+\end{idea}
+
+% ================= MÉTODOS =================
+\section{Contra qué nos comparamos}
+
+\begin{center}
+\rowcolors{2}{azulclaro}{white}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{4.2cm} X}
+\toprule
+\rowcolor{azul}\color{white}Método & \color{white}\textbf{Qué hace} \\
+\midrule
+Solo el plan rápido & No mejora nada: es el piso \\
+Solo pares & Mejora en grupos de 2 buses \\
+\rowcolor{verdeclaro}Pares y tríos (el nuestro) & Grupos de 2 y después grupos de 3 \\
+Cuartetos & Grupos de 4 buses \\
+Quintetos & Grupos de 5 buses \\
+Octetos & Grupos de 8 buses \\
+Mezcla creciente & Parte con pares y sube a 3, 4, 5 y 8 solo cuando el tamaño anterior ya no encuentra ahorros \\
+La respuesta perfecta & Resuelve todo sin atajos. Solo funciona en casos chicos, y sirve de regla para medir a todos los demás \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Cómo se arma cada grupo.} Solo con buses que pueden intercambiar viajes: del mismo sector y con horarios que se toquen. Se prueban dos formas de elegirlos: los buses más parecidos entre sí, y al azar.
+
+\begin{meta}{Para que la comparación sea justa}
+Todos los métodos usan los mismos casos de prueba, el mismo tiempo y el mismo computador. A todos se les calcula el costo de la misma forma, y todos pasan por el mismo revisor automático, que confirma que el plan de verdad funciona.
+\end{meta}
+
+\begin{ojo}{Ojo con la licencia}
+La licencia gratuita de Gurobi solo acepta problemas pequeños, y lo más probable es que un octeto se pase del límite. Hay dos salidas: usar un programa gratuito sin límite, o pedir la licencia académica de la universidad.
+\end{ojo}
+
+% ================= CHECKLIST =================
+\section{Checklist de tareas}
+
+\dia{MIÉ 4 · JUE 5}{Investigar y preparar}
+\begin{tareas}
+  \item \textbf{Investigar} quién más mejora planes de buses por grupos (de 2, 3 o más buses), qué tamaño de grupo usan y por qué.
+  \item Averiguar cómo se demuestra en los estudios que un método es bueno: contra qué se compara y qué se mide.
+  \item Revisar cada fuente (autores, año y revista) antes de citarla.
+  \item Resolver la licencia: pedir la académica o instalar el programa gratuito.
+  \item Crear los \textbf{casos muy chicos}: una ruta, unos 6 casos. En ellos se puede encontrar la respuesta perfecta.
+  \item Crear los \textbf{casos chicos}: de 2 a 4 rutas, unos 6 casos.
+\end{tareas}
+
+\dia{VIE 6}{Programas}
+\begin{tareas}
+  \item Generalizar la mejora para que acepte grupos de cualquier tamaño (2, 3, 4, 5 y 8), usando la misma pieza que hoy resuelve pares y tríos.
+  \item Programar las dos formas de elegir los grupos: los buses más parecidos y al azar.
+  \item Programar la mezcla creciente (2 $\to$ 3 $\to$ 4 $\to$ 5 $\to$ 8).
+  \item Programar la respuesta perfecta para los casos chicos.
+  \item Un programa que corra todos los métodos en todos los casos y junte los resultados en una tabla.
+  \item Pruebas automáticas, y confirmar que pares y tríos siguen dando exactamente lo mismo que antes.
+\end{tareas}
+
+\dia{SÁB 7}{Correr}
+\begin{tareas}
+  \item Casos muy chicos y chicos: todos los métodos, incluida la respuesta perfecta.
+  \item Muestra de 212 rutas: todos los métodos con 5, 10 y 20 minutos, para ver quién gana con poco tiempo y quién con más.
+  \item Pasar cada resultado por el revisor automático. Lo que no pasa no se usa.
+  \item \opcional De noche, la red completa con el mejor grupo grande, para compararla con la nuestra.
+\end{tareas}
+
+\dia{DOM 8}{Conclusión}
+\begin{tareas}
+  \item Una tabla por caso y método: costo, buses, tiempo y distancia a la respuesta perfecta.
+  \item Un gráfico del ahorro según el tamaño del grupo, con el mismo tiempo.
+  \item Un gráfico de cuánto demora un intento según el tamaño del grupo.
+  \item Comprobar si las diferencias son reales o casualidad.
+  \item Una página con la conclusión y lo que dice la investigación, lista para el informe y para una lámina.
+\end{tareas}
+
+% ================= CRITERIO =================
+\section{Qué tiene que mostrar el domingo}
+
+\begin{meta}{Podemos decir «pares y tríos es la mejor elección» si se cumple todo esto}
+\begin{enumerate}[leftmargin=1.4em, itemsep=0.3em]
+  \item Con el mismo tiempo, ni los cuartetos, ni los quintetos, ni los octetos, ni la mezcla creciente son más de \textbf{1\,\%} más baratos que el nuestro.
+  \item En los casos chicos quedamos cerca de la respuesta perfecta, idealmente a menos de \textbf{2\,\%}.
+  \item Los tríos mejoran lo que dejan los pares.
+\end{enumerate}
+\end{meta}
+
+Si algo de esto no se cumple, el domingo decidimos con los datos en la mano si cambiamos el método. Una comparación honesta puede salir a favor o en contra, y saberlo antes del informe es justamente lo que buscamos.
+
+\end{document}

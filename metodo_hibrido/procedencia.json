@@ -1,0 +1,34 @@
+{
+  "caso_base.py": {
+    "origen": "tmp\\revision_caso_base\\caso_base_ejecutable\\caso_base.py",
+    "sha256_origen": "6c573b56d08a9e99713b02753e3ad8a82ee2153d26db59359c6ec913f9953bb1"
+  },
+  "verificar.py": {
+    "origen": "tres_fases\\verificar.py",
+    "sha256_origen": "73a5a9c060afa9090194d3eea03b4f255d6238e11cb045a051bae21637efeb13"
+  },
+  "calendario.py": {
+    "origen": "tres_fases\\fase3.py",
+    "sha256_origen": "6ed70a2390181465f98a42522470cc36ab44499f2edcda835dd05465ca222186"
+  },
+  "recarga.py": {
+    "origen": "tres_fases\\reparar.py",
+    "sha256_origen": "f701887cde76499f4be234444d8648db228e483e96de1a4819bd73abc1f0fad8"
+  },
+  "conjunta.py": {
+    "origen": "tres_fases\\conjunta.py",
+    "sha256_origen": "d97dcf1a1c5f80e0a33f03f09570fb6bd93c97d2cc919076a8653f0e397a6244"
+  },
+  "intercambios.py": {
+    "origen": "tres_fases\\intercambios.py",
+    "sha256_origen": "91f9220bdac80abc5cfac9af7a5953a1d5b578072de83dfec1662e421418618d"
+  },
+  "trios.py": {
+    "origen": "tres_fases\\trios.py",
+    "sha256_origen": "544e5f116d8055407747f9b513605b70030b61832c4a851c112d00450a9aa056"
+  },
+  "test_caso_base.py": {
+    "origen": "tmp\\revision_caso_base\\caso_base_ejecutable\\test_caso_base.py",
+    "sha256_origen": "bdf307260420fa01e6507fd34cffb819782e4b0eec27fbe47515cead1e176b33"
+  }
+}
