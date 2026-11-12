@@ -12,8 +12,8 @@ del anterior:
 |---|---|
 | `mediano_200_sector_1_2_rutas` | 200 |
 | `mediano_250_sector_1_3_rutas` | 255 |
-| `mediano_300_sector_1_4_rutas` | 292 |
-| `mediano_400_sector_1_5_rutas` | 399 |
+| `mediano_300_sector_1_4_rutas` | 298 |
+| `mediano_400_sector_1_5_rutas` | 405 |
 
 Cada carpeta trae todo lo necesario: `corridas.csv`, `distancias.csv` y `escenario.json`.
 

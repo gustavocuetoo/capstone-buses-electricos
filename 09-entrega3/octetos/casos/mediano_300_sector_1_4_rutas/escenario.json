@@ -1,9 +1,9 @@
 {
   "rutas": [
+    "107c",
     "B15",
     "B32",
-    "B33",
-    "B37"
+    "B33"
   ],
   "service_id": "L",
   "terminales_espera": [

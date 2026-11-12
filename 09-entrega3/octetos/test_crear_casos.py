@@ -14,9 +14,9 @@ class EleccionDeCasos(unittest.TestCase):
         self.corridas = read_csv(INSTANCIA_212 / 'corridas.csv')
         self.casos = elegir_casos(self.corridas)
 
-    def test_hay_seis_muy_chicos_de_una_ruta_y_seis_chicos_de_dos_a_cuatro(self):
+    def test_hay_seis_muy_chicos_de_una_ruta_y_cinco_chicos_de_dos_a_cuatro(self):
         tamanos = Counter(c['tipo'] for c in self.casos)
-        self.assertEqual(tamanos, {'muy_chico': 6, 'chico': 6})
+        self.assertEqual(tamanos, {'muy_chico': 6, 'chico': 5})
         for caso in self.casos:
             esperado = {1} if caso['tipo'] == 'muy_chico' else {2, 3, 4}
             self.assertIn(len(caso['rutas']), esperado, caso['nombre'])
@@ -37,7 +37,7 @@ class CasosEscritos(unittest.TestCase):
         originales = {r['corrida_id']: r for r in read_csv(INSTANCIA_212 / 'corridas.csv')}
         with tempfile.TemporaryDirectory() as tmp:
             indice = crear_casos(Path(tmp))
-            self.assertEqual(len(indice), 12)
+            self.assertEqual(len(indice), 11)
             for fila in indice:
                 carpeta = Path(tmp) / fila['nombre']
                 validate_inputs(*load_instance(carpeta))

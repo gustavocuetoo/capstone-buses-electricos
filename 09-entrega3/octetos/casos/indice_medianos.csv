@@ -1,5 +1,5 @@
 ﻿nombre,tipo,sector,rutas,corridas
 mediano_200_sector_1_2_rutas,mediano,1,B33|B15,200
 mediano_250_sector_1_3_rutas,mediano,1,B33|B15|B32,255
-mediano_300_sector_1_4_rutas,mediano,1,B33|B15|B32|B37,292
-mediano_400_sector_1_5_rutas,mediano,1,B33|B15|B32|B37|308c,399
+mediano_300_sector_1_4_rutas,mediano,1,B33|B15|B32|107c,298
+mediano_400_sector_1_5_rutas,mediano,1,B33|B15|B32|107c|308c,405

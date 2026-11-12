@@ -2,7 +2,7 @@
 
 Cada caso es un subconjunto de rutas completas de la instancia de 212 rutas, de un solo sector:
   - 6 muy chicos: 1 ruta de 15 a 40 corridas, donde se puede buscar la respuesta perfecta;
-  - 6 chicos: 2, 3 o 4 rutas de 25 a 80 corridas cada una;
+  - 5 chicos: 2, 3 o 4 rutas de 25 a 80 corridas cada una;
   - con --medianos, una escalera de 4 casos de ~200, 250, 300 y 400 corridas de un mismo sector, donde
     cada caso contiene al anterior; sirve para ver hasta dónde llega la respuesta perfecta.
 Las corridas se copian sin cambios y el horizonte es el de la instancia de origen.
@@ -29,9 +29,9 @@ MUY_CHICO_CORRIDAS = (15, 40)
 MUY_CHICO_IDEAL = 25
 MUY_CHICOS = 6
 CHICO_CORRIDAS = (25, 80)
-# (posición del sector en orden, número de rutas) de cada caso chico. El sector 4 es el que
-# tiene más rutas en el rango, por eso recibe dos casos.
-CHICOS = ((0, 2), (1, 2), (2, 3), (3, 3), (4, 4), (3, 4))
+# (número del caso, posición del sector en orden, número de rutas) de cada caso chico. El sector 4
+# es el que tiene más rutas en el rango, por eso recibe dos casos.
+CHICOS = ((2, 1, 2), (3, 2, 3), (4, 3, 3), (5, 4, 4), (6, 3, 4))
 # Escalera de casos medianos: corridas mínimas de cada peldaño y tamaño de las rutas que se suman.
 MEDIANOS = (200, 250, 300, 400)
 MEDIANO_RUTA_MIN, MEDIANO_RUTA_MAX = 25, 120
@@ -67,7 +67,7 @@ def _chicos(conteo, sectores, usadas):
     orden = sorted(set(sectores.values()))
     usadas = set(usadas)
     casos = []
-    for i, (posicion, cuantas) in enumerate(CHICOS, 1):
+    for i, posicion, cuantas in CHICOS:
         sector = orden[posicion]
         libres = sorted(r for r, n in conteo.items()
                         if sectores[r] == sector and bajo <= n <= alto and r not in usadas)
