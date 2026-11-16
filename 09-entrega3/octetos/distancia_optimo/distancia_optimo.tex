@@ -1,0 +1,141 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{parskip}
+\setlist{nosep,leftmargin=*}
+\renewcommand{\arraystretch}{1.1}
+
+\title{\vspace{-1.5cm}Distancia al óptimo de la mejora por grupos}
+\author{Capstone --- buses eléctricos}
+\date{Reunión con el profesor, 16 de noviembre de 2026}
+
+\begin{document}
+\maketitle
+\vspace{-0.6cm}
+
+\textbf{Resultado.} En los 5 casos chicos donde Gurobi prueba el óptimo, el método que
+usamos en la red completa (cuartetos al azar) queda en promedio a \textbf{0,13\,\%} del
+costo óptimo, y a 0,31\,\% en el peor caso. Usa siempre el mismo número de buses que el
+óptimo. El plan inicial, sin mejora, quedaba a 1,39\,\%.
+
+\section{Qué queríamos saber}
+Nuestro método parte de un plan inicial y lo mejora reasignando viajes entre grupos de
+buses. Es una heurística: no garantiza el óptimo. En la red completa (417 rutas, unos
+7.350 buses en día laboral) el modelo exacto no se puede resolver, así que no sabemos
+cuánto nos falta. Para estimarlo, armamos casos más chicos donde el óptimo sí se puede
+calcular y comparamos.
+
+\section{Cómo lo medimos}
+\begin{enumerate}
+  \item \textbf{Casos.} Tomamos subconjuntos de la instancia real, un sector a la vez:
+    5 casos \emph{chicos} de 2 a 4 rutas (84 a 157 corridas) y 6 \emph{muy chicos} de
+    una ruta (24 a 26 corridas).
+  \item \textbf{Óptimo.} Un solo MILP en Gurobi decide qué bus hace cada corrida, dónde
+    termina la jornada y cuándo recarga, con el mismo costo (USD 250 por bus, USD 0,5
+    por km y USD 5 por sesión de carga) y el mismo catálogo de recargas que la
+    heurística. Con tolerancia 0 y límite de 30 minutos, probó el óptimo en los 5 casos
+    chicos, en 1 a 8 minutos cada uno.
+  \item \textbf{Métodos.} Corrimos el plan inicial, pares, pares + tríos, la mezcla
+    creciente (tipo VNS) y grupos de 3, 4, 5 y 8 buses, elegidos al azar (3 semillas) o
+    por parecido. Cada método tuvo 60 y 120 segundos; ambos tiempos dan casi lo mismo.
+  \item \textbf{Brecha.} Para cada corrida,
+    \[
+      \text{brecha} = \frac{\text{costo del método} - \text{costo óptimo}}{\text{costo óptimo}}.
+    \]
+    Promediamos primero las semillas de cada caso y después los 5 casos.
+\end{enumerate}
+
+\section{Resultados}
+La Tabla~\ref{tab:casos} muestra cada caso chico y la Tabla~\ref{tab:metodos} resume
+la brecha de cada método con 120 segundos.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Casos chicos: óptimo probado y brecha de tres métodos.}
+\label{tab:casos}
+\begin{tabular}{lcccrrrrr}
+\toprule
+ & & & & \multicolumn{2}{c}{Óptimo} & \multicolumn{3}{c}{Brecha al óptimo (\%)} \\
+\cmidrule(lr){5-6}\cmidrule(lr){7-9}
+Caso & Sector & Rutas & Corridas & Buses & USD & Plan inicial & Pares + tríos & Cuartetos \\
+\midrule
+chico\_02 & 2 & 2 & 84  & 29 & 8.651,57  & 2,90 & 2,70 & 0,03 \\
+chico\_03 & 3 & 3 & 116 & 24 & 7.430,86  & 3,52 & 0,25 & 0,19 \\
+chico\_04 & 4 & 3 & 152 & 42 & 13.041,50 & 0,27 & 0,00 & 0,13 \\
+chico\_05 & 5 & 4 & 157 & 35 & 11.225,71 & 0,12 & 0,06 & 0,12 \\
+chico\_06 & 4 & 4 & 141 & 28 & 8.425,65  & 0,16 & 0,06 & 0,16 \\
+\midrule
+Promedio  &   &   &     &    &           & 1,39 & 0,61 & 0,13 \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+{\footnotesize Cuartetos: grupos de 4 buses al azar, promedio de 3 semillas.}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Brecha al óptimo por método en los 5 casos chicos (120 segundos).}
+\label{tab:metodos}
+\begin{tabular}{lccc}
+\toprule
+Método & Brecha media (\%) & Peor caso (\%) & Buses de más (promedio) \\
+\midrule
+Plan inicial, sin mejora   & 1,39 & 3,52 & 0,4 \\
+Pares                      & 1,24 & 3,39 & 0,4 \\
+Pares + tríos              & 0,61 & 2,70 & 0,2 \\
+Mezcla creciente           & 0,56 & 2,70 & 0,2 \\
+Tríos al azar              & 0,15 & 0,38 & 0 \\
+\textbf{Cuartetos al azar} & \textbf{0,13} & \textbf{0,31} & \textbf{0} \\
+Quintetos al azar          & 0,14 & 0,32 & 0 \\
+Octetos al azar            & 0,14 & 0,38 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los métodos que parten con pares quedan atrapados en chico\_02: se quedan en 30 buses
+cuando el óptimo usa 29, y los tríos no logran salir de ese plan. Los grupos de 3 o más
+buses llegan a 29 desde el comienzo. Por eso la brecha baja de 0,61\,\% a 0,13\,\% al
+pasar de pares + tríos a cuartetos.
+
+En la red completa, el mismo método con 40 minutos baja el costo frente al plan inicial
+en 2,25\,\% en día laboral, 4,80\,\% en sábado y 8,00\,\% en domingo.
+
+\section{Qué podemos afirmar y qué no}
+\begin{itemize}
+  \item \textbf{Sí:} en casos de hasta 157 corridas, la mejora por grupos cierra cerca
+    del 90\,\% de la distancia entre el plan inicial y el óptimo, y nunca usa buses de
+    más.
+  \item \textbf{No:} la brecha de la red completa. Los casos chicos tienen como máximo
+    157 corridas; la red completa es mucho más grande y allí no tenemos cota inferior.
+  \item \textbf{La ventaja de los cuartetos depende de un caso.} En chico\_04, 05 y 06,
+    pares + tríos queda más cerca del óptimo (0,00 a 0,06\,\% contra 0,12 a 0,16\,\%), y
+    los cuartetos no mejoran el plan inicial en chico\_05 ni en chico\_06.
+  \item \textbf{Casos muy chicos (una ruta).} Pares y pares + tríos llegan al óptimo en
+    los 6. En la ruta J22, los cuartetos quedan a 4,2\,\%. Los grupos de 5 u 8 no se
+    pueden formar con los 4 buses del plan inicial y se quedan en el plan inicial (25,4\,\%).
+  \item \textbf{Casi no hay recargas.} El óptimo no recarga en ninguno de los 5 casos
+    chicos. La brecha mide sobre todo cómo se encadenan los viajes, no las decisiones
+    de recarga.
+  \item \textbf{Casos medianos (200 a 400 corridas): no se pudieron resolver.} Con 200
+    corridas, el modelo exacto usó unos 13~GB de memoria en un computador de 8~GB.
+\end{itemize}
+
+\section{Preguntas para la reunión}
+\begin{enumerate}
+  \item ¿Basta con la brecha en casos chicos, o conviene buscar una cota inferior
+    para la red completa (por ejemplo, la relajación lineal por sector)?
+  \item ¿Vale la pena resolver los casos medianos en un equipo con más memoria?
+  \item ¿Nos quedamos con cuartetos al azar, o combinamos pares + tríos con grupos más
+    grandes, ya que cada uno gana en casos distintos?
+\end{enumerate}
+
+\end{document}
