@@ -1,0 +1,144 @@
+{
+  "rutas": [
+    "307c",
+    "B12c",
+    "B08",
+    "B33",
+    "208",
+    "429c",
+    "B31N",
+    "435",
+    "B02N",
+    "428",
+    "J18c",
+    "I16",
+    "J07c",
+    "424",
+    "I08N",
+    "306",
+    "481",
+    "407",
+    "414e",
+    "B03",
+    "H08",
+    "D13",
+    "H05",
+    "223",
+    "329",
+    "201e",
+    "217e",
+    "102",
+    "506e",
+    "432N",
+    "C22",
+    "421c",
+    "D11",
+    "D07c",
+    "C02",
+    "D26",
+    "D17v",
+    "516",
+    "505c",
+    "401",
+    "F13c",
+    "F28",
+    "228",
+    "F15",
+    "G16",
+    "234",
+    "G08v",
+    "302",
+    "124",
+    "G39"
+  ],
+  "corridas": 7413,
+  "horizonte": {
+    "inicio_horizonte_s": -6437,
+    "fin_horizonte_s": 98296
+  },
+  "fase1": {
+    "estado_gurobi": 2,
+    "optimo_demostrado": true,
+    "objetivo_usd": 293570.2372554098,
+    "tiempo_solver_s": 6.7779998779296875,
+    "nodos": 14619,
+    "arcos": 216872
+  },
+  "fase2": {
+    "corridas_cubiertas": 7413,
+    "flota": 832,
+    "buses_iniciales": {
+      "T04": 173,
+      "T02": 284,
+      "T01": 214,
+      "T03": 161
+    },
+    "buses_finales": {
+      "T04": 116,
+      "E2": 70,
+      "E4": 100,
+      "E3": 58,
+      "T02": 93,
+      "T01": 98,
+      "T03": 43,
+      "E1": 104,
+      "E5": 150
+    },
+    "km_vacio": 15643.842473,
+    "km_servicio": 155496.6320378121,
+    "espera_min": 237198.75,
+    "costo_verificado_usd": 293570.2372554051,
+    "verificacion": "cobertura, balances, integralidad, horarios, terminales y costos; no incluye energía",
+    "tiempo_s": 1.7051945000002888
+  },
+  "fase3": {
+    "verificado": true,
+    "corridas": 7413,
+    "buses": 949,
+    "km": 176015.56442681226,
+    "carga_kwh": 10422.978683009645,
+    "sesiones": 236,
+    "costo_buses_usd": 237250,
+    "costo_km_usd": 88007.78221340613,
+    "costo_energia_usd": 1485.8528990533825,
+    "costo_sesiones_usd": 1180,
+    "costo_total_usd": 327923.6351124595,
+    "energia_minima_kwh": 34.999999999999915,
+    "capacidades": {
+      "E1": {
+        "ocupacion_maxima": 105,
+        "cargas_simultaneas_maximas": 4,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      },
+      "E2": {
+        "ocupacion_maxima": 83,
+        "cargas_simultaneas_maximas": 5,
+        "capacidad_fisica": 180,
+        "conexiones": 180
+      },
+      "E3": {
+        "ocupacion_maxima": 92,
+        "cargas_simultaneas_maximas": 6,
+        "capacidad_fisica": 120,
+        "conexiones": 120
+      },
+      "E4": {
+        "ocupacion_maxima": 100,
+        "cargas_simultaneas_maximas": 4,
+        "capacidad_fisica": 100,
+        "conexiones": 100
+      },
+      "E5": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 4,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      }
+    },
+    "tiempo_construccion_s": 0.3760866000002352,
+    "particiones": 117,
+    "optimalidad_demostrada": false
+  },
+  "tiempo_total_s": 22.32652250000001
+}

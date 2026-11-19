@@ -1,0 +1,159 @@
+{
+  "verificado": true,
+  "auditoria_planes_releidos": true,
+  "csv_conciliados": true,
+  "pruebas_aprobadas": 22,
+  "resumen": {
+    "verificado": true,
+    "corridas": 33220,
+    "buses": 3873,
+    "km": 798658.554385443,
+    "carga_kwh": 26432.41079625449,
+    "sesiones": 534,
+    "costo_buses_usd": 968250,
+    "costo_km_usd": 399329.2771927215,
+    "costo_energia_usd": 4382.426583654733,
+    "costo_sesiones_usd": 2670,
+    "costo_total_usd": 1374631.7037763763,
+    "energia_minima_kwh": 34.99999998440461,
+    "capacidades": {
+      "E1": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 12,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      },
+      "E2": {
+        "ocupacion_maxima": 180,
+        "cargas_simultaneas_maximas": 14,
+        "capacidad_fisica": 180,
+        "conexiones": 180
+      },
+      "E3": {
+        "ocupacion_maxima": 120,
+        "cargas_simultaneas_maximas": 8,
+        "capacidad_fisica": 120,
+        "conexiones": 120
+      },
+      "E4": {
+        "ocupacion_maxima": 100,
+        "cargas_simultaneas_maximas": 16,
+        "capacidad_fisica": 100,
+        "conexiones": 100
+      },
+      "E5": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 16,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      }
+    }
+  },
+  "referencia_caso_base": {
+    "verificado": true,
+    "corridas": 33220,
+    "buses": 4014,
+    "km": 803168.452737444,
+    "carga_kwh": 33239.605439990664,
+    "sesiones": 818,
+    "costo_buses_usd": 1003500,
+    "costo_km_usd": 401584.226368722,
+    "costo_energia_usd": 6174.471095245556,
+    "costo_sesiones_usd": 4090,
+    "costo_total_usd": 1415348.6974639676,
+    "energia_minima_kwh": 34.99999999999997,
+    "capacidades": {
+      "E1": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 18,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      },
+      "E2": {
+        "ocupacion_maxima": 180,
+        "cargas_simultaneas_maximas": 26,
+        "capacidad_fisica": 180,
+        "conexiones": 180
+      },
+      "E3": {
+        "ocupacion_maxima": 120,
+        "cargas_simultaneas_maximas": 10,
+        "capacidad_fisica": 120,
+        "conexiones": 120
+      },
+      "E4": {
+        "ocupacion_maxima": 100,
+        "cargas_simultaneas_maximas": 22,
+        "capacidad_fisica": 100,
+        "conexiones": 100
+      },
+      "E5": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 23,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      }
+    }
+  },
+  "referencia_previa": {
+    "verificado": true,
+    "corridas": 33220,
+    "buses": 3902,
+    "km": 799476.9003514425,
+    "carga_kwh": 31996.063089293024,
+    "sesiones": 652,
+    "costo_buses_usd": 975500,
+    "costo_km_usd": 399738.45017572126,
+    "costo_energia_usd": 5419.5801661643045,
+    "costo_sesiones_usd": 3260,
+    "costo_total_usd": 1383918.0303418855,
+    "energia_minima_kwh": 34.99999999135317,
+    "capacidades": {
+      "E1": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 13,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      },
+      "E2": {
+        "ocupacion_maxima": 180,
+        "cargas_simultaneas_maximas": 20,
+        "capacidad_fisica": 180,
+        "conexiones": 180
+      },
+      "E3": {
+        "ocupacion_maxima": 120,
+        "cargas_simultaneas_maximas": 9,
+        "capacidad_fisica": 120,
+        "conexiones": 120
+      },
+      "E4": {
+        "ocupacion_maxima": 100,
+        "cargas_simultaneas_maximas": 24,
+        "capacidad_fisica": 100,
+        "conexiones": 100
+      },
+      "E5": {
+        "ocupacion_maxima": 149,
+        "cargas_simultaneas_maximas": 16,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      }
+    }
+  },
+  "ahorro_vs_caso_base_usd": 40716.99368759128,
+  "mejora_vs_caso_base_pct": 2.8768171236210764,
+  "buses_evitados_vs_caso_base": 141,
+  "ahorro_vs_mejor_previa_usd": 9286.326565509196,
+  "tiempo_algoritmos_total_s": 1718.3855916250031,
+  "modelos_totales": 60440,
+  "modelos_descartados_por_licencia": 184,
+  "optimalidad_global_demostrada": false,
+  "sha256_entregables": {
+    "actividades.csv": "8d471dab0692342ff31bbba82751cebf4c546399a54fb79fd9177803a7a72542",
+    "resumen.json": "49e1e138c45ca5b47466f916086923903e4a643749ac788574dce0ae515df48b",
+    "recargas.csv": "27e01ac0c86d8acb5290ba693e1bc98b8ad754aa9c41ce6e70327dd6c8876868",
+    "jornadas.csv": "687f1af61c7288659e369aad6a356ce8f5d32c115ec59cd46f9b11105f85099f",
+    "planes.json": "a31e22c8778d0a45b6180bd5d590cc5bafdb25cd174d98122a03096d32344962"
+  }
+}

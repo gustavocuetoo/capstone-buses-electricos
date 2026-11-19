@@ -16,22 +16,33 @@ que se usa en todas las entregas.
 | `00-enunciado/` | Enunciado P7 y lineamientos de las Entregas 1, 2 y 3. | Sí |
 | `01-datos/` | Datos del curso: GTFS de RED, red vial `chile.gpkg`, mapa. **Solo lectura.** | No (pesa 1,3 GB; se comparte aparte) |
 | `02-analisis-datos/` | Análisis de datos de la Entrega 1: corridas, KPIs, figuras. | Sí |
-| `03-resultados/` | Salidas de `02-analisis-datos/` (figuras y tablas LaTeX). | No (se regenera) |
+| `03-resultados/` | Salidas de `02-analisis-datos/` (figuras y tablas LaTeX). | Sí |
 | `04-documentos/` | Documentos de trabajo en LaTeX y sus PDF: análisis de datos, supuestos, discusión metodológica, bibliografía. | Sí |
 | `05-entrega1/` | Presentación e informe entregados en la Entrega 1. | Sí |
 | `08-entrega2/` | Informe 2 en LaTeX (`informe2/`), barrido de presupuesto (`sensibilidad_presupuesto/`), presentación del grupo. | Sí |
 | `09-entrega3/` | Plan de la Entrega 3, mapa de sectores (`mapa_sectores/`) y estudio de tamaños de grupo (`octetos/`). | Sí |
-| `codigo/` | Código base del grupo: Fase 1 (`fase1/`), prototipo de tres fases y **caso base miope** (`tres_fases/caso_base.py`). | Sí, sin `output/` |
-| `metodo_hibrido/` | **Método principal**: construcción cronológica + mejora por pares, tríos y cuartetos con Gurobi, y su verificador. | Sí, sin instancias ni resultados |
-| `caso_base_simple_gurobi/` | Caso base sin recargas resuelto con Gurobi (comparación de la Entrega 2). | Sí, sin la corrida |
+| `codigo/` | Código base del grupo: Fase 1 (`fase1/`), prototipo de tres fases y **caso base miope** (`tres_fases/caso_base.py`). | Sí; de `output/` solo los resúmenes |
+| `metodo_hibrido/` | **Método principal**: construcción cronológica + mejora por pares, tríos y cuartetos con Gurobi, y su verificador. | Sí; de `resultados/` solo los resúmenes, sin instancias |
+| `caso_base_simple_gurobi/` | Caso base sin recargas resuelto con Gurobi (comparación de la Entrega 2). | Sí; de la corrida solo el resumen y las jornadas |
 
 No se suben: entornos de Python (`.venv*`), licencias de Gurobi, instancias y corridas
 pesadas. Las reglas están en [`.gitignore`](.gitignore).
 
-**Datos, instancias y corridas completas** están en Google Drive, en zip que conservan las rutas
-del repo: [Capstone G29 - datos y resultados](https://drive.google.com/drive/folders/1Trv7TUivV7h_G1UwlBCi4pEdTYQHn1lG).
-Se descomprimen en la raíz del repo clonado (`unzip <archivo>.zip -d .`). El `LEEME.txt` de esa
-carpeta dice qué trae cada zip.
+## Dónde están los resultados
+
+De cada corrida se suben los resúmenes; los planes completos (`planes.json`, `actividades.csv`,
+20-50 MB cada uno) se regeneran con los scripts.
+
+| Resultado | Archivos |
+|---|---|
+| Método híbrido, red completa L / S / D | `metodo_hibrido/resultados/completa_417_20261006/`, `completa_417_S_20261027/`, `completa_417_D_20261027/`: `INFORME.md` (solo L), `comparacion_etapas.csv`, `comparacion.json`, `verificacion_final.json`, `04_final/resumen.json`, `04_final/jornadas.csv` (un bus por fila), `04_final/recargas.csv` |
+| Resumen escrito del método híbrido | `metodo_hibrido/RESULTADOS.md` |
+| Barrido de presupuesto (Entrega 2) | `metodo_hibrido/resultados/presupuesto/B*_r*/` y `08-entrega2/sensibilidad_presupuesto/resumen_barrido.csv` |
+| Caso base miope L / S / D | `codigo/output/tres_fases/red_417_*_caso_base/`: `resumen.json`, `jornadas.csv`, `recargas.csv` |
+| Caso base simple con Gurobi | `caso_base_simple_gurobi/corrida_gurobi/resumen.json`, `jornadas.csv` |
+| Tamaños de grupo y distancia al óptimo (Entrega 3) | `09-entrega3/octetos/resultados/*.csv` y `09-entrega3/octetos/distancia_optimo/distancia_optimo.pdf` |
+| Análisis de datos (Entrega 1) | `03-resultados/` |
+| Cifras del informe 2 | `08-entrega2/informe2/salidas/` |
 
 ## Preparar el computador (una vez)
 

@@ -1,0 +1,46 @@
+{
+  "verificado": true,
+  "corridas": 37377,
+  "buses": 4399,
+  "km": 925265.2800696538,
+  "carga_kwh": 132787.70670530337,
+  "sesiones": 3129,
+  "costo_buses_usd": 1099750,
+  "costo_km_usd": 462632.6400348269,
+  "costo_energia_usd": 24810.183573827875,
+  "costo_sesiones_usd": 15645,
+  "costo_total_usd": 1602837.8236086548,
+  "energia_minima_kwh": 34.99999999999996,
+  "capacidades": {
+    "E1": {
+      "ocupacion_maxima": 150,
+      "cargas_simultaneas_maximas": 35,
+      "capacidad_fisica": 150,
+      "conexiones": 150
+    },
+    "E2": {
+      "ocupacion_maxima": 180,
+      "cargas_simultaneas_maximas": 45,
+      "capacidad_fisica": 180,
+      "conexiones": 180
+    },
+    "E3": {
+      "ocupacion_maxima": 120,
+      "cargas_simultaneas_maximas": 27,
+      "capacidad_fisica": 120,
+      "conexiones": 120
+    },
+    "E4": {
+      "ocupacion_maxima": 100,
+      "cargas_simultaneas_maximas": 44,
+      "capacidad_fisica": 100,
+      "conexiones": 100
+    },
+    "E5": {
+      "ocupacion_maxima": 150,
+      "cargas_simultaneas_maximas": 48,
+      "capacidad_fisica": 150,
+      "conexiones": 150
+    }
+  }
+}

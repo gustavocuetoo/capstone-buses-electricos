@@ -31,12 +31,32 @@ caso_base_simple_gurobi/instancia_*/
 codigo/gtfs
 codigo/mapa_red.png
 
-# Resultados de las corridas: se regeneran con los scripts
-03-resultados/
-metodo_hibrido/resultados/
-codigo/output/
-caso_base_simple_gurobi/corrida_gurobi/
-08-entrega2/informe2/salidas/
+# Resultados de las corridas: se suben solo los resúmenes (KPIs, comparaciones,
+# verificación, jornadas y recargas finales). Los planes completos y las
+# actividades minuto a minuto (20-50 MB cada uno) se regeneran con los scripts.
+codigo/output/**
+!codigo/output/**/
+!codigo/output/tres_fases/**/resumen.json
+!codigo/output/tres_fases/red_417_*_caso_base/auditoria_hibrido.json
+!codigo/output/tres_fases/red_417_*_caso_base/jornadas.csv
+!codigo/output/tres_fases/red_417_*_caso_base/recargas.csv
+metodo_hibrido/resultados/**
+!metodo_hibrido/resultados/**/
+!metodo_hibrido/resultados/**/INFORME.md
+!metodo_hibrido/resultados/**/resumen.json
+!metodo_hibrido/resultados/**/comparacion.json
+!metodo_hibrido/resultados/**/comparacion_etapas.csv
+!metodo_hibrido/resultados/**/ejecucion.json
+!metodo_hibrido/resultados/**/verificacion_final.json
+!metodo_hibrido/resultados/**/cota_relajada.json
+!metodo_hibrido/resultados/**/validacion_cruzada.json
+!metodo_hibrido/resultados/**/auditoria_independiente.json
+!metodo_hibrido/resultados/**/04_final/jornadas.csv
+!metodo_hibrido/resultados/**/04_final/recargas.csv
+caso_base_simple_gurobi/corrida_gurobi/**
+!caso_base_simple_gurobi/corrida_gurobi/resumen.json
+!caso_base_simple_gurobi/corrida_gurobi/configuracion.json
+!caso_base_simple_gurobi/corrida_gurobi/jornadas.csv
 
 # Archivos auxiliares de compilación LaTeX
 *.aux

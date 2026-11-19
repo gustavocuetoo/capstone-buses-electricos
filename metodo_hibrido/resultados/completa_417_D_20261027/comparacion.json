@@ -1,0 +1,125 @@
+{
+  "inicial": {
+    "verificado": true,
+    "corridas": 37377,
+    "buses": 4399,
+    "km": 925265.2800696538,
+    "carga_kwh": 132787.70670530337,
+    "sesiones": 3129,
+    "costo_buses_usd": 1099750,
+    "costo_km_usd": 462632.6400348269,
+    "costo_energia_usd": 24810.183573827875,
+    "costo_sesiones_usd": 15645,
+    "costo_total_usd": 1602837.8236086548,
+    "energia_minima_kwh": 34.99999999999996,
+    "capacidades": {
+      "E1": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 35,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      },
+      "E2": {
+        "ocupacion_maxima": 180,
+        "cargas_simultaneas_maximas": 45,
+        "capacidad_fisica": 180,
+        "conexiones": 180
+      },
+      "E3": {
+        "ocupacion_maxima": 120,
+        "cargas_simultaneas_maximas": 27,
+        "capacidad_fisica": 120,
+        "conexiones": 120
+      },
+      "E4": {
+        "ocupacion_maxima": 100,
+        "cargas_simultaneas_maximas": 44,
+        "capacidad_fisica": 100,
+        "conexiones": 100
+      },
+      "E5": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 48,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      }
+    }
+  },
+  "final": {
+    "verificado": true,
+    "corridas": 37377,
+    "buses": 4201,
+    "km": 916006.2852396552,
+    "carga_kwh": 114871.80858806681,
+    "sesiones": 2305,
+    "costo_buses_usd": 1050250,
+    "costo_km_usd": 458003.1426198276,
+    "costo_energia_usd": 20321.134972289758,
+    "costo_sesiones_usd": 11525,
+    "costo_total_usd": 1540099.2775921172,
+    "energia_minima_kwh": 34.999999964263154,
+    "capacidades": {
+      "E1": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 43,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      },
+      "E2": {
+        "ocupacion_maxima": 180,
+        "cargas_simultaneas_maximas": 47,
+        "capacidad_fisica": 180,
+        "conexiones": 180
+      },
+      "E3": {
+        "ocupacion_maxima": 120,
+        "cargas_simultaneas_maximas": 25,
+        "capacidad_fisica": 120,
+        "conexiones": 120
+      },
+      "E4": {
+        "ocupacion_maxima": 100,
+        "cargas_simultaneas_maximas": 50,
+        "capacidad_fisica": 100,
+        "conexiones": 100
+      },
+      "E5": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 41,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      }
+    }
+  },
+  "busquedas": [
+    {
+      "etapa": "01_pares",
+      "tiempo_busqueda_s": 600.516606374993,
+      "intentos": 8248,
+      "rondas": 4,
+      "motivo_fin": "presupuesto",
+      "mejoras": 1260,
+      "etapa_aceptada": true,
+      "rechazo": "",
+      "tiempo_etapa_s": 601.3364113339921
+    },
+    {
+      "etapa": "01_trios",
+      "tiempo_busqueda_s": 600.4273641670006,
+      "intentos": 36354,
+      "rondas": 6,
+      "motivo_fin": "presupuesto",
+      "mejoras": 164,
+      "etapa_aceptada": true,
+      "rechazo": "",
+      "tiempo_etapa_s": 601.2826181249984
+    }
+  ],
+  "corridas": 37377,
+  "rutas": 339,
+  "buses_evitados": 198,
+  "ahorro_usd": 62738.546016537584,
+  "mejora_porcentual": 3.9142167156554253,
+  "tiempo_total_s": 1233.099599750014,
+  "optimalidad_global_demostrada": false
+}

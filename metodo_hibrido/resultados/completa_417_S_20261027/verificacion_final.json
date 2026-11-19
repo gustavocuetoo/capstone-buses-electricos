@@ -1,0 +1,66 @@
+{
+  "validacion_cruzada_aprobada": true,
+  "datos_originales_sin_cambios": true,
+  "csv_conciliados": true,
+  "servicio": "S",
+  "corridas": 43619,
+  "rutas": 343,
+  "resumen": {
+    "verificado": true,
+    "corridas": 43619,
+    "buses": 4692,
+    "km": 1064268.9970515713,
+    "carga_kwh": 124559.57944801575,
+    "sesiones": 2567,
+    "costo_buses_usd": 1173000,
+    "costo_km_usd": 532134.4985257856,
+    "costo_energia_usd": 21808.833072630838,
+    "costo_sesiones_usd": 12835,
+    "costo_total_usd": 1739778.3315984167,
+    "energia_minima_kwh": 34.999999990998504,
+    "capacidades": {
+      "E1": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 59,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      },
+      "E2": {
+        "ocupacion_maxima": 180,
+        "cargas_simultaneas_maximas": 57,
+        "capacidad_fisica": 180,
+        "conexiones": 180
+      },
+      "E3": {
+        "ocupacion_maxima": 120,
+        "cargas_simultaneas_maximas": 38,
+        "capacidad_fisica": 120,
+        "conexiones": 120
+      },
+      "E4": {
+        "ocupacion_maxima": 100,
+        "cargas_simultaneas_maximas": 46,
+        "capacidad_fisica": 100,
+        "conexiones": 100
+      },
+      "E5": {
+        "ocupacion_maxima": 150,
+        "cargas_simultaneas_maximas": 61,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      }
+    }
+  },
+  "alcance": "Modelo híbrido: flota dimensionada, espera sin costo, día aislado con batería inicial llena",
+  "cota_flota_por_simultaneidad": 3860,
+  "segundo_maxima_simultaneidad": 54000,
+  "flota_archivo_original": 1200.0,
+  "factible_con_flota_archivo_original": false,
+  "sha256_entregables": {
+    "actividades.csv": "6203387aef6fc60a7a07377490005b056d7f30184d22048a571fca20ced299ae",
+    "resumen.json": "148466a33fc30956a22d38d65df7253e0a2577ae05e4e1ef8abe15bc28f6563a",
+    "recargas.csv": "00621d565922f8e7ae508c0e54d89ede6ea9aba110b328112b970f89cd572c44",
+    "jornadas.csv": "e4ac42327a8b9a8a0b3b011007640d7e80268f1128ae690a9fb5e2c3be4c1c7d",
+    "planes.json": "193feb7ec80120c0c9a239908865f4a22b98206607c5136296b4b5171bef6a8d"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "metodologia": "Construcción cronológica + mejora local conjunta",
+  "parametros": {
+    "instancia": "/Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/metodo_hibrido/instancia_212",
+    "salida": "/Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/metodo_hibrido/resultados/presupuesto/B015_r3",
+    "presupuesto_pares": 15.0,
+    "presupuesto_trios": 15.0,
+    "limite_local": 2,
+    "vecinos": 8,
+    "alternativas": 3,
+    "rondas": 3
+  },
+  "sha256_entradas": {
+    "escenario.json": "6652a68aa0838f423f10838ac3afcc469413da102caf8692e3faf03049604c5e",
+    "corridas.csv": "eb56112bf12b43bb0223f3e49f5b89a10890a51c76ebc8ec869034d25986ac9c",
+    "distancias.csv": "b983eab2eae324edd4615fc043cb59626b3061c8f99d7993da7fa1d69d0a0af3"
+  },
+  "sha256_codigo": {
+    "test_hibrido.py": "7db6676d06a52194611afca1a6dd444136a3cee33f41da050c30ca5a8f81620a",
+    "trios.py": "64cd9edba5a789be2235a3bd22cfe12aa7bea6dd50b2be84b1617f454c3d1550",
+    "verificar.py": "ab842f97fb7722c706129e3bf943e9c0768a64d52d8669a990825ade881ab29e",
+    "ejecutar.py": "431e0266bde91ef8751e1d3861a46350cd8827c8facc190c6ef4222afdabe9d7",
+    "intercambios.py": "ef03b358716d997375dc9a1235fa4c2220acac7acf24206b10b32b7b5cc46a9e",
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "calendario.py": "db651a1f4857e15d7f70dcb76c1dfa5d0bd840aaf386b898b55b069296e553d0",
+    "caso_base.py": "2c8312da465b33e24e35586008b9eafe269596f05816e4a2836ca719183335a9",
+    "conjunta.py": "fa5d572bf6fb98ce4e2a61c054c72d6d0bbbcc9579f1301e86ecf21a9e2e4c0b",
+    "test_caso_base.py": "5b05fe2675a9386e8cfd220dfb8027bb4cb100900e8ad49403df25b4fd06ebaf",
+    "recarga.py": "4dd2b1a9626de558ce1a3e84739979f03feb0f8e5858e590b9b8aef81c0d7b1f"
+  },
+  "sectores": "Servicios de cada jornada en un solo sector; cinco E compartidos"
+}

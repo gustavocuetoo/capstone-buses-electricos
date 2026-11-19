@@ -1,0 +1,114 @@
+{
+  "rutas": [
+    "B18",
+    "B43",
+    "B12",
+    "201",
+    "J04",
+    "I09",
+    "518",
+    "422",
+    "D14",
+    "E04",
+    "113",
+    "508",
+    "C01c",
+    "C06",
+    "D01",
+    "C09",
+    "F33",
+    "G14",
+    "F07",
+    "204N"
+  ],
+  "corridas": 4001,
+  "horizonte": {
+    "inicio_horizonte_s": -6316,
+    "fin_horizonte_s": 97270
+  },
+  "fase1": {
+    "estado_gurobi": 2,
+    "optimo_demostrado": true,
+    "objetivo_usd": 150742.2419381788,
+    "tiempo_solver_s": 0.6480000019073486,
+    "nodos": 7929,
+    "arcos": 88682
+  },
+  "fase2": {
+    "corridas_cubiertas": 4001,
+    "flota": 422,
+    "buses_iniciales": {
+      "T01": 73,
+      "T03": 115,
+      "T04": 102,
+      "T02": 132
+    },
+    "buses_finales": {
+      "E4": 100,
+      "T01": 37,
+      "T03": 25,
+      "T04": 82,
+      "E2": 16,
+      "E5": 41,
+      "E1": 56,
+      "E3": 14,
+      "T02": 51
+    },
+    "km_vacio": 8491.454202,
+    "km_servicio": 81993.0296743566,
+    "espera_min": 114143.11666666667,
+    "costo_verificado_usd": 150742.24193817828,
+    "verificacion": "cobertura, balances, integralidad, horarios, terminales y costos; no incluye energía",
+    "tiempo_s": 0.7470972000010079
+  },
+  "fase3": {
+    "verificado": true,
+    "corridas": 4001,
+    "buses": 513,
+    "km": 93533.99087635646,
+    "carga_kwh": 4792.868377521122,
+    "sesiones": 113,
+    "costo_buses_usd": 128250,
+    "costo_km_usd": 46766.99543817823,
+    "costo_energia_usd": 646.6576681246027,
+    "costo_sesiones_usd": 565,
+    "costo_total_usd": 176228.65310630284,
+    "energia_minima_kwh": 34.99999999999998,
+    "capacidades": {
+      "E1": {
+        "ocupacion_maxima": 79,
+        "cargas_simultaneas_maximas": 3,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      },
+      "E2": {
+        "ocupacion_maxima": 27,
+        "cargas_simultaneas_maximas": 3,
+        "capacidad_fisica": 180,
+        "conexiones": 180
+      },
+      "E3": {
+        "ocupacion_maxima": 24,
+        "cargas_simultaneas_maximas": 1,
+        "capacidad_fisica": 120,
+        "conexiones": 120
+      },
+      "E4": {
+        "ocupacion_maxima": 100,
+        "cargas_simultaneas_maximas": 1,
+        "capacidad_fisica": 100,
+        "conexiones": 100
+      },
+      "E5": {
+        "ocupacion_maxima": 48,
+        "cargas_simultaneas_maximas": 3,
+        "capacidad_fisica": 150,
+        "conexiones": 150
+      }
+    },
+    "tiempo_construccion_s": 0.33671809999941615,
+    "particiones": 91,
+    "optimalidad_demostrada": false
+  },
+  "tiempo_total_s": 7.20230520000041
+}

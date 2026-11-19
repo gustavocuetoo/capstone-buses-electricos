@@ -1,0 +1,15 @@
+{
+  "corridas": 33220,
+  "rutas": 212,
+  "km_servicio": 704414.1023873984,
+  "cota_buses_por_servicios_simultaneos": 3484,
+  "cota_por_sector": {
+    "3": 672,
+    "4": 731,
+    "2": 820,
+    "1": 650,
+    "5": 611
+  },
+  "cota_costo_usd": 1223207.0511936992,
+  "alcance": "Cota inferior relajada: solo simultaneidad de servicios por sector y kilómetros de servicio; omite vacío, recarga y recursos."
+}

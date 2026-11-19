@@ -1,0 +1,7 @@
+{
+  "instancia": "/Users/anitasepulveda/Desktop/Universidad/SEMESTRES/SEMESTRE 8/Capstone/Proyecto/caso_base_simple_gurobi/instancia_212",
+  "salida": "corrida_gurobi",
+  "motor": "gurobi",
+  "tiempo_cadena": 60,
+  "hilos": 1
+}

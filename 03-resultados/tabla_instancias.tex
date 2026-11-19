@@ -1,0 +1,16 @@
+% Generado automáticamente -- NO editar a mano.
+% Volver a generar con:  python3 02-codigo/entrega1_kpis.py
+
+\begin{tabular}{l r r r r r r r L{3.4cm}}
+\rowcolor{headrow}
+\thead{Inst.} & \thead{Rutas} & \thead{Viajes} & \thead{Corridas} & \thead{km/día} & \thead{h-bus} & \thead{Cota flota} & \thead{Arcos} & \thead{Uso previsto} \\
+\midrule
+I-001 & 1 & 21 & 171 & 4.180 & 271 & 20 & $1{,}2\times 10^{4}$ & Depuración del modelo; óptimo exacto verificable a mano \\
+\rowcolor{softrow}
+I-010 & 10 & 111 & 964 & 23.881 & 1.482 & 118 & $3{,}9\times 10^{5}$ & Prototipo MILP exacto; referencia de calidad \\
+I-050 & 50 & 711 & 6.552 & 129.691 & 7.914 & 687 & $1{,}8\times 10^{7}$ & Comparar exacto vs. heurística; calibración \\
+\rowcolor{softrow}
+I-200 & 200 & 3.180 & 31.279 & 667.909 & 42.385 & 3.239 & $4{,}1\times 10^{8}$ & Escala de trabajo; ajuste de parámetros \\
+I-FULL & 418 & 6.629 & 64.603 & 1.346.022 & 84.483 & 6.603 & $1{,}8\times 10^{9}$ & Caso real objetivo; solo heurística/descomposición \\
+\bottomrule
+\end{tabular}

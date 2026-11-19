@@ -1,0 +1,27 @@
+% Generado automáticamente -- NO editar a mano.
+% Volver a generar con:  python3 02-codigo/entrega1_kpis.py
+
+\begin{tabular}{l L{8.2cm} r l}
+\rowcolor{headrow}
+\thead{} & \thead{Verificación} & \thead{Resultado} & \thead{Estado} \\
+\midrule
+C1 & Viajes con distancia conocida (shape\_distances) & 100{,}0\% & \textcolor{ink}{\textbf{OK}} \\
+\rowcolor{softrow}
+C2 & Viajes con ventana horaria válida (stop\_times) & 100{,}0\% & \textcolor{ink}{\textbf{OK}} \\
+C3 & Terminales de origen/destino reconstruibles & 100{,}0\% & \textcolor{ink}{\textbf{OK}} \\
+\rowcolor{softrow}
+C4 & Viajes de menos de 10 min (posible artefacto) & 2 de 6.629 & \textcolor{amber}{\textbf{ALERTA}} \\
+C5 & Viajes de menos de 5 km (posible artefacto) & 31 de 6.629 & \textcolor{amber}{\textbf{ALERTA}} \\
+\rowcolor{softrow}
+C6 & Frecuencias con headway positivo & 6.629 de 6.629 & \textcolor{ink}{\textbf{OK}} \\
+C7 & depots.csv y charger\_capacity.csv concuerdan & idénticos & \textcolor{ink}{\textbf{OK}} \\
+\rowcolor{softrow}
+C8 & Tarifa eléctrica cubre 24 h sin huecos ni solapes & 6 tramos & \textcolor{ink}{\textbf{OK}} \\
+C9 & Consumo implícito vs. piloto real (1{,}006 kWh/km) & +39\% & \textcolor{amber}{\textbf{ALERTA}} \\
+\rowcolor{softrow}
+C11 & Campos del diccionario presentes en los archivos & 27 de 44 & \textcolor{critred}{\textbf{FALLA}} \\
+C12 & Viajes no-bus (Metro y Metrotren) en el día de servicio & 1.288 de 7.917 descartados & \textcolor{amber}{\textbf{ALERTA}} \\
+\rowcolor{softrow}
+C13 & Paradas fuera de la Región Metropolitana & 3 de 12.877 & \textcolor{amber}{\textbf{ALERTA}} \\
+\bottomrule
+\end{tabular}
