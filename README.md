@@ -28,6 +28,11 @@ que se usa en todas las entregas.
 No se suben: entornos de Python (`.venv*`), licencias de Gurobi, instancias y corridas
 pesadas. Las reglas están en [`.gitignore`](.gitignore).
 
+**Datos, instancias y corridas completas** están en Google Drive, en zip que conservan las rutas
+del repo: [Capstone G29 - datos y resultados](https://drive.google.com/drive/folders/1Trv7TUivV7h_G1UwlBCi4pEdTYQHn1lG).
+Se descomprimen en la raíz del repo clonado (`unzip <archivo>.zip -d .`). El `LEEME.txt` de esa
+carpeta dice qué trae cada zip.
+
 ## Preparar el computador (una vez)
 
 Desde la raíz del repositorio:
