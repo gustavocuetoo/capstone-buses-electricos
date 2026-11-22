@@ -15,8 +15,17 @@ Desde la raíz del repositorio (solo necesita pandas y matplotlib, sin Gurobi):
 ```bash
 python3 09-entrega3/kpi/kpi_planes.py
 python3 09-entrega3/kpi/uso_electroterminales.py
-python3 -m pytest -q 09-entrega3/kpi/test_kpi.py
+python3 -m pytest -q 09-entrega3/kpi/
 ```
+
+La ocupación de plazas necesita `actividades.csv`, que no está en GitHub pero sí en las carpetas
+`04_final` del computador donde se corrió el método:
+
+```bash
+python3 09-entrega3/kpi/ocupacion_plazas.py --plan metodo_hibrido/resultados/completa_417_20261006/04_final --nombre metodo_L
+```
+
+El script comprueba que su pico coincida con la `ocupacion_maxima` del auditor.
 
 ## Archivos
 
@@ -25,7 +34,8 @@ python3 -m pytest -q 09-entrega3/kpi/test_kpi.py
 | `planes.py` | Lista de planes, lectura de `resumen.json`, `jornadas.csv` y `recargas.csv`, y validación de que los tres cuadren |
 | `kpi_planes.py` | 30 KPI por plan, ahorro del método contra el caso base y tabla por sector |
 | `uso_electroterminales.py` | Perfil de carga por electroterminal en bloques de 5 min, resumen, matriz sector × electroterminal y figuras |
-| `test_kpi.py` | Pruebas con un plan chico y con los planes del repositorio |
+| `ocupacion_plazas.py` | Ocupación de plazas por electroterminal cada 5 min desde `actividades.csv`, separando buses cargando, esperando durante la operación y estacionados al cierre |
+| `test_kpi.py`, `test_ocupacion_plazas.py` | Pruebas con planes chicos y con los planes del repositorio |
 | `resultados/` | Salidas: CSV, `kpi_planes.md` y figuras PNG |
 
 ## Controles
