@@ -54,11 +54,11 @@ esté, se agrega a `PLANES` y las cifras se recalculan solas.
   vez, entre 17,5 % y 26 % de las conexiones, y ocurre entre las 17:00 y las 19:30, casi siempre antes
   del tramo caro de 19:00 a 22:00. El caso base, que recarga al 100 %, llena las conexiones de E2, E4 y E5 entre las
   20:00 y las 22:00.
-- **Las plazas se llenan al cierre del día, no durante la operación.** En el método, exactamente 700
+- **Las plazas llegan al 100 % al menos al cierre del día.** En el método, exactamente 700
   buses terminan el día estacionados en un electroterminal: 180 + 150 + 150 + 120 + 100, que es la
   capacidad total. Por eso la verificación reporta ocupación máxima de plazas igual a la capacidad. En
-  el caso base ningún bus termina en un electroterminal. Para ver la ocupación de plazas hora a hora hace
-  falta `actividades.csv`.
+  el caso base ningún bus termina en un electroterminal. Para saber si también se llenan durante la
+  operación hace falta la ocupación de plazas hora a hora, que necesita `actividades.csv`.
 - **Desbalance entre sectores.** El sector 3 (Los Espinos) carga solo el 34 % de su energía en su propio
   electroterminal, y el 38 % en E2 El Conquistador y el 20 % en E5 Santa Rosa. Los demás sectores
   cargan entre 53 % y 77 % en el suyo. Santa Rosa (sector 5, 117 rutas) carga el 64 % en el suyo.
